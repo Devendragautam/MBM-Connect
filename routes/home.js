@@ -7,7 +7,7 @@ router.get("/", (req, res) => {
     message: "Welcome to MBM Connect API ",
     available_routes: {
       stories: "/api/stories",
-      conversations: "/api/conversations",
+      conversations: "/api/chat",
       market: "/api/market",
     },
   });
