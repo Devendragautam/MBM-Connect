@@ -5,6 +5,7 @@ import homeRoutes from "./Routes/home.js";
 import storiesRoutes from "./Routes/chat.js";
 import chatRoutes from "./Routes/chat.js";
 import marketRoutes from "./Routes/market.js";
+import userRoutes from "./Routes/user.js";
 
 const app = express();
 app.use(express.json());
@@ -23,3 +24,4 @@ app.use("/", homeRoutes);
 app.use("/api/stories", storiesRoutes);
 app.use("/api/chat",chatRoutes);
 app.use("/api/market", marketRoutes);
+app.use("/api/user", userRoutes);
