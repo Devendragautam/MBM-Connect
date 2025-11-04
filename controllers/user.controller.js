@@ -8,9 +8,9 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 export const registeruser = asyncHandler(async (req, res) => {
   const { fullName, username, email, password } = req.body;
 
-  if (!fullName || !username || !email || !password) {
-    throw new ApiError(400, "All fields are required");
-  }
+  // if (!fullName || !username || !email || !password) {
+  //   throw new ApiError(400, "All fields are required");
+  // }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(email)) {
