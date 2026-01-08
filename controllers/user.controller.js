@@ -1,99 +1,80 @@
 import bcrypt from "bcrypt";
-import fs from "fs/promises";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.models.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
-export const registeruser = async (req, res) => {
-  const safeUnlink = async (path) => {
-    if (!path) return;
-    try {
-      await fs.unlink(path);
-    } catch (e) {}
-  };
+export const registeruser = asyncHandler(async (req, res) => {
+  const { fullName, email, username, password } = req.body;
 
-  try {
-    console.log("req.body:", req.body);
-    console.log("req.files:", req.files);
-
-    const { fullName, email, username, password } = req.body ?? {};
-
-    if (
-      !fullName ||
-      !email ||
-      !username ||
-      !password ||
-      !String(fullName).trim() ||
-      !String(email).trim() ||
-      !String(username).trim() ||
-      !String(password).trim()
-    ) {
-      throw new ApiError(400, "All fields (fullName, email, username, password) are required");
-    }
-
-    const emailNormalized = String(email).trim().toLowerCase();
-    const usernameNormalized = String(username).trim().toLowerCase();
-
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailNormalized)) {
-      throw new ApiError(400, "Invalid email format");
-    }
-
-    const existedUser = await User.findOne({
-      $or: [{ username: usernameNormalized }, { email: emailNormalized }],
-    });
-
-    if (existedUser) {
-      throw new ApiError(409, "User with that email or username already exists");
-    }
-
-    const avatarLocalPath = req.files?.avatar?.[0]?.path;
-    const coverImageLocalPath = req.files?.coverImage?.[0]?.path;
-
-    if (!avatarLocalPath) {
-      throw new ApiError(400, "Avatar file is required");
-    }
-
-    const avatarUpload = await uploadOnCloudinary(avatarLocalPath);
-    if (!avatarUpload?.url) {
-      await safeUnlink(avatarLocalPath);
-      await safeUnlink(coverImageLocalPath);
-      throw new ApiError(400, "Avatar upload failed");
-    }
-
-    let coverImageUrl = "";
-    if (coverImageLocalPath) {
-      const coverUpload = await uploadOnCloudinary(coverImageLocalPath);
-      if (coverUpload?.url) coverImageUrl = coverUpload.url;
-    }
-
-    const hashedPassword = await bcrypt.hash(String(password), 10);
-
-    const user = await User.create({
-      fullName: String(fullName).trim(),
-      avatar: avatarUpload.url,
-      coverImage: coverImageUrl,
-      email: emailNormalized,
-      password: hashedPassword,
-      username: usernameNormalized,
-    });
-
-    await safeUnlink(avatarLocalPath);
-    await safeUnlink(coverImageLocalPath);
-
-    const createdUser = await User.findById(user._id).select("-password -refreshToken -__v");
-
-    if (!createdUser) {
-      throw new ApiError(500, "Something went wrong while registering the user");
-    }
-
-    return res
-      .status(201)
-      .json(new ApiResponse(201, createdUser, "User registered successfully"));
-  } catch (error) {
-    return res.status(error?.statusCode || 500).json({
-      status: false,
-      message: error?.message || "Internal Server Error",
-    });
+  // 1️⃣ Basic validation
+  if (![fullName, email, username, password].every(Boolean)) {
+    throw new ApiError(400, "All fields are required");
   }
-};
+
+  if (password.length < 6) {
+    throw new ApiError(400, "Password must be at least 6 characters long");
+  }
+
+  const emailNormalized = email.trim().toLowerCase();
+  const usernameNormalized = username.trim().toLowerCase();
+
+  // 2️⃣ Email format check
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(emailNormalized)) {
+    throw new ApiError(400, "Invalid email format");
+  }
+
+  // 3️⃣ Check existing user
+  const existedUser = await User.findOne({
+    $or: [{ email: emailNormalized }, { username: usernameNormalized }],
+  });
+
+  if (existedUser) {
+    throw new ApiError(409, "User with that email or username already exists");
+  }
+
+  // 4️⃣ Avatar validation
+  const avatarPath = req.files?.avatar?.[0]?.path;
+  if (!avatarPath) {
+    throw new ApiError(400, "Avatar is required");
+  }
+
+  // 5️⃣ Upload avatar
+  const avatarUpload = await uploadOnCloudinary(avatarPath);
+  if (!avatarUpload?.url) {
+    throw new ApiError(400, "Avatar upload failed");
+  }
+
+  // 6️⃣ Upload cover image (optional)
+  let coverImageUrl = "";
+  const coverPath = req.files?.coverImage?.[0]?.path;
+
+  if (coverPath) {
+    const coverUpload = await uploadOnCloudinary(coverPath);
+    coverImageUrl = coverUpload?.url || "";
+  }
+
+  // 7️⃣ Hash password
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  // 8️⃣ Create user
+  const user = await User.create({
+    fullName: fullName.trim(),
+    email: emailNormalized,
+    username: usernameNormalized,
+    password: hashedPassword,
+    avatar: avatarUpload.url,
+    coverImage: coverImageUrl,
+  });
+
+  // 9️⃣ Send safe response
+  const safeUser = await User.findById(user._id).select(
+    "-password -refreshToken -__v"
+  );
+
+  res
+    .status(201)
+    .json(new ApiResponse(201, safeUser, "User registered successfully"));
+});
