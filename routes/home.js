@@ -4,11 +4,12 @@ const router = express.Router();
 router.get("/", (req, res) => {
   res.status(200).json({
     success: true,
-    message: "Welcome to MBM Connect API ",
-    available_routes: {
+    message: "Welcome to MBM Connect API",
+    routes: {
+      user: "/api/user",
       stories: "/api/stories",
-      conversations: "/api/chat",
       market: "/api/market",
+      chat: "/api/chat",
     },
   });
 });
