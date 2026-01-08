@@ -1,23 +1,22 @@
 import mongoose from "mongoose";
-import { stringify } from "querystring";
+import bcrypt from "bcrypt";
 
-const UserSchema = new mongoose.Schema(
+const userSchema = new mongoose.Schema(
   {
     fullName: {
       type: String,
       required: true,
       trim: true,
-      lowercase: true,
-      index: true,
     },
+
     username: {
       type: String,
       required: true,
-      trim: true,
-      index: true,
-      lowercase: true,
       unique: true,
+      lowercase: true,
+      trim: true,
     },
+
     email: {
       type: String,
       required: true,
@@ -25,38 +24,35 @@ const UserSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+
     avatar: {
       type: String,
       required: true,
     },
+
     coverImage: {
       type: String,
     },
+
     password: {
-     type : String
+      type: String,
+      required: true,
+      select: false, // 🔑 IMPORTANT (learning point)
     },
+
     refreshToken: {
       type: String,
     },
-    chats: [
-      {
-        date: { type: String },
-        time: { type: String },
-        partner: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "User",
-        },
-        messages: [
-          {
-            sender: { type: String },
-            receiver: { type: String },
-            text: { type: String }, // optional addition for clarity
-          },
-        ],
-      },
-    ],
   },
   { timestamps: true }
 );
 
-export const User = mongoose.model("User", UserSchema);
+/**
+ * 🔐 Compare entered password with hashed password
+ * (You will use this in login controller)
+ */
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+export const User = mongoose.model("User", userSchema);

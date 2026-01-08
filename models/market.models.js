@@ -1,39 +1,41 @@
 import mongoose from "mongoose";
 
-const MarketSchema = new mongoose.Schema(
+const marketSchema = new mongoose.Schema(
   {
     owner: {
-      type: mongoose.Schema.Types.ObjectId, 
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    data: {
-      category: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      date: {
-        type: String,
-      },
-      time: {
-        type: String,
-      },
-      image: { 
-        type: String,
-      },
-      description: { 
-        type: String,
-        trim: true,
-      },
-      price: {
-        type: Number,
-        required: true,
-        min: 0,
-      },
+
+    category: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    title: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+
+    description: {
+      type: String,
+      trim: true,
+    },
+
+    price: {
+      type: Number,
+      required: true,
+      min: 0,
+    },
+
+    image: {
+      type: String,
     },
   },
   { timestamps: true }
 );
 
-export const Market = mongoose.model("Market", MarketSchema);
+export const Market = mongoose.model("Market", marketSchema);
