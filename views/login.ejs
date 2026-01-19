@@ -1,36 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body>
+  <div class="w-full h-screen bg-zinc-900 flex items-center justify-center">
+    <form
+      method="post"
+      action="/api/user/login"
+      class="flex flex-col gap-4 w-80 bg-zinc-800 p-6 rounded-xl shadow-lg"
+    >
+      <h1 class="text-2xl font-bold text-white text-center mb-2">Login</h1>
 
-<div class="w-full h-screen bg-zinc-900 flex items-center justify-center">
-    
-    <form method="post" action="/login" class="flex flex-col gap-4 w-80 bg-zinc-800 p-6 rounded-xl shadow-lg">
+      <input
+        class="input"
+        type="email"
+        placeholder="Email"
+        name="email"
+        required
+      />
 
-        <h1 class="text-2xl font-bold text-white text-center mb-2">Login</h1>
+      <input
+        class="input"
+        type="password"
+        placeholder="Password"
+        name="password"
+        required
+      />
 
-        <input class="px-3 py-2 rounded-md bg-transparent border-2 border-zinc-700 text-white placeholder:text-zinc-400"
-            type="email" placeholder="Email" name="email">
+      <input
+        class="px-3 py-2 rounded-md bg-blue-600 text-white cursor-pointer hover:bg-blue-700 transition"
+        type="submit"
+        value="Login"
+      />
 
-        <input class="px-3 py-2 rounded-md bg-transparent border-2 border-zinc-700 text-white placeholder:text-zinc-400"
-            type="password" placeholder="Password" name="password">
-
-        <input class="px-3 py-2 rounded-md bg-blue-600 text-white cursor-pointer hover:bg-blue-700 transition"
-            type="submit" value="Login">
-
-        <p class="text-zinc-400 text-sm text-center mt-2">
-            Don't have an account? 
-            <a href="/" class="text-blue-500 hover:underline">Register</a>
-        </p>
-
+      <p class="text-zinc-400 text-sm text-center mt-2">
+        Don't have an account?
+        <a href="/" class="text-blue-500 hover:underline">Register</a>
+      </p>
     </form>
+  </div>
 
-</div>
-
+  <style>
+    .input {
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.375rem;
+      background: transparent;
+      border: 2px solid #3f3f46;
+      color: white;
+    }
+  </style>
 </body>
 </html>

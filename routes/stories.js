@@ -1,26 +1,32 @@
 import express from "express";
+import {
+  createStory,
+  getAllStories,
+  deleteStory,
+  toggleLike,
+  addComment,
+} from "../controllers/stories.controller.js";
+
+import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js";
+
 const router = express.Router();
 
-/**
- * @route   GET /api/stories
- * @desc    Get all stories
- */
-router.get("/", (req, res) => {
-  res.status(501).json({
-    success: false,
-    message: "Stories feature not implemented yet",
-  });
-});
+router.get("/", authMiddleware, getAllStories);
 
-/**
- * @route   POST /api/stories
- * @desc    Create a new story
- */
-router.post("/", (req, res) => {
-  res.status(501).json({
-    success: false,
-    message: "Create story not implemented yet",
-  });
-});
+router.post(
+  "/",
+  authMiddleware,
+  upload.fields([{ name: "image", maxCount: 1 }]),
+  createStory
+);
+
+router.delete("/:id", authMiddleware, deleteStory);
+
+// ❤️ Like / Unlike
+router.post("/:id/like", authMiddleware, toggleLike);
+
+// 💬 Comment
+router.post("/:id/comment", authMiddleware, addComment);
 
 export default router;
