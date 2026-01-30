@@ -6,6 +6,7 @@ import {
 } from "../controllers/market.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
+import { upload } from "../middlewares/multer.middleware.js"; // ✅ ADDED
 
 const router = express.Router();
 
@@ -20,8 +21,14 @@ router.get("/", authMiddleware, getAllItems);
  * @route   POST /api/market
  * @desc    Create market item
  * @access  Private
+ * @note    Supports optional image upload
  */
-router.post("/", authMiddleware, createItem);
+router.post(
+  "/",
+  authMiddleware,
+  upload.fields([{ name: "image", maxCount: 1 }]), // ✅ ADDED
+  createItem
+);
 
 /**
  * @route   DELETE /api/market/:id

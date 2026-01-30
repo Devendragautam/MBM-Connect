@@ -16,7 +16,7 @@ const generateRefreshToken = (id) =>
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
+  sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
 };
 
 /* ================= REGISTER ================= */
@@ -24,23 +24,29 @@ export const registerUser = async (req, res) => {
   const { fullName, email, username, password } = req.body;
 
   if (!fullName || !email || !username || !password) {
-    throw new ApiError(400, "All fields required");
+    throw new ApiError(400, "All fields are required");
   }
 
-  const exists = await User.findOne({
+  const existingUser = await User.findOne({
     $or: [
       { email: email.toLowerCase() },
       { username: username.toLowerCase() },
     ],
   });
 
-  if (exists) throw new ApiError(409, "User already exists");
+  if (existingUser) {
+    throw new ApiError(409, "User already exists");
+  }
 
   const avatarPath = req.files?.avatar?.[0]?.path;
-  if (!avatarPath) throw new ApiError(400, "Avatar required");
+  if (!avatarPath) {
+    throw new ApiError(400, "Avatar is required");
+  }
 
-  const avatar = await uploadOnCloudinary(avatarPath);
-  if (!avatar?.url) throw new ApiError(500, "Avatar upload failed");
+  const avatarUpload = await uploadOnCloudinary(avatarPath);
+  if (!avatarUpload?.url) {
+    throw new ApiError(500, "Avatar upload failed");
+  }
 
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -49,7 +55,7 @@ export const registerUser = async (req, res) => {
     email: email.toLowerCase(),
     username: username.toLowerCase(),
     password: hashedPassword,
-    avatar: avatar.url,
+    avatar: avatarUpload.url,
   });
 
   const accessToken = generateAccessToken(user._id);
@@ -74,17 +80,21 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
-    throw new ApiError(400, "Email and password required");
+    throw new ApiError(400, "Email and password are required");
   }
 
   const user = await User.findOne({
     email: email.toLowerCase(),
   }).select("+password");
 
-  if (!user) throw new ApiError(401, "Invalid credentials");
+  if (!user) {
+    throw new ApiError(401, "Invalid credentials");
+  }
 
-  const match = await bcrypt.compare(password, user.password);
-  if (!match) throw new ApiError(401, "Invalid credentials");
+  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  if (!isPasswordCorrect) {
+    throw new ApiError(401, "Invalid credentials");
+  }
 
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
@@ -116,19 +126,21 @@ export const logoutUser = async (req, res) => {
 
 /* ================= CURRENT USER ================= */
 export const getCurrentUser = async (req, res) => {
-  res.json(new ApiResponse(200, req.user, "Current user"));
+  res.json(new ApiResponse(200, req.user, "Current user fetched"));
 };
 
 /* ================= REFRESH TOKEN ================= */
 export const refreshAccessToken = async (req, res) => {
   const token = req.cookies?.refreshToken;
-  if (!token) throw new ApiError(401, "Refresh token missing");
+  if (!token) {
+    throw new ApiError(401, "Refresh token missing");
+  }
 
   let decoded;
   try {
     decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-  } catch {
-    throw new ApiError(401, "Refresh token expired");
+  } catch (error) {
+    throw new ApiError(401, "Refresh token expired or invalid");
   }
 
   const user = await User.findById(decoded._id);
@@ -140,5 +152,5 @@ export const refreshAccessToken = async (req, res) => {
 
   res
     .cookie("accessToken", newAccessToken, cookieOptions)
-    .json(new ApiResponse(200, {}, "Token refreshed"));
+    .json(new ApiResponse(200, {}, "Access token refreshed"));
 };
