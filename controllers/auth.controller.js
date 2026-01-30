@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.models.js";
 
@@ -20,7 +21,7 @@ const cookieOptions = {
 };
 
 /* ================= REGISTER ================= */
-export const registerUser = async (req, res) => {
+export const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, username, password } = req.body;
 
   if (!fullName || !email || !username || !password) {
@@ -73,10 +74,10 @@ export const registerUser = async (req, res) => {
     .cookie("refreshToken", refreshToken, cookieOptions)
     .status(201)
     .json(new ApiResponse(201, safeUser, "Registered successfully"));
-};
+});
 
 /* ================= LOGIN ================= */
-export const loginUser = async (req, res) => {
+export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   if (!email || !password) {
@@ -106,10 +107,10 @@ export const loginUser = async (req, res) => {
     .cookie("accessToken", accessToken, cookieOptions)
     .cookie("refreshToken", refreshToken, cookieOptions)
     .json(new ApiResponse(200, {}, "Login successful"));
-};
+});
 
 /* ================= LOGOUT ================= */
-export const logoutUser = async (req, res) => {
+export const logoutUser = asyncHandler(async (req, res) => {
   if (!req.user?._id) {
     throw new ApiError(401, "Unauthorized");
   }
@@ -122,15 +123,15 @@ export const logoutUser = async (req, res) => {
     .clearCookie("accessToken", cookieOptions)
     .clearCookie("refreshToken", cookieOptions)
     .json(new ApiResponse(200, {}, "Logged out successfully"));
-};
+});
 
 /* ================= CURRENT USER ================= */
-export const getCurrentUser = async (req, res) => {
+export const getCurrentUser = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, req.user, "Current user fetched"));
-};
+});
 
 /* ================= REFRESH TOKEN ================= */
-export const refreshAccessToken = async (req, res) => {
+export const refreshAccessToken = asyncHandler(async (req, res) => {
   const token = req.cookies?.refreshToken;
   if (!token) {
     throw new ApiError(401, "Refresh token missing");
@@ -153,4 +154,4 @@ export const refreshAccessToken = async (req, res) => {
   res
     .cookie("accessToken", newAccessToken, cookieOptions)
     .json(new ApiResponse(200, {}, "Access token refreshed"));
-};
+});

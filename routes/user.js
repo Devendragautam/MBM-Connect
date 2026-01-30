@@ -9,6 +9,10 @@ import {
 
 import { uploadFields } from "../middlewares/multer.middleware.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
+import {
+  validateRegister,
+  validateLogin,
+} from "../middlewares/validation.middleware.js";
 
 const router = express.Router();
 
@@ -18,10 +22,10 @@ const router = express.Router();
  */
 
 // Register user (with avatar upload)
-router.post("/register", uploadFields, registerUser);
+router.post("/register", uploadFields, validateRegister, registerUser);
 
 // Login
-router.post("/login", loginUser);
+router.post("/login", validateLogin, loginUser);
 
 // Refresh access token
 router.post("/refresh", refreshAccessToken);
