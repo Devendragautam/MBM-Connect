@@ -49,6 +49,12 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Avatar upload failed");
   }
 
+  let coverImageUrl = "";
+  if (req.files?.coverImage?.[0]?.path) {
+    const coverUpload = await uploadOnCloudinary(req.files.coverImage[0].path);
+    if (coverUpload?.url) coverImageUrl = coverUpload.url;
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const user = await User.create({
@@ -57,6 +63,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     username: username.toLowerCase(),
     password: hashedPassword,
     avatar: avatarUpload.url,
+    coverImage: coverImageUrl,
   });
 
   const accessToken = generateAccessToken(user._id);
@@ -92,7 +99,11 @@ export const loginUser = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Invalid credentials");
   }
 
-  const isPasswordCorrect = await bcrypt.compare(password, user.password);
+  if (!user.password) {
+    throw new ApiError(500, "User password not found in database");
+  }
+
+  const isPasswordCorrect = await user.isPasswordCorrect(password);
   if (!isPasswordCorrect) {
     throw new ApiError(401, "Invalid credentials");
   }
@@ -103,10 +114,14 @@ export const loginUser = asyncHandler(async (req, res) => {
   user.refreshToken = refreshToken;
   await user.save();
 
+  const safeUser = await User.findById(user._id).select(
+    "-password -refreshToken"
+  );
+
   res
     .cookie("accessToken", accessToken, cookieOptions)
     .cookie("refreshToken", refreshToken, cookieOptions)
-    .json(new ApiResponse(200, {}, "Login successful"));
+    .json(new ApiResponse(200, { token: accessToken, user: safeUser }, "Login successful"));
 });
 
 /* ================= LOGOUT ================= */

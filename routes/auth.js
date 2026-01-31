@@ -8,11 +8,12 @@ import {
 } from "../controllers/auth.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { uploadFields } from "../middlewares/multer.middleware.js";
+import { validateRegister, handleValidationErrors } from "../middlewares/validation.middleware.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const router = Router();
 
-router.post("/register", uploadFields, asyncHandler(registerUser));
+router.post("/register", uploadFields, validateRegister, asyncHandler(registerUser));
 router.post("/login", asyncHandler(loginUser));
 router.post("/refresh-token", asyncHandler(refreshAccessToken));
 router.post("/logout", authMiddleware, asyncHandler(logoutUser));

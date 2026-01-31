@@ -7,10 +7,12 @@ import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 
 import homeRoutes from "./Routes/home.js";
+import authRoutes from "./Routes/auth.js";
 import userRoutes from "./Routes/user.js";
 import storiesRoutes from "./Routes/stories.js";
 import marketRoutes from "./Routes/market.js";
 import chatRoutes from "./Routes/chat.js";
+import postRoutes from "./Routes/post.js";
 
 import { ApiError } from "./utils/ApiError.js";
 
@@ -27,8 +29,10 @@ await mongoose.connect(process.env.MONGODB_URI);
 console.log("✅ MongoDB connected");
 
 /* ✅ Routes */
-app.use("/", homeRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/home", homeRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/posts", postRoutes);
 app.use("/api/stories", storiesRoutes);
 app.use("/api/market", marketRoutes);
 app.use("/api/chat", chatRoutes);

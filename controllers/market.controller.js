@@ -1,6 +1,7 @@
 import { Market } from "../models/market.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js"; // ✅ ADDED
 
 /**
@@ -9,7 +10,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js"; // ✅ ADDED
  * - supports optional image upload
  * ===============================
  */
-export const createItem = async (req, res) => {
+export const createItem = asyncHandler(async (req, res) => {
   const { title, price, category, description } = req.body;
 
   // ❌ Validation
@@ -42,14 +43,14 @@ export const createItem = async (req, res) => {
   res
     .status(201)
     .json(new ApiResponse(201, item, "Item created successfully"));
-};
+});
 
 /**
  * ===============================
  * GET ALL ITEMS
  * ===============================
  */
-export const getAllItems = async (req, res) => {
+export const getAllItems = asyncHandler(async (req, res) => {
   const items = await Market.find()
     .populate("owner", "username avatar")
     .sort({ createdAt: -1 });
@@ -57,14 +58,14 @@ export const getAllItems = async (req, res) => {
   res
     .status(200)
     .json(new ApiResponse(200, items, "Market items fetched"));
-};
+});
 
 /**
  * ===============================
  * DELETE ITEM (OWNER ONLY)
  * ===============================
  */
-export const deleteItem = async (req, res) => {
+export const deleteItem = asyncHandler(async (req, res) => {
   const item = await Market.findById(req.params.id);
 
   if (!item) {
@@ -79,4 +80,4 @@ export const deleteItem = async (req, res) => {
   await item.deleteOne();
 
   res.json(new ApiResponse(200, {}, "Item deleted successfully"));
-};
+});

@@ -27,11 +27,20 @@ const userSchema = new mongoose.Schema(
 
     avatar: {
       type: String,
-      required: true,
     },
 
     coverImage: {
       type: String,
+    },
+
+    bio: {
+      type: String,
+      default: "",
+    },
+
+    website: {
+      type: String,
+      default: "",
     },
 
     password: {
@@ -42,6 +51,25 @@ const userSchema = new mongoose.Schema(
 
     refreshToken: {
       type: String,
+    },
+
+    followers: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    following: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+
+    postsCount: {
+      type: Number,
+      default: 0,
     },
   },
   { timestamps: true }

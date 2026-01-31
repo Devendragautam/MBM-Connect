@@ -1,6 +1,7 @@
 import { Post } from "../models/post.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 /**
@@ -8,7 +9,7 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
  * CREATE STORY (with optional image)
  * ===============================
  */
-export const createStory = async (req, res) => {
+export const createStory = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
   if (!content) {
@@ -33,14 +34,14 @@ export const createStory = async (req, res) => {
   res
     .status(201)
     .json(new ApiResponse(201, post, "Story created"));
-};
+});
 
 /**
  * ===============================
  * GET ALL STORIES (Feed)
  * ===============================
  */
-export const getAllStories = async (req, res) => {
+export const getAllStories = asyncHandler(async (req, res) => {
   const stories = await Post.find()
     .populate("author", "username avatar")
     .sort({ createdAt: -1 });
@@ -48,14 +49,14 @@ export const getAllStories = async (req, res) => {
   res
     .status(200)
     .json(new ApiResponse(200, stories, "Stories fetched"));
-};
+});
 
 /**
  * ===============================
  * DELETE STORY (Owner only)
  * ===============================
  */
-export const deleteStory = async (req, res) => {
+export const deleteStory = asyncHandler(async (req, res) => {
   const story = await Post.findById(req.params.id);
 
   if (!story) {
@@ -69,14 +70,14 @@ export const deleteStory = async (req, res) => {
   await story.deleteOne();
 
   res.json(new ApiResponse(200, {}, "Story deleted"));
-};
+});
 
 /**
  * ===============================
  * LIKE / UNLIKE STORY
  * ===============================
  */
-export const toggleLike = async (req, res) => {
+export const toggleLike = asyncHandler(async (req, res) => {
   const story = await Post.findById(req.params.id);
   if (!story) {
     throw new ApiError(404, "Story not found");
@@ -100,14 +101,14 @@ export const toggleLike = async (req, res) => {
       isLiked ? "Story unliked" : "Story liked"
     )
   );
-};
+});
 
 /**
  * ===============================
  * ADD COMMENT TO STORY
  * ===============================
  */
-export const addComment = async (req, res) => {
+export const addComment = asyncHandler(async (req, res) => {
   const { text } = req.body;
 
   if (!text) {
@@ -129,4 +130,4 @@ export const addComment = async (req, res) => {
   res.json(
     new ApiResponse(201, story.comments, "Comment added")
   );
-};
+});
