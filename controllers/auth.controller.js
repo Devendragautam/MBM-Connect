@@ -76,11 +76,21 @@ export const registerUser = asyncHandler(async (req, res) => {
     "-password -refreshToken"
   );
 
+  // ✅ FIXED RESPONSE (token + user)
   res
     .cookie("accessToken", accessToken, cookieOptions)
     .cookie("refreshToken", refreshToken, cookieOptions)
     .status(201)
-    .json(new ApiResponse(201, safeUser, "Registered successfully"));
+    .json(
+      new ApiResponse(
+        201,
+        {
+          token: accessToken,
+          user: safeUser,
+        },
+        "Registered successfully"
+      )
+    );
 });
 
 /* ================= LOGIN ================= */
@@ -97,10 +107,6 @@ export const loginUser = asyncHandler(async (req, res) => {
 
   if (!user) {
     throw new ApiError(401, "Invalid credentials");
-  }
-
-  if (!user.password) {
-    throw new ApiError(500, "User password not found in database");
   }
 
   const isPasswordCorrect = await user.isPasswordCorrect(password);
@@ -121,7 +127,13 @@ export const loginUser = asyncHandler(async (req, res) => {
   res
     .cookie("accessToken", accessToken, cookieOptions)
     .cookie("refreshToken", refreshToken, cookieOptions)
-    .json(new ApiResponse(200, { token: accessToken, user: safeUser }, "Login successful"));
+    .json(
+      new ApiResponse(
+        200,
+        { token: accessToken, user: safeUser },
+        "Login successful"
+      )
+    );
 });
 
 /* ================= LOGOUT ================= */
@@ -152,12 +164,7 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Refresh token missing");
   }
 
-  let decoded;
-  try {
-    decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
-  } catch (error) {
-    throw new ApiError(401, "Refresh token expired or invalid");
-  }
+  const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
 
   const user = await User.findById(decoded._id);
   if (!user || user.refreshToken !== token) {

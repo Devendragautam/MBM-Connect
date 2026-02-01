@@ -1,36 +1,34 @@
 import axios from 'axios';
+import { navigate } from '../shared/utils/navigation';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080';
+const envUrl = (import.meta.env.VITE_API_URL || '').replace(/\/$/, '');
+const baseURL = envUrl ? (envUrl.endsWith('/api') ? envUrl : `${envUrl}/api`) : '/api';
 
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL,
+  withCredentials: true,
 });
 
-// Add token to requests and handle FormData
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  // Only set Content-Type for non-FormData requests
-  if (!(config.data instanceof FormData)) {
-    config.headers['Content-Type'] = 'application/json';
-  }
+  if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
 
-// Handle response errors
 apiClient.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+  (res) => res,
+  (err) => {
+    const originalRequest = err.config;
+    // Prevent redirect loop/refresh on login 401s
+    if (
+      err.response?.status === 401 && 
+      !originalRequest?.url?.includes('/auth/login') &&
+      !window.location.pathname.includes('/login')
+    ) {
+      navigate.toLogin();
     }
-    return Promise.reject(error);
+    return Promise.reject(err);
   }
 );
 
 export default apiClient;
-export const axiosInstance = apiClient;

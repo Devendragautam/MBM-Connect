@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { User } from "../models/user.models.js";
 import { Post } from "../models/post.models.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -5,6 +6,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
+/* ================= GET USER PROFILE ================= */
 export const getUserProfile = asyncHandler(async (req, res) => {
   const user = await User.findById(req.params.id)
     .select("-password -refreshToken")
@@ -15,15 +17,19 @@ export const getUserProfile = asyncHandler(async (req, res) => {
     throw new ApiError(404, "User not found");
   }
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, user, "User profile fetched successfully"));
+  res.status(200).json(
+    new ApiResponse(200, user, "User profile fetched successfully")
+  );
 });
 
+/* ================= UPDATE PROFILE ================= */
 export const updateUserProfile = asyncHandler(async (req, res) => {
-  // Ensure user is updating their own profile
-  if (req.user?._id.toString() !== req.params.id) {
-    throw new ApiError(403, "Unauthorized request");
+  if (!req.user?._id) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  if (req.user._id.toString() !== req.params.id) {
+    throw new ApiError(403, "You can only update your own profile");
   }
 
   const { fullName, bio, website } = req.body;
@@ -33,25 +39,27 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
   if (bio) updateData.bio = bio;
   if (website) updateData.website = website;
 
-  // Handle avatar upload if present
   if (req.files?.avatar?.[0]) {
-    const avatarLocalPath = req.files.avatar[0].path;
-    const avatar = await uploadOnCloudinary(avatarLocalPath);
-    if (avatar?.url) {
-      updateData.avatar = avatar.url;
+    const avatar = await uploadOnCloudinary(req.files.avatar[0].path);
+    if (!avatar?.url) {
+      throw new ApiError(500, "Avatar upload failed");
     }
+    updateData.avatar = avatar.url;
   }
 
-  // Handle coverImage upload if present
   if (req.files?.coverImage?.[0]) {
-    const coverLocalPath = req.files.coverImage[0].path;
-    const cover = await uploadOnCloudinary(coverLocalPath);
-    if (cover?.url) {
-      updateData.coverImage = cover.url;
+    const cover = await uploadOnCloudinary(req.files.coverImage[0].path);
+    if (!cover?.url) {
+      throw new ApiError(500, "Cover image upload failed");
     }
+    updateData.coverImage = cover.url;
   }
 
-  const user = await User.findByIdAndUpdate(
+  if (Object.keys(updateData).length === 0) {
+    throw new ApiError(400, "No data provided to update");
+  }
+
+  const updatedUser = await User.findByIdAndUpdate(
     req.params.id,
     { $set: updateData },
     { new: true }
@@ -60,83 +68,125 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     .populate("followers", "username avatar")
     .populate("following", "username avatar");
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, user, "User profile updated successfully"));
+  if (!updatedUser) {
+    throw new ApiError(404, "User not found");
+  }
+
+  res.status(200).json(
+    new ApiResponse(200, updatedUser, "User profile updated successfully")
+  );
 });
 
+/* ================= FOLLOW USER ================= */
 export const followUser = asyncHandler(async (req, res) => {
-  const userIdToFollow = req.params.id;
+  if (!req.user?._id) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  const targetUserId = req.params.id;
   const currentUserId = req.user._id;
 
-  if (userIdToFollow === currentUserId.toString()) {
+  if (targetUserId === currentUserId.toString()) {
     throw new ApiError(400, "You cannot follow yourself");
   }
 
-  const userToFollow = await User.findById(userIdToFollow);
-  const currentUser = await User.findById(currentUserId);
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!userToFollow) {
-    throw new ApiError(404, "User not found");
+  try {
+    const currentUser = await User.findById(currentUserId).session(session);
+    const targetUser = await User.findById(targetUserId).session(session);
+
+    if (!targetUser) {
+      throw new ApiError(404, "User not found");
+    }
+
+    if (
+      currentUser.following.some(
+        (id) => id.toString() === targetUserId
+      )
+    ) {
+      throw new ApiError(400, "Already following this user");
+    }
+
+    currentUser.following.push(targetUserId);
+    targetUser.followers.push(currentUserId);
+
+    await currentUser.save({ session });
+    await targetUser.save({ session });
+
+    await session.commitTransaction();
+
+    res.status(200).json(
+      new ApiResponse(200, {}, "User followed successfully")
+    );
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  // Check if already following
-  if (currentUser.following.includes(userIdToFollow)) {
-    throw new ApiError(400, "Already following this user");
-  }
-
-  // Add to current user's following list
-  currentUser.following.push(userIdToFollow);
-  await currentUser.save();
-
-  // Add to user's followers list
-  userToFollow.followers.push(currentUserId);
-  await userToFollow.save();
-
-  res
-    .status(200)
-    .json(new ApiResponse(200, { currentUser, userToFollow }, "User followed successfully"));
 });
 
+/* ================= UNFOLLOW USER ================= */
 export const unfollowUser = asyncHandler(async (req, res) => {
-  const userIdToUnfollow = req.params.id;
+  if (!req.user?._id) {
+    throw new ApiError(401, "Unauthorized");
+  }
+
+  const targetUserId = req.params.id;
   const currentUserId = req.user._id;
 
-  const userToUnfollow = await User.findById(userIdToUnfollow);
-  const currentUser = await User.findById(currentUserId);
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
-  if (!userToUnfollow) {
-    throw new ApiError(404, "User not found");
+  try {
+    const currentUser = await User.findById(currentUserId).session(session);
+    const targetUser = await User.findById(targetUserId).session(session);
+
+    if (!targetUser) {
+      throw new ApiError(404, "User not found");
+    }
+
+    if (
+      !currentUser.following.some(
+        (id) => id.toString() === targetUserId
+      )
+    ) {
+      throw new ApiError(400, "Not following this user");
+    }
+
+    currentUser.following = currentUser.following.filter(
+      (id) => id.toString() !== targetUserId
+    );
+
+    targetUser.followers = targetUser.followers.filter(
+      (id) => id.toString() !== currentUserId.toString()
+    );
+
+    await currentUser.save({ session });
+    await targetUser.save({ session });
+
+    await session.commitTransaction();
+
+    res.status(200).json(
+      new ApiResponse(200, {}, "User unfollowed successfully")
+    );
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
   }
-
-  // Check if following
-  if (!currentUser.following.includes(userIdToUnfollow)) {
-    throw new ApiError(400, "Not following this user");
-  }
-
-  // Remove from current user's following list
-  currentUser.following = currentUser.following.filter(
-    (id) => id.toString() !== userIdToUnfollow
-  );
-  await currentUser.save();
-
-  // Remove from user's followers list
-  userToUnfollow.followers = userToUnfollow.followers.filter(
-    (id) => id.toString() !== currentUserId.toString()
-  );
-  await userToUnfollow.save();
-
-  res
-    .status(200)
-    .json(new ApiResponse(200, { currentUser, userToUnfollow }, "User unfollowed successfully"));
 });
 
+/* ================= USER POSTS ================= */
 export const getUserPosts = asyncHandler(async (req, res) => {
   const posts = await Post.find({ author: req.params.id })
     .populate("author", "username avatar")
     .sort({ createdAt: -1 });
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, posts, "User posts fetched successfully"));
+  res.status(200).json(
+    new ApiResponse(200, posts, "User posts fetched successfully")
+  );
 });
