@@ -9,7 +9,7 @@ import PostCard from '../feed/PostCard';
 
 export default function UserProfile() {
   const { userId } = useParams();
-  const { user: currentUser } = useAuth();
+  const { user: currentUser, updateUser } = useAuth();
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
   
@@ -117,9 +117,15 @@ export default function UserProfile() {
 
       const response = await userAPI.updateProfile(userId, formData);
       if (response.data.success) {
-        setProfile(response.data.data);
+        const updatedProfileData = response.data.data;
+        setProfile(updatedProfileData);
         setIsEditing(false);
         setError(null);
+
+        // If the updated profile is the current user's, update the auth context
+        if (currentUser?._id === userId) {
+          updateUser(updatedProfileData);
+        }
       } else {
         setError(response.data.message || 'Error updating profile');
       }
