@@ -107,19 +107,21 @@ export default function Feed() {
           {posts.map((post, index) => {
             if (posts.length === index + 1) {
               return (
-                <div ref={lastPostElementRef} key={post._id}>
+                <div ref={lastPostElementRef} key={post._id} className="animate-fadeInUp" style={{ animationDelay: `${0.1 + index * 0.08}s` }}>
                   <PostCard post={post} onPostDeleted={handlePostDeleted} currentUserId={user?._id} />
                 </div>
               );
             } else {
               return (
-                <PostCard key={post._id} post={post} onPostDeleted={handlePostDeleted} currentUserId={user?._id} />
+                <div key={post._id} className="animate-fadeInUp" style={{ animationDelay: `${0.1 + index * 0.08}s` }}>
+                  <PostCard post={post} onPostDeleted={handlePostDeleted} currentUserId={user?._id} />
+                </div>
               );
             }
           })}
 
           {loading && (
-            <div className="py-4">
+            <div className="py-4 animate-fadeInUp">
               <Loader text="Loading more..." />
             </div>
           )}
@@ -128,29 +130,39 @@ export default function Feed() {
     }
 
     return (
-      <div className="text-center py-12">
-        <div className="text-4xl mb-4">📝</div>
-        <p className={`text-lg font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+      <div className="text-center py-16 animate-fadeInUp">
+        <div className="text-6xl mb-4">📝</div>
+        <p className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
           No posts yet
         </p>
-        <p className={isDarkMode ? 'text-gray-400' : 'text-gray-600'}>
+        <p className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>
           {user ? 'Be the first to create a post!' : 'Log in to see posts from your followers'}
         </p>
       </div>
     );
   }, [posts, loading, hasMore, handlePostDeleted, user, isDarkMode, lastPostElementRef]);
 
+  const bgClass = isDarkMode 
+    ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800'
+    : 'bg-gradient-to-br from-slate-50 via-white to-blue-50';
+
   return (
-    <div className={`min-h-screen ${isDarkMode ? 'bg-secondary-900' : 'bg-gray-100'}`}>
-      <div className="max-w-2xl mx-auto py-8 px-4">
+    <div className={`min-h-screen ${bgClass}`}>
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} animate-pulse-light`}></div>
+        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} floating-element-slow`}></div>
+      </div>
+
+      <div className="max-w-3xl mx-auto py-12 px-4 relative z-10">
         {user && (
-          <div className="mb-6">
+          <div className="mb-8 animate-fadeInUp">
             <CreatePost onPostCreated={handlePostCreated} />
           </div>
         )}
 
         {error && (
-          <div className="mb-6">
+          <div className="mb-6 animate-slideDown">
             <ErrorBox 
               message="Error loading posts" 
               errors={[error]}

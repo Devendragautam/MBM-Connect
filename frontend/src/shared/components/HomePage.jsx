@@ -3,263 +3,293 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 import { useDarkMode } from '../DarkModeContext';
 
-const HomePage = () => {
+const fadeInUp = `
+  @keyframes fadeInUp {
+    0% { 
+      opacity: 0; 
+      transform: translateY(30px);
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  
+  @keyframes slideInLeft {
+    0% { 
+      opacity: 0; 
+      transform: translateX(-40px);
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes slideInRight {
+    0% { 
+      opacity: 0; 
+      transform: translateX(40px);
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateX(0);
+    }
+  }
+  
+  @keyframes subtleFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+  }
+  
+  @keyframes scaleIn {
+    0% { 
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    100% { 
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes slideUp {
+    0% { 
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    100% { 
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -1000px 0; }
+    100% { background-position: 1000px 0; }
+  }
+
+  .animate-fadeInUp { 
+    animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+  }
+  
+  .animate-fadeIn { 
+    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+  }
+  
+  .animate-slideInLeft { 
+    animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+  }
+  
+  .animate-slideInRight { 
+    animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+  }
+  
+  .animate-subtleFloat { 
+    animation: subtleFloat 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+  
+  .animate-scaleIn { 
+    animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; 
+  }
+
+  .animate-slideUp { 
+    animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+
+  .group:hover .group-icon {
+    animation: subtleFloat 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+`;
+
+export default function HomePage() {
   const { isAuthenticated } = useAuth();
   const { isDarkMode } = useDarkMode();
 
+  const bgClass = isDarkMode 
+    ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800' 
+    : 'bg-gradient-to-br from-slate-50 via-white to-blue-50';
+  const textClass = isDarkMode ? 'text-white' : 'text-slate-900';
+  const cardBg = isDarkMode 
+    ? 'bg-gradient-to-br from-slate-800/50 to-slate-700/30 border border-slate-700/50' 
+    : 'bg-gradient-to-br from-white to-slate-50 border border-slate-200';
+  const accentColor = 'from-indigo-600 via-purple-600 to-pink-600';
+
+  const stats = [
+    { label: 'Active Members', value: '10K+', icon: '👥' },
+    { label: 'Daily Transactions', value: '5K+', icon: '📊' },
+    { label: 'Trust Score', value: '98%', icon: '✓' },
+  ];
+
   const features = [
-    {
-      icon: '🛍️',
-      title: 'Marketplace',
-      description: 'Buy and sell items in our vibrant marketplace. Post listings, browse products, and connect with sellers.',
-      color: 'from-blue-400 to-blue-600'
-    },
-    {
-      icon: '📖',
-      title: 'Stories',
-      description: 'Share your experiences and read stories from the community. Connect through shared narratives.',
-      color: 'from-purple-400 to-purple-600'
-    },
-    {
-      icon: '💬',
-      title: 'Messaging',
-      description: 'Chat with other members, negotiate deals, and build relationships within our community.',
-      color: 'from-pink-400 to-pink-600'
-    },
-    {
-      icon: '👥',
-      title: 'Community',
-      description: 'Join a thriving community of like-minded individuals. Network and grow together.',
-      color: 'from-green-400 to-green-600'
-    },
+    { icon: '🔐', title: 'Enterprise Security', desc: 'Bank-level encryption and data protection' },
+    { icon: '⚡', title: 'Instant Verification', desc: 'Real-time member authentication' },
+    { icon: '🌍', title: 'Global Network', desc: 'Connect with professionals worldwide' },
   ];
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${
-      isDarkMode
-        ? 'bg-gradient-to-b from-secondary-900 via-secondary-800 to-secondary-900'
-        : 'bg-gradient-to-b from-primary-50 via-white to-secondary-50'
-    }`}>
+    <div className={`min-h-screen ${bgClass}`}>
+      <style>{fadeInUp}</style>
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-20 sm:py-32">
-        {/* Background Elements */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className={`absolute -top-40 -right-40 w-96 h-96 ${isDarkMode ? 'bg-primary-900' : 'bg-primary-200'} rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse-light`}></div>
-          <div className={`absolute -bottom-40 -left-40 w-96 h-96 ${isDarkMode ? 'bg-blue-900' : 'bg-blue-200'} rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse-light`}></div>
-        </div>
-
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center animate-fade-in">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-instagram rounded-2xl shadow-lg-light mb-6">
-              <span className="text-3xl font-display font-bold text-white">MB</span>
-            </div>
-
-            <h1 className={`text-5xl sm:text-6xl font-display font-bold mb-6 ${
-              isDarkMode ? 'text-white' : 'text-secondary-900'
-            }`}>
-              Welcome to <span className="bg-gradient-instagram bg-clip-text text-transparent">MBM Connect</span>
-            </h1>
-
-            <p className={`text-xl mb-8 max-w-2xl mx-auto ${
-              isDarkMode ? 'text-gray-400' : 'text-secondary-600'
-            }`}>
-              Your all-in-one community platform for marketplace, stories, and meaningful connections. Join thousands of members building relationships and business opportunities together.
-            </p>
-
-            {!isAuthenticated ? (
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <Link
-                  to="/login"
-                  className={`px-8 py-3 font-semibold rounded-xl shadow-lg-light hover:shadow-xl-light hover:scale-105 transition-all border-2 border-primary-200 ${
-                    isDarkMode
-                      ? 'bg-secondary-800 text-primary-400 hover:bg-secondary-700'
-                      : 'bg-white text-primary-600 hover:bg-gray-50'
-                  }`}
-                >
-                  Sign In
-                </Link>
-                <Link
-                  to="/signup"
-                  className="px-8 py-3 bg-gradient-primary text-white font-semibold rounded-xl shadow-lg-light hover:shadow-xl-light hover:scale-105 transition-all"
-                >
-                  Get Started Free
-                </Link>
-              </div>
-            ) : (
-              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <Link
-                  to="/dashboard"
-                  className="px-8 py-3 bg-gradient-primary text-white font-semibold rounded-xl shadow-lg-light hover:shadow-xl-light hover:scale-105 transition-all"
-                >
-                  Go to Dashboard
-                </Link>
-                <Link
-                  to="/market"
-                  className={`px-8 py-3 font-semibold rounded-xl shadow-lg-light hover:shadow-xl-light hover:scale-105 transition-all border-2 border-primary-200 ${
-                    isDarkMode
-                      ? 'bg-secondary-800 text-primary-400 hover:bg-secondary-700'
-                      : 'bg-white text-primary-600 hover:bg-gray-50'
-                  }`}
-                >
-                  Browse Marketplace
-                </Link>
-              </div>
-            )}
-
-            {/* Stats */}
-            <div className={`grid grid-cols-3 gap-8 mt-16 py-12 border-t border-b ${
-              isDarkMode ? 'border-secondary-700' : 'border-secondary-200'
-            }`}>
+      <main>
+        <section className="max-w-7xl mx-auto px-6 py-32 md:py-40">
+          <div className="grid md:grid-cols-2 gap-16 items-center">
+            <div className="space-y-8 animate-slideInLeft" style={{ animationDelay: '0.15s' }}>
               <div>
-                <div className="text-3xl font-bold text-primary-600">10K+</div>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-secondary-600'}`}>Active Members</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-primary-600">5K+</div>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-secondary-600'}`}>Listings</p>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-primary-600">1M+</div>
-                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-secondary-600'}`}>Messages Daily</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className={`py-20 sm:py-32 ${isDarkMode ? 'bg-secondary-800/50' : ''}`}>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className={`text-3xl sm:text-4xl font-display font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-secondary-900'}`}>
-              Why Choose MBM Connect?
-            </h2>
-            <p className={`text-xl ${isDarkMode ? 'text-gray-400' : 'text-secondary-600'}`}>
-              Everything you need in one powerful platform
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map((feature, idx) => (
-              <div
-                key={idx}
-                className={`group rounded-lg p-6 hover:shadow-lg transition-all duration-300 ${
-                  isDarkMode
-                    ? 'bg-secondary-700 hover:bg-secondary-600'
-                    : 'bg-white hover:shadow-lg-light'
-                }`}
-              >
-                <div className="mb-4">
-                  <div className="text-5xl group-hover:scale-110 transition-transform">{feature.icon}</div>
+                <div className="inline-block mb-4 animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
+                  <span className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-500 hover:scale-105 ${isDarkMode ? 'bg-purple-900/40 text-purple-300' : 'bg-indigo-100 text-indigo-700'}`}>
+                    ✨ The Professional Community Platform
+                  </span>
                 </div>
-                <h3 className={`text-xl font-bold mb-3 ${isDarkMode ? 'text-white' : 'text-secondary-900'}`}>
-                  {feature.title}
-                </h3>
-                <p className={isDarkMode ? 'text-gray-300' : 'text-secondary-600'}>
-                  {feature.description}
-                </p>
+                <h1 className={`text-6xl md:text-7xl font-bold leading-tight tracking-tight ${textClass} animate-slideInLeft`} style={{ animationDelay: '0.4s' }}>
+                  Connect with Purpose
+                </h1>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
+              <p className={`text-xl leading-relaxed animate-fadeInUp ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`} style={{ animationDelay: '0.5s' }}>
+                A curated professional network designed for meaningful business relationships, secure transactions, and community growth.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-fadeInUp" style={{ animationDelay: '0.6s' }}>
+                {!isAuthenticated ? (
+                  <>
+                    <Link to="/signup" className={`px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-500 text-white bg-gradient-to-r ${accentColor} hover:shadow-2xl hover:scale-105 transform text-center`}>
+                      Start Free Today
+                    </Link>
+                    <Link to="/login" className={`px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-500 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-900'} text-center hover:scale-105 transform`}>
+                      Sign In
+                    </Link>
+                  </>
+                ) : (
+                  <Link to="/dashboard" className={`px-8 py-4 rounded-lg font-semibold text-lg transition-all duration-500 text-white bg-gradient-to-r ${accentColor} hover:shadow-2xl hover:scale-105 text-center transform`}>
+                    Go to Dashboard
+                  </Link>
+                )}
+              </div>
 
-      {/* How It Works */}
-      <section className="py-20 sm:py-32 bg-gradient-to-r from-primary-50 to-blue-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="section-title">How It Works</h2>
-            <p className="section-subtitle">Get started in just 3 simple steps</p>
-          </div>
+              <div className="flex items-center gap-6 pt-4 text-sm animate-fadeInUp" style={{ animationDelay: '0.7s' }}>
+                <div className="flex -space-x-2">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 animate-subtleFloat" style={{ animationDelay: '0s' }}></div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 animate-subtleFloat" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-pink-400 to-pink-600 animate-subtleFloat" style={{ animationDelay: '0.4s' }}></div>
+                </div>
+                <p className={isDarkMode ? 'text-gray-400' : 'text-slate-600'}>Trusted by 10,000+ professionals</p>
+              </div>
+            </div>
 
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              { num: '1', title: 'Create Account', desc: 'Sign up with your email and create your profile' },
-              { num: '2', title: 'Connect', desc: 'Browse and connect with community members' },
-              { num: '3', title: 'Grow', desc: 'Buy, sell, share, and grow your network' },
-            ].map((step, idx) => (
-              <div key={idx} className="relative">
-                <div className="flex items-start">
-                  <div className="flex-shrink-0">
-                    <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-gradient-primary text-white font-bold text-lg shadow-lg-light">
-                      {step.num}
+            <div className="relative animate-slideInRight" style={{ animationDelay: '0.2s' }}>
+              <div className={`rounded-3xl p-8 ${cardBg} shadow-2xl border transition-all duration-500 hover:shadow-3xl hover:scale-105 group`}>
+                <div className="space-y-6">
+                  {features.map((f, i) => (
+                    <div key={i} className="flex items-start gap-4 animate-slideUp" style={{ animationDelay: `${0.5 + i * 0.15}s` }}>
+                      <div className={`text-3xl flex-shrink-0 transition-transform duration-500 group-icon ${i % 2 === 0 ? 'group-hover:animate-subtleFloat' : ''}`} style={{ animationDelay: `${i * 0.1}s` }}>{f.icon}</div>
+                      <div>
+                        <h3 className={`font-semibold text-base ${textClass}`}>{f.title}</h3>
+                        <p className={`text-sm mt-1 ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>{f.desc}</p>
+                      </div>
                     </div>
-                  </div>
-                  <div className="ml-4">
-                    <h3 className="text-lg font-bold text-secondary-900">{step.title}</h3>
-                    <p className="mt-2 text-secondary-600">{step.desc}</p>
-                  </div>
+                  ))}
                 </div>
-                {idx < 2 && <div className="hidden md:block absolute top-12 left-24 w-32 h-1 bg-gradient-to-r from-primary-400 to-transparent"></div>}
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      {!isAuthenticated && (
-        <section className="py-20 sm:py-32 bg-gradient-primary">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-4xl font-bold font-display text-white mb-6">Ready to Connect?</h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              Join thousands of members and start your journey today. It's free and takes less than a minute.
-            </p>
-            <Link
-              to="/signup"
-              className="inline-block px-8 py-4 bg-white text-primary-600 font-bold rounded-xl hover:shadow-xl-light hover:scale-105 transition-all text-lg"
-            >
-              Get Started Now
-            </Link>
+            </div>
           </div>
         </section>
-      )}
 
-      {/* Footer */}
-      <footer className="bg-secondary-900 text-secondary-300 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-4 gap-8 mb-8">
-            <div>
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-gradient-primary rounded-lg flex items-center justify-center">
-                  <span className="text-white font-bold">MB</span>
+        {/* Stats Section */}
+        <section className={`py-20 ${isDarkMode ? 'bg-slate-800/30' : 'bg-gradient-to-r from-slate-100 to-blue-50'}`}>
+          <div className="max-w-7xl mx-auto px-6">
+            <h2 className={`text-3xl font-bold text-center mb-12 ${textClass} animate-fadeInUp`} style={{ animationDelay: '0.1s' }}>Trusted by Industry Leaders</h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {stats.map((stat, i) => (
+                <div key={i} className={`text-center p-8 rounded-2xl ${cardBg} transition-all duration-500 hover:scale-105 hover:shadow-lg animate-slideUp cursor-pointer`} style={{ animationDelay: `${0.15 + i * 0.12}s` }}>
+                  <div className={`text-5xl mb-4 transition-transform duration-500 inline-block ${i % 2 === 0 ? 'group-hover:animate-subtleFloat' : ''}`} style={{ animationDelay: `${i * 0.15}s` }}>{stat.icon}</div>
+                  <div className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{stat.value}</div>
+                  <p className={`mt-3 font-medium ${isDarkMode ? 'text-gray-300' : 'text-slate-700'}`}>{stat.label}</p>
                 </div>
-                <span className="font-bold text-white">MBM Connect</span>
-              </div>
-              <p className="text-sm">Your all-in-one community platform for connections and growth.</p>
-            </div>
-            <div>
-              <h4 className="font-bold text-white mb-4">Product</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Marketplace</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Stories</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Messaging</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-white mb-4">Company</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">About</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Blog</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Careers</a></li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-bold text-white mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a href="#" className="hover:text-white transition-colors">Privacy</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Terms</a></li>
-                <li><a href="#" className="hover:text-white transition-colors">Contact</a></li>
-              </ul>
+              ))}
             </div>
           </div>
-          <div className="border-t border-secondary-700 pt-8 text-center text-sm">
-            <p>&copy; 2025 MBM Connect. All rights reserved. Built with ❤️</p>
+        </section>
+
+        {/* Value Props Section */}
+        <section className="max-w-7xl mx-auto px-6 py-20">
+          <h2 className={`text-3xl font-bold text-center mb-12 ${textClass} animate-fadeInUp`} style={{ animationDelay: '0.1s' }}>Why Choose MBM Connect?</h2>
+          <div className="grid md:grid-cols-3 gap-8">
+            {[
+              { title: 'Verified Members', desc: 'Every member undergoes thorough verification process' },
+              { title: 'Secure Transactions', desc: 'End-to-end encryption for all communications' },
+              { title: '24/7 Support', desc: 'Dedicated support team always available' },
+            ].map((item, i) => (
+              <div key={i} className={`p-8 rounded-2xl ${cardBg} transition-all duration-500 hover:shadow-lg hover:scale-105 animate-slideUp cursor-pointer group`} style={{ animationDelay: `${0.2 + i * 0.12}s` }}>
+                <h3 className={`text-xl font-semibold mb-3 ${textClass} group-hover:text-indigo-600 transition-colors duration-300`}>{item.title}</h3>
+                <p className={isDarkMode ? 'text-gray-400' : 'text-slate-600'}>{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className={`py-20 bg-gradient-to-r ${accentColor} relative overflow-hidden`}>
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 left-0 w-40 h-40 bg-white rounded-full blur-3xl animate-subtleFloat"></div>
+            <div className="absolute bottom-0 right-0 w-40 h-40 bg-white rounded-full blur-3xl animate-subtleFloat" style={{ animationDelay: '1.5s' }}></div>
+          </div>
+          <div className="max-w-6xl mx-auto px-6 text-center text-white space-y-6 relative z-10 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+            <h2 className="text-4xl font-bold">Join the Professional Community</h2>
+            <p className="text-lg opacity-90 max-w-2xl mx-auto">
+              Take the first step towards meaningful business connections and unlimited growth opportunities.
+            </p>
+            {!isAuthenticated && (
+              <Link to="/signup" className="inline-block px-10 py-4 mt-4 rounded-lg bg-white text-indigo-600 font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-500 transform">
+                Get Started Free
+              </Link>
+            )}
+          </div>
+        </section>
+      </main>
+
+      {/* Footer */}
+      <footer className={`${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-slate-100 border-slate-200'} border-t py-12`}>
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <h4 className="font-semibold mb-4">Platform</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>Features</a></li>
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>Security</a></li>
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>Pricing</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Company</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>About</a></li>
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>Blog</a></li>
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-semibold mb-4">Legal</h4>
+              <ul className="space-y-2 text-sm">
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>Privacy</a></li>
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>Terms</a></li>
+                <li><a href="#" className={`${isDarkMode ? 'text-gray-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'} transition`}>Cookies</a></li>
+              </ul>
+            </div>
+            <div className="text-right">
+              <div className="font-bold text-lg mb-2">MBM Connect</div>
+              <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>Building trust, one connection at a time.</p>
+            </div>
+          </div>
+          <div className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-slate-300'} pt-8 text-center text-sm ${isDarkMode ? 'text-gray-400' : 'text-slate-600'}`}>
+            <p>&copy; 2025 MBM Connect. All rights reserved.</p>
           </div>
         </div>
       </footer>
     </div>
   );
-};
-
-export default HomePage;
+}
