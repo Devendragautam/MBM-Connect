@@ -1,7 +1,7 @@
 import multer from "multer";
 import fs from "fs";
 import path from "path";
-import { ApiError } from "../utils/ApiError.js";
+import { ApiError } from "../utils/apiError.js";
 
 // 1️⃣ Define temp directory for uploads
 const tempDir = path.join(process.cwd(), "public", "temp");
