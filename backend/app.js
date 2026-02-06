@@ -14,7 +14,7 @@ import marketRoutes from "./Routes/market.js";
 import chatRoutes from "./Routes/chat.js";
 import postRoutes from "./Routes/post.js";
 
-import { ApiError } from "./utils/ApiError.js";
+import { ApiError } from "./utils/apiError.js";
 
 const app = express();
 
