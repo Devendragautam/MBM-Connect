@@ -28,16 +28,22 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     throw new ApiError(401, "Unauthorized");
   }
 
-  if (req.user._id.toString() !== req.params.id) {
-    throw new ApiError(403, "You can only update your own profile");
-  }
+  const isOwner = req.user._id.toString() === req.params.id;
 
   const { fullName, bio, website } = req.body;
   const updateData = {};
 
-  if (fullName) updateData.fullName = fullName;
-  if (bio) updateData.bio = bio;
-  if (website) updateData.website = website;
+  // Owners can update profile fields; others may only update avatar/cover images
+  if (isOwner) {
+    if (fullName) updateData.fullName = fullName;
+    if (bio) updateData.bio = bio;
+    if (website) updateData.website = website;
+  } else {
+    // If not owner, ensure request contains at least one allowed file
+    if (!req.files?.avatar?.[0] && !req.files?.coverImage?.[0]) {
+      throw new ApiError(403, "You can only update your own profile");
+    }
+  }
 
   if (req.files?.avatar?.[0]) {
     const avatar = await uploadOnCloudinary(req.files.avatar[0].path);
@@ -188,5 +194,17 @@ export const getUserPosts = asyncHandler(async (req, res) => {
 
   res.status(200).json(
     new ApiResponse(200, posts, "User posts fetched successfully")
+  );
+});
+
+/* ================= GET ALL USERS ================= */
+export const getAllUsers = asyncHandler(async (req, res) => {
+  // Return list of all registered users (limited public fields)
+  const users = await User.find()
+    .select('fullName username avatar email')
+    .sort({ fullName: 1 });
+
+  res.status(200).json(
+    new ApiResponse(200, users, 'All users fetched successfully')
   );
 });

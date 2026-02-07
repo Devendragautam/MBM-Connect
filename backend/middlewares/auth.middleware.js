@@ -18,7 +18,14 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, "Unauthorized");
   }
 
-  const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  let decoded;
+  try {
+    decoded = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (err) {
+    // Map JWT errors to a 401 Unauthorized ApiError
+    throw new ApiError(401, err.message || 'Invalid token');
+  }
+
   const user = await User.findById(decoded._id).select("-password -refreshToken");
 
   if (!user) {

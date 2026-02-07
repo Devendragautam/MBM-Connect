@@ -22,6 +22,13 @@ body {
   min-height: 100vh;
 }
 
+/* Dark mode page background override */
+.dark body {
+  background: radial-gradient(1200px 400px at 10% 10%, rgba(124,58,237,0.06), transparent 10%),
+              linear-gradient(180deg, #071428 0%, #021026 100%);
+  color: #e6eef8;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -83,11 +90,100 @@ body {
   .section-subtitle {
     @apply text-lg text-slate-600 mb-8;
   }
+
+  .search-input {
+    @apply w-full px-4 py-3 border-2 border-slate-200 rounded-2xl outline-none transition-all duration-300 bg-white text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100;
+  }
+
+  /* Dark variant for search */
+  .dark .search-input {
+    @apply bg-slate-900 text-slate-100 border-slate-700 placeholder-slate-500 focus:ring-indigo-900;
+  }
+
+  .member-card {
+    @apply p-4 rounded-2xl bg-white shadow-md transition-transform duration-300 ease-out;
+    min-height: 88px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .member-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 18px 44px rgba(2,6,23,0.16);
+  }
+
+  /* Dark variant for member card */
+  .dark .member-card {
+    @apply bg-slate-900 border border-slate-800 shadow-lg;
+  }
+
+  .avatar-lg {
+    @apply w-16 h-16 rounded-full object-cover ring-2 ring-indigo-400;
+  }
+
+  .dark .avatar-lg {
+    @apply ring-2 ring-indigo-500;
+  }
+
+  .action-btn {
+    @apply px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm;
+  }
+
+  .btn-chat {
+    @apply bg-indigo-600 text-white hover:bg-indigo-700;
+  }
+
+  .btn-video {
+    @apply bg-emerald-600 text-white hover:bg-emerald-700;
+  }
+
+  /* Compact layout helpers */
+  .member-left {
+    @apply flex items-center gap-4 flex-none;
+  }
+
+  .member-name {
+    @apply text-lg font-semibold;
+  }
+
+  .member-actions {
+    @apply flex flex-col items-end gap-2;
+    min-width: 120px;
+  }
+
+  .profile-link {
+    @apply text-xs text-slate-500 dark:text-slate-300 underline cursor-pointer;
+  }
+
+  .dark .btn-chat {
+    @apply bg-indigo-500 hover:bg-indigo-600;
+  }
+
+  .dark .btn-video {
+    @apply bg-emerald-500 hover:bg-emerald-600;
+  }
+
+  .animated-gradient-text {
+    background: linear-gradient(90deg,#0ea5e9,#7c3aed,#ec4899,#f97316);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: gradientMove 4.5s linear infinite;
+    font-family: 'Poppins', 'Inter', sans-serif;
+  }
 }
 
 /* ========== Animations ========== */
 .animate-fade-in {
   animation: fadeIn 0.5s ease-in-out;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 .animate-slide-up {

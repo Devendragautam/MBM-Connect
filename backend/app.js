@@ -25,8 +25,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ✅ DB */
-await mongoose.connect(process.env.MONGODB_URI);
-console.log("✅ MongoDB connected");
+try {
+  await mongoose.connect(process.env.MONGODB_URI);
+  console.log("✅ MongoDB connected");
+} catch (error) {
+  console.error("❌ MongoDB connection error:", error.message);
+}
 
 /* ✅ Routes */
 app.use("/api/auth", authRoutes);

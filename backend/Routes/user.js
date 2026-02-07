@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getAllUsers,
   getUserProfile,
   updateUserProfile,
   getUserPosts,
@@ -10,6 +11,9 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 import { upload } from "../middlewares/multer.middleware.js";
 
 const router = express.Router();
+
+// Public: list all users
+router.get("/", getAllUsers);
 
 router.get("/:id", getUserProfile);
 router.put(

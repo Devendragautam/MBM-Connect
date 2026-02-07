@@ -3,8 +3,9 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useDarkMode } from '../../shared/DarkModeContext';
 import { userAPI } from '../user/user.api';
+import { resolveImageUrl } from '../../shared/utils/imageUrl';
 import { feedAPI } from '../feed/feed.api';
-import { Loader, Button, Input } from '../../shared/ui';
+import { Loader, Button, Input, ErrorBox } from '../../shared/ui';
 import PostCard from '../feed/PostCard';
 
 export default function UserProfile() {
@@ -24,6 +25,8 @@ export default function UserProfile() {
   const [error, setError] = useState(null);
   const [avatarFile, setAvatarFile] = useState(null);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [isEditingImage, setIsEditingImage] = useState(false);
+  const [editingImageType, setEditingImageType] = useState(null); // 'avatar' or 'cover'
   const [activeTab, setActiveTab] = useState('posts');
   const [coverFile, setCoverFile] = useState(null);
   const [coverPreview, setCoverPreview] = useState(null);
@@ -43,10 +46,16 @@ export default function UserProfile() {
       if (response.data.success) {
         setProfile(response.data.data);
         setEditForm(response.data.data);
-        
         // Check if current user is following this user
-        if (currentUser?._id !== userId && response.data.data?.followers?.includes(currentUser?._id)) {
-          setIsFollowing(true);
+        if (currentUser?._id && currentUser?._id !== userId) {
+          const followers = response.data.data?.followers || [];
+          const following = followers.some(f => {
+            if (!f) return false;
+            // follower may be populated as object {_id, username} or just id string
+            if (typeof f === 'string') return f === currentUser._id;
+            return f._id?.toString() === currentUser._id?.toString();
+          });
+          setIsFollowing(!!following);
         }
       } else {
         setError(response.data.message || 'Failed to load profile');
@@ -63,7 +72,15 @@ export default function UserProfile() {
     try {
       const response = await feedAPI.getUserPosts(userId);
       if (response.data.success) {
-        setPosts(response.data.data.posts || []);
+        // backend may return posts as an array (data) or as { posts: [...] }
+        const data = response.data.data;
+        if (Array.isArray(data)) {
+          setPosts(data);
+        } else if (Array.isArray(data?.posts)) {
+          setPosts(data.posts);
+        } else {
+          setPosts([]);
+        }
       }
     } catch (err) {
       console.error('Error fetching user posts:', err);
@@ -96,6 +113,11 @@ export default function UserProfile() {
     if (file) {
       setAvatarFile(file);
       setAvatarPreview(URL.createObjectURL(file));
+      // If a logged-in user (not necessarily owner) selected an image, show confirm UI
+      if (currentUser && !isOwnProfile) {
+        setEditingImageType('avatar');
+        setIsEditingImage(true);
+      }
     }
   };
 
@@ -104,10 +126,20 @@ export default function UserProfile() {
     if (file) {
       setCoverFile(file);
       setCoverPreview(URL.createObjectURL(file));
+      if (currentUser && !isOwnProfile) {
+        setEditingImageType('cover');
+        setIsEditingImage(true);
+      }
     }
   };
 
   const handleSaveProfile = async () => {
+    // Prevent accidental updates to other users from the client
+    // Allow non-owners to upload avatar/cover images only
+    if (!isOwnProfile && !(avatarFile || coverFile)) {
+      setError('You can only update your own profile');
+      return;
+    }
     try {
       setIsSaving(true);
       const formData = new FormData();
@@ -123,7 +155,7 @@ export default function UserProfile() {
       if (avatarFile) formData.append('avatar', avatarFile);
       if (coverFile) formData.append('coverImage', coverFile);
 
-      const response = await userAPI.updateProfile(formData);
+      const response = await userAPI.updateProfile(userId, formData);
       
       if (response.data.success) {
         setProfile(response.data.data);
@@ -157,15 +189,13 @@ export default function UserProfile() {
     setPosts(prev => prev.filter(p => p._id !== postId));
   };
 
-  if (error) {
+  // Errors are displayed inline so the rest of the profile UI stays accessible
+
+  if (error && !profile) {
     return (
-      <div className={`min-h-screen flex items-center justify-center ${isDarkMode ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800' : 'bg-gradient-to-br from-slate-50 via-white to-blue-50'}`}>
-        <div className="text-center space-y-4">
-          <p className="text-red-500 text-lg font-semibold">❌ {error}</p>
-          <button onClick={() => navigate(-1)} className="px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-semibold hover:shadow-lg">
-            ← Go Back
-          </button>
-        </div>
+      <div className={`min-h-screen flex flex-col items-center justify-center gap-4 p-4 ${isDarkMode ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800' : 'bg-gradient-to-br from-slate-50 via-white to-blue-50'}`}>
+        <ErrorBox message={error} onDismiss={() => setError(null)} variant="error" />
+        <Button onClick={() => navigate(-1)}>Go Back</Button>
       </div>
     );
   }
@@ -192,7 +222,7 @@ export default function UserProfile() {
       <div className="relative h-64 md:h-96 w-full overflow-hidden group animate-fadeInDown transition-all duration-300">
         {coverPreview || profile.coverImage ? (
           <img 
-            src={coverPreview || profile.coverImage} 
+            src={coverPreview || resolveImageUrl(profile.coverImage) || '/placeholder-cover.jpg'} 
             alt="Cover" 
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
@@ -201,7 +231,7 @@ export default function UserProfile() {
         )}
         <div className="absolute inset-0 bg-black/30 transition-opacity duration-300"></div>
         
-        {isOwnProfile && isEditing && (
+        {(isOwnProfile && isEditing) || (!!currentUser && !isEditingImage) ? (
           <>
             <button 
               onClick={() => coverInputRef.current?.click()}
@@ -217,12 +247,61 @@ export default function UserProfile() {
               className="hidden"
             />
           </>
-        )}
+        ) : null}
       </div>
 
       {/* Profile Content */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative -mt-28 z-10">
         <div className={`rounded-3xl shadow-2xl backdrop-blur-xl p-8 md:p-12 border animate-slideUp transition-all duration-500 hover:shadow-3xl ${isDarkMode ? 'bg-slate-800/90 border-slate-700' : 'bg-white/95 border-slate-200'}`}>
+          {error && (
+            <ErrorBox message={error} onDismiss={() => setError(null)} variant="error" />
+          )}
+
+          {isEditingImage ? (
+            <div className={`rounded-2xl p-6 mb-6 ${isDarkMode ? 'bg-slate-900/70 border-slate-700' : 'bg-white/95 border-slate-200'} border`}>
+              <h3 className="text-lg font-semibold mb-4">Confirm Image Upload</h3>
+              <div className="flex items-center gap-6">
+                {editingImageType === 'avatar' && avatarPreview && (
+                  <img src={avatarPreview} alt="Avatar preview" className="w-36 h-36 rounded-2xl object-cover" />
+                )}
+                {editingImageType === 'cover' && coverPreview && (
+                  <img src={coverPreview} alt="Cover preview" className="w-60 h-36 rounded-2xl object-cover" />
+                )}
+                <div className="flex-1">
+                  <p className="mb-4">You're about to update the user's {editingImageType} image.</p>
+                  <div className="flex gap-3">
+                    <button
+                      onClick={async () => {
+                        await handleSaveProfile();
+                        setIsEditingImage(false);
+                        setEditingImageType(null);
+                      }}
+                      className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg"
+                    >
+                      Upload
+                    </button>
+                    <button
+                      onClick={() => {
+                        // cancel
+                        if (editingImageType === 'avatar') {
+                          setAvatarFile(null);
+                          setAvatarPreview(null);
+                        } else {
+                          setCoverFile(null);
+                          setCoverPreview(null);
+                        }
+                        setIsEditingImage(false);
+                        setEditingImageType(null);
+                      }}
+                      className={`px-6 py-2 rounded-lg ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-slate-100'}`}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
           
           {/* Profile Header Section */}
           <div className="flex flex-col md:flex-row gap-8 mb-8 animate-fadeInUp" style={{animationDelay: '0.15s'}}>
@@ -231,7 +310,7 @@ export default function UserProfile() {
               <div className={`relative -mt-32 md:-mt-40 w-40 h-40 md:w-48 md:h-48 rounded-3xl border-4 border-indigo-500 shadow-2xl overflow-hidden flex-shrink-0 transition-all duration-500 hover:shadow-3xl hover:border-purple-500 hover:scale-105 ${isDarkMode ? 'bg-slate-700' : 'bg-slate-100'}`}>
                 {avatarPreview || profile.avatar ? (
                   <img 
-                    src={avatarPreview || profile.avatar} 
+                    src={avatarPreview || resolveImageUrl(profile.avatar) || '/placeholder-avatar.png'} 
                     alt={profile.username} 
                     className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                   />
@@ -240,10 +319,13 @@ export default function UserProfile() {
                     👤
                   </div>
                 )}
-                {isOwnProfile && isEditing && (
+                {((isOwnProfile && isEditing) || (!!currentUser && !isEditingImage)) && (
                   <>
                     <button 
-                      onClick={() => avatarInputRef.current?.click()}
+                      onClick={() => {
+                        setEditingImageType('avatar');
+                        avatarInputRef.current?.click();
+                      }}
                       className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-semibold opacity-0 hover:opacity-100 transition-opacity"
                     >
                       📷
@@ -269,8 +351,9 @@ export default function UserProfile() {
                   </button>
                 </div>
               )}
-              </div>
             </div>
+
+            {/* Profile Info */}
 
             {/* Profile Info */}
             <div className="flex-1 text-center md:text-left">

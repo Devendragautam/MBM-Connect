@@ -5,6 +5,9 @@ import { useDarkMode } from '../DarkModeContext';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
+  React.useEffect(() => {
+    console.log('[Navbar] auth user changed', user);
+  }, [user]);
   const { isDarkMode, toggleDarkMode } = useDarkMode();
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
@@ -18,6 +21,7 @@ const Navbar = () => {
   const navLinks = [
     { name: 'Feed', path: '/feed', icon: '📰' },
     { name: 'Dashboard', path: '/dashboard', icon: '📊' },
+    { name: 'Connect', path: '/connect', icon: '🔗' },
     { name: 'Market', path: '/market', icon: '🛍️' },
     { name: 'Stories', path: '/stories', icon: '📖' },
     { name: 'Chat', path: '/chat', icon: '💬' },

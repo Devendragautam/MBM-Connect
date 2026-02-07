@@ -57,4 +57,14 @@ export const userAPI = {
       throw error;
     }
   },
+  // Get all registered users
+  getAllUsers: async () => {
+    try {
+      const response = await apiClient.get(`/user`);
+      return response;
+    } catch (error) {
+      console.error('Error fetching users list:', error);
+      throw error;
+    }
+  },
 };

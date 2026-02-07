@@ -27,6 +27,18 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem('user', JSON.stringify(userData));
   };
 
+  const updateUser = (updatedUser) => {
+    console.log('[AuthContext] updateUser called', updatedUser);
+    setUser(updatedUser);
+    // keep authentication state intact
+    setIsAuthenticated(true);
+    try {
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    } catch (err) {
+      console.error('Error saving updated user to localStorage:', err);
+    }
+  };
+
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
@@ -49,6 +61,7 @@ export const AuthProvider = ({ children }) => {
         loading,
         isAuthenticated,
         login,
+        updateUser,
         logout,
         setToken,
         getToken,
