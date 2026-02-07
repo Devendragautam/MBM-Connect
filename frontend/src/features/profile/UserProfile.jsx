@@ -241,13 +241,34 @@ export default function UserProfile() {
                   </div>
                 )}
                 {isOwnProfile && isEditing && (
-                  <button 
-                    onClick={() => avatarInputRef.current?.click()}
-                    className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-semibold opacity-0 hover:opacity-100 transition-opacity"
-                  >
-                    📷
-                  </button>
+                  <>
+                    <button 
+                      onClick={() => avatarInputRef.current?.click()}
+                      className="absolute inset-0 bg-black/60 flex items-center justify-center text-white font-semibold opacity-0 hover:opacity-100 transition-opacity"
+                    >
+                      📷
+                    </button>
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleAvatarChange}
+                      className="hidden"
+                    />
+                  </>
                 )}
+              </div>
+
+              {isOwnProfile && isEditing && (
+                <div className="mt-3">
+                  <button
+                    onClick={() => avatarInputRef.current?.click()}
+                    className={`px-4 py-2 text-sm font-semibold rounded-md transition-all ${isDarkMode ? 'bg-slate-700 text-white hover:bg-slate-600' : 'bg-slate-100 text-slate-900 hover:bg-slate-200'}`}
+                  >
+                    📸 Change Image
+                  </button>
+                </div>
+              )}
               </div>
             </div>
 
