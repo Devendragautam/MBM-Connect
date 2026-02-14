@@ -3,6 +3,7 @@ import {
   createItem,
   getAllItems,
   deleteItem,
+  updateItem, // ✅ ADDED
 } from "../controllers/market.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
@@ -28,6 +29,18 @@ router.post(
   authMiddleware,
   upload.fields([{ name: "image", maxCount: 1 }]), // ✅ ADDED
   createItem
+);
+
+/**
+ * @route   PUT /api/market/:id
+ * @desc    Update market item
+ * @access  Private (owner only)
+ */
+router.put(
+  "/:id",
+  authMiddleware,
+  upload.fields([{ name: "image", maxCount: 1 }]),
+  updateItem
 );
 
 /**

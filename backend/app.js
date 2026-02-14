@@ -63,7 +63,15 @@ app.use((err, req, res, next) => {
   });
 });
 
+import http from "http";
+import { initSocket } from "./utils/socket.js";
+
 /* ✅ Start server */
-app.listen(process.env.PORT, () => {
+const server = http.createServer(app);
+
+// Initialize Socket.io
+initSocket(server);
+
+server.listen(process.env.PORT, () => {
   console.log(`🚀 Server running on ${process.env.PORT}`);
 });
