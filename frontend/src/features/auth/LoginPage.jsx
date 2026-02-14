@@ -54,7 +54,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center px-4 py-12 ${isDarkMode ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800' : 'bg-gradient-to-br from-slate-50 via-white to-blue-50'}`}>
+    <div className="min-h-screen flex items-center justify-center px-4 py-12 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} animate-pulse-light`}></div>
@@ -74,7 +74,7 @@ const LoginPage = () => {
         </div>
 
         {/* Login Card */}
-        <div className={`rounded-3xl shadow-2xl backdrop-blur-xl p-8 animate-slideUp ${isDarkMode ? 'bg-slate-800/80 border border-slate-700' : 'bg-white/90 border border-slate-200'}`}>
+        <div className="glass-panel p-8 animate-slideUp">
           {/* Error Message */}
           {error && (
             <div className={`mb-6 p-4 border-2 rounded-xl flex items-start gap-3 animate-slideDown ${isDarkMode ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200'}`}>
@@ -99,11 +99,10 @@ const LoginPage = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-lg border-2 transition-all pl-11 font-medium ${
-                    isDarkMode
-                      ? 'bg-slate-700 border-slate-600 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
-                      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
-                  } focus:outline-none`}
+                  className={`w-full px-4 py-3 rounded-lg border-2 transition-all pl-11 font-medium ${isDarkMode
+                    ? 'bg-slate-700 border-slate-600 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
+                    : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
+                    } focus:outline-none`}
                   placeholder="you@example.com"
                   required
                 />
@@ -125,19 +124,17 @@ const LoginPage = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 rounded-lg border-2 transition-all pl-11 font-medium ${
-                    isDarkMode
-                      ? 'bg-slate-700 border-slate-600 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
-                      : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
-                  } focus:outline-none`}
+                  className={`w-full px-4 py-3 rounded-lg border-2 transition-all pl-11 font-medium ${isDarkMode
+                    ? 'bg-slate-700 border-slate-600 text-white focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20'
+                    : 'bg-slate-50 border-slate-300 text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
+                    } focus:outline-none`}
                   placeholder="••••••••"
                   required
                 />
-                <svg className={`absolute left-3 top-3.5 w-5 h-5 transition-colors ${
-                  isDarkMode
-                    ? 'text-slate-400 group-focus-within:text-purple-400'
-                    : 'text-slate-500 group-focus-within:text-indigo-600'
-                }`} fill="currentColor" viewBox="0 0 20 20">
+                <svg className={`absolute left-3 top-3.5 w-5 h-5 transition-colors ${isDarkMode
+                  ? 'text-slate-400 group-focus-within:text-purple-400'
+                  : 'text-slate-500 group-focus-within:text-indigo-600'
+                  }`} fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                 </svg>
                 <button

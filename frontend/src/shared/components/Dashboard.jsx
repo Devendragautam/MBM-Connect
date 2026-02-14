@@ -22,18 +22,18 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      
+
       // Fetch data independently to prevent one failure from blocking the dashboard
       const feedPromise = feedAPI.getAllPosts(1, 5).catch(err => {
         console.error('Feed fetch failed:', err);
         return null;
       });
-      
+
       const marketPromise = marketAPI.getListings({ limit: 5 }).catch(err => {
         console.error('Market fetch failed:', err);
         return null;
       });
-      
+
       const storiesPromise = storiesAPI.getStories({ limit: 5 }).catch(err => {
         console.error('Stories fetch failed:', err);
         return null;
@@ -48,10 +48,10 @@ const Dashboard = () => {
       // Handle feed response structure (paginated object vs array)
       const feedData = feedRes?.data?.data;
       if (feedData) setFeeds(feedData?.posts || (Array.isArray(feedData) ? feedData : []));
-      
+
       const marketData = marketRes?.data?.data;
       if (marketData) setListings(Array.isArray(marketData) ? marketData : (marketData?.listings || []));
-      
+
       const storiesData = storiesRes?.data?.data;
       if (storiesData) setStories(Array.isArray(storiesData) ? storiesData : (storiesData?.stories || []));
     } catch (err) {
@@ -62,7 +62,7 @@ const Dashboard = () => {
     }
   };
 
-  const bgClass = isDarkMode 
+  const bgClass = isDarkMode
     ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800'
     : 'bg-gradient-to-br from-slate-50 via-white to-blue-50';
 
@@ -73,7 +73,7 @@ const Dashboard = () => {
   }
 
   return (
-    <div className={`min-h-screen py-16 ${bgClass}`}>
+    <div className="min-h-screen py-16 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} animate-pulse-light`}></div>
@@ -90,62 +90,56 @@ const Dashboard = () => {
         </div>
 
         {error && (
-          <ErrorBox 
-            message={error} 
-            onDismiss={() => setError('')} 
+          <ErrorBox
+            message={error}
+            onDismiss={() => setError('')}
           />
         )}
 
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {/* Total Listings */}
-          <div className={`p-8 rounded-3xl shadow-2xl backdrop-blur-xl border animate-fadeInUp hover-scale-md ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white/90 border-slate-200'}`} style={{ animationDelay: '0.1s' }}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                  Total Listings
-                </p>
-                <p className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
-                  {listings.length}
-                </p>
-              </div>
-              <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-2xl">
-                🛍️
-              </div>
+          <div className={`glass-effect p-8 flex items-center justify-between animate-fadeInUp hover-scale-md`} style={{ animationDelay: '0.1s' }}>
+            <div>
+              <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                Total Listings
+              </p>
+              <p className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                {listings.length}
+              </p>
+            </div>
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-2xl">
+              🛍️
             </div>
           </div>
 
           {/* Stories Count */}
-          <div className={`p-8 rounded-3xl shadow-2xl backdrop-blur-xl border animate-fadeInUp hover-scale-md ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white/90 border-slate-200'}`} style={{ animationDelay: '0.2s' }}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                  Stories
-                </p>
-                <p className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
-                  {stories.length}
-                </p>
-              </div>
-              <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-2xl">
-                📖
-              </div>
+          <div className={`glass-effect p-8 flex items-center justify-between animate-fadeInUp hover-scale-md`} style={{ animationDelay: '0.2s' }}>
+            <div>
+              <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                Stories
+              </p>
+              <p className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+                {stories.length}
+              </p>
+            </div>
+            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-2xl">
+              📖
             </div>
           </div>
 
           {/* Feed Posts */}
-          <div className={`p-8 rounded-3xl shadow-2xl backdrop-blur-xl border animate-fadeInUp hover-scale-md ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white/90 border-slate-200'}`} style={{ animationDelay: '0.3s' }}>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-                  Feed Posts
-                </p>
-                <p className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
-                  {feeds.length}
-                </p>
-              </div>
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-2xl">
-                📰
-              </div>
+          <div className={`glass-effect p-8 flex items-center justify-between animate-fadeInUp hover-scale-md`} style={{ animationDelay: '0.3s' }}>
+            <div>
+              <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                Feed Posts
+              </p>
+              <p className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+                {feeds.length}
+              </p>
+            </div>
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-2xl">
+              📰
             </div>
           </div>
         </div>

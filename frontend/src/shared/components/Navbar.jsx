@@ -27,12 +27,8 @@ const Navbar = () => {
     { name: 'Chat', path: '/chat', icon: '💬' },
   ];
 
-  const bgClass = isDarkMode 
-    ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800'
-    : 'bg-gradient-to-br from-white via-slate-50 to-blue-50';
-
   return (
-    <nav className={`${bgClass} border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50 backdrop-blur-xl bg-opacity-95 shadow-2xl transition-colors duration-300`}>
+    <nav className={`border-b border-white/20 dark:border-slate-700/30 sticky top-0 z-50 glass-effect bg-white/10 shadow-lg transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -79,7 +75,7 @@ const Navbar = () => {
                       />
                     </Link>
                   )}
-                  
+
                   {/* Dark Mode Toggle */}
                   <button
                     onClick={toggleDarkMode}
@@ -105,7 +101,7 @@ const Navbar = () => {
                 >
                   {isDarkMode ? '☀️' : '🌙'}
                 </button>
-                
+
                 <Link
                   to="/login"
                   className="px-4 py-2 text-indigo-600 dark:text-purple-400 hover:text-indigo-700 dark:hover:text-purple-300 font-semibold transition-colors hover-scale"
@@ -143,7 +139,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className={`md:hidden border-t ${isDarkMode ? 'border-slate-700 bg-slate-900/50' : 'border-slate-200 bg-white/50'} pb-4 animate-slideDown`}>
+          <div className={`md:hidden border-t border-white/20 dark:border-slate-700/30 bg-white/20 dark:bg-slate-900/40 backdrop-blur-xl pb-4 animate-slideDown shadow-lg`}>
             {isAuthenticated ? (
               <>
                 <div className="py-4 space-y-1">

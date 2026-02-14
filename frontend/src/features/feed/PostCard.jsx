@@ -28,7 +28,7 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
     try {
       setLoading(true);
       const response = await feedAPI.likePost(post._id);
-      
+
       if (response.data.success) {
         setLiked((prev) => !prev);
         setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
@@ -42,7 +42,7 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
 
   const handleAddComment = async (e) => {
     e.preventDefault();
-    
+
     if (!commentText.trim()) return;
 
     try {
@@ -80,7 +80,7 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
 
     try {
       const response = await feedAPI.deletePost(post._id);
-      
+
       if (response.data.success && onPostDeleted) {
         onPostDeleted(post._id);
       }
@@ -90,21 +90,24 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
   };
 
   return (
-    <div className={`rounded-3xl border overflow-hidden shadow-2xl backdrop-blur-xl transition-all duration-300 hover:shadow-3xl ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white/90 border-slate-200'}`}>
+    <div className="glass-panel tilt-hover mb-8 transform transition-all duration-300 hover:z-10 relative">
       {/* Header */}
-      <div className={`flex items-center justify-between p-6 border-b ${isDarkMode ? 'border-slate-700' : 'border-slate-200'}`}>
-        <div className="flex items-center gap-3 cursor-pointer hover-scale" onClick={() => navigate(`/profile/${post.author._id}`)}>
-          <img
-            src={post.author?.avatar || 'https://via.placeholder.com/40'}
-            alt={post.author?.username}
-            className="w-12 h-12 rounded-full object-cover border-2 border-indigo-500"
-          />
+      <div className="flex items-center justify-between p-5 border-b border-white/10">
+        <div className="flex items-center gap-4 cursor-pointer group" onClick={() => navigate(`/profile/${post.author._id}`)}>
+          <div className="relative">
+            <img
+              src={post.author?.avatar || 'https://via.placeholder.com/40'}
+              alt={post.author?.username}
+              className="w-12 h-12 rounded-full object-cover ring-2 ring-white/30 group-hover:ring-sky-500 transition-all duration-300"
+            />
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-sky-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+          </div>
           <div>
-            <p className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+            <p className={`font-bold text-lg ${isDarkMode ? 'text-white' : 'text-slate-900'} group-hover:text-sky-500 transition-colors`}>
               {post.author?.fullName}
             </p>
-            <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
-              @{post.author?.username} • {createdAt}
+            <p className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+              @{post.author?.username} • <span className="opacity-70">{createdAt}</span>
             </p>
           </div>
         </div>
@@ -113,120 +116,124 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
           <button
             onClick={handleDelete}
             disabled={loading}
-            className="px-4 py-2 bg-red-500/20 text-red-600 dark:text-red-400 hover:bg-red-500/30 rounded-lg font-semibold text-sm transition-all"
+            className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-red-500/10 text-slate-400 hover:text-red-500 transition-all duration-200"
+            title="Delete Post"
           >
-            Delete
+            🗑️
           </button>
         )}
       </div>
 
       {/* Content */}
-      <div className={`p-6 ${isDarkMode ? 'text-slate-300' : 'text-slate-800'}`}>
-        <p className="mb-4 leading-relaxed">{post.content}</p>
-        
+      <div className={`p-6 ${isDarkMode ? 'text-slate-200' : 'text-slate-700'}`}>
+        <p className="mb-4 leading-relaxed text-base whitespace-pre-wrap">{post.content}</p>
+
         {post.image && (
-          <img
-            src={post.image}
-            alt="post"
-            className="w-full h-80 object-cover rounded-2xl mb-4"
-          />
+          <div className="rounded-2xl overflow-hidden shadow-lg border border-white/10">
+            <img
+              src={post.image}
+              alt="post"
+              className="w-full h-auto max-h-[500px] object-cover hover:scale-[1.02] transition-transform duration-500"
+            />
+          </div>
         )}
       </div>
 
       {/* Stats */}
-      <div className={`flex justify-between px-6 py-4 border-y text-sm font-semibold ${isDarkMode ? 'border-slate-700 text-slate-400' : 'border-slate-200 text-slate-700'}`}>
-        <span className="hover:text-indigo-600 cursor-pointer transition-colors">{likeCount} Likes</span>
-        <span className="hover:text-indigo-600 cursor-pointer transition-colors">{comments.length} Comments</span>
+      <div className="px-6 py-3 border-y border-white/10 flex justify-between text-sm font-medium text-slate-500 dark:text-slate-400">
+        <span className="flex items-center gap-1.5 hover:text-sky-500 transition-colors cursor-pointer">
+          <span className="text-lg">❤️</span> {likeCount} Likes
+        </span>
+        <span className="flex items-center gap-1.5 hover:text-sky-500 transition-colors cursor-pointer">
+          <span className="text-lg">💬</span> {comments.length} Comments
+        </span>
       </div>
 
       {/* Actions */}
-      <div className={`flex justify-around py-4 border-b ${isDarkMode ? 'border-slate-700' : 'border-slate-200'}`}>
+      <div className="flex p-2">
         <button
           onClick={handleLike}
           disabled={loading}
-          className={`flex items-center gap-2 flex-1 justify-center py-2 rounded-lg font-medium transition-all duration-300 hover-scale ${
-            liked
-              ? 'text-red-500'
-              : isDarkMode
-              ? 'text-slate-400 hover:text-red-500'
-              : 'text-slate-600 hover:text-red-500'
-          }`}
+          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium transition-all duration-300 ${liked
+            ? 'text-red-500 bg-red-500/10'
+            : 'text-slate-600 dark:text-slate-400 hover:bg-white/10'
+            }`}
         >
-          {liked ? '❤️' : '🤍'} Like
+          <span className={`text-xl transition-transform duration-300 ${liked ? 'scale-110' : ''}`}>
+            {liked ? '❤️' : '🤍'}
+          </span>
+          Like
         </button>
 
         <button
           onClick={() => setShowComments(!showComments)}
-          className={`flex items-center gap-2 flex-1 justify-center py-2 rounded-lg font-medium transition-all duration-300 hover-scale ${
-            isDarkMode
-              ? 'text-slate-400 hover:text-blue-400'
-              : 'text-slate-600 hover:text-blue-500'
-          }`}
+          className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-medium text-slate-600 dark:text-slate-400 hover:bg-white/10 transition-all duration-300"
         >
-          💬 Comment
+          <span className="text-xl">💬</span> Comment
         </button>
       </div>
 
       {/* Comments Section */}
       {showComments && (
-        <div className={`p-6 space-y-4 animate-slideDown ${isDarkMode ? 'bg-slate-700/50' : 'bg-slate-100/50'}`}>
+        <div className="p-4 border-t border-white/10 bg-black/5 dark:bg-black/20 backdrop-blur-sm">
+          {/* Comments List */}
+          <div className="space-y-4 mb-4 max-h-80 overflow-y-auto custom-scrollbar px-2">
+            {comments.length === 0 ? (
+              <p className="text-center text-sm text-slate-500 py-4">No comments yet. Be the first!</p>
+            ) : (
+              comments.map((comment) => (
+                <div key={comment._id} className="flex gap-3 animate-fade-in">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                    {comment.user?.username?.[0]?.toUpperCase() || '?'}
+                  </div>
+                  <div className="flex-1">
+                    <div className="glass-panel p-3 rounded-tl-none relative group">
+                      <div className="flex justify-between items-start mb-1">
+                        <span className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                          {comment.user?.username}
+                        </span>
+                        {comment.user?._id === currentUserId && (
+                          <button
+                            onClick={() => handleDeleteComment(comment._id)}
+                            className="text-red-400 hover:text-red-500 text-xs opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            Delete
+                          </button>
+                        )}
+                      </div>
+                      <p className={`text-sm ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                        {comment.text}
+                      </p>
+                    </div>
+                    <div className="text-[10px] text-slate-500 mt-1 ml-1">
+                      {comment.createdAt && new Date(comment.createdAt).toLocaleDateString()}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
           {/* Comment Input */}
-          <form onSubmit={handleAddComment} className="flex gap-2">
+          <form onSubmit={handleAddComment} className="relative">
             <input
               type="text"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Add a comment..."
-              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all ${
-                isDarkMode
-                  ? 'bg-slate-700 border border-slate-600 text-white placeholder-slate-400'
-                  : 'bg-white border border-slate-300 text-slate-900 placeholder-slate-500'
-              }`}
+              placeholder="Write a comment..."
+              className="input-field pr-12 text-sm"
+              disabled={loading}
             />
             <button
               type="submit"
               disabled={loading || !commentText.trim()}
-              className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-lg text-white rounded-lg text-sm font-medium disabled:opacity-50 transition-all"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-sky-500 text-white hover:bg-sky-600 disabled:opacity-50 disabled:hover:bg-sky-500 transition-colors shadow-lg"
             >
-              Post
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+              </svg>
             </button>
           </form>
-
-          {/* Comments List */}
-          <div className="space-y-3 max-h-60 overflow-y-auto">
-            {comments.map((comment) => (
-              <div
-                key={comment._id}
-                className={`p-3 rounded-xl ${isDarkMode ? 'bg-slate-700' : 'bg-white'}`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        @{comment.user?.username}
-                      </span>
-                      <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        {comment.createdAt && new Date(comment.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                      {comment.text}
-                    </p>
-                  </div>
-
-                  {comment.user?._id === currentUserId && (
-                    <button
-                      onClick={() => handleDeleteComment(comment._id)}
-                      disabled={loading}
-                      className="text-red-500 hover:text-red-600 text-xs font-semibold"
-                    >
-                      Delete
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       )}
     </div>

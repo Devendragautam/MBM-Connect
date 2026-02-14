@@ -25,7 +25,7 @@ export default function CreatePost({ onPostCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!content.trim()) {
       setError('Please write something for your post');
       return;
@@ -65,55 +65,55 @@ export default function CreatePost({ onPostCreated }) {
   };
 
   return (
-    <div className={`rounded-lg border p-6 ${isDarkMode ? 'bg-secondary-800 border-secondary-700' : 'bg-white border-gray-200'}`}>
+    <div className="glass-panel p-6 mb-8 animate-fade-in border-t-4 border-indigo-500/50">
       {/* Header */}
-      <h3 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-        Create a Post
+      <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+        <span className="text-2xl animate-bounce">✨</span> Create a Post
       </h3>
 
       {/* Error Message */}
       {error && (
-        <div className="mb-4 p-3 bg-red-500/20 border border-red-500 rounded text-red-600 text-sm">
-          {error}
+        <div className="mb-4 animate-slide-up">
+          <ErrorBox message={error} variant="error" />
         </div>
       )}
 
       {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Content Textarea */}
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="What's on your mind?"
-          maxLength={1000}
-          rows={4}
-          className={`w-full p-3 rounded-lg border resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            isDarkMode
-              ? 'bg-secondary-700 border-secondary-600 text-white placeholder-gray-400'
-              : 'bg-gray-50 border-gray-300 text-gray-900 placeholder-gray-500'
-          }`}
-        />
-
-        {/* Character Count */}
-        <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-          {content.length} / 1000
+        <div className="relative group">
+          <textarea
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            placeholder="What's on your mind?"
+            maxLength={1000}
+            rows={3}
+            className="input-field min-h-[120px] resize-none"
+          />
+          <div className={`absolute bottom-3 right-3 text-xs font-medium transition-colors duration-300 ${content.length > 900 ? 'text-red-500' : isDarkMode ? 'text-slate-400' : 'text-slate-500'
+            }`}>
+            {content.length} / 1000
+          </div>
         </div>
 
         {/* Image Preview */}
         {preview && (
-          <div className="relative">
+          <div className="relative rounded-2xl overflow-hidden border border-white/20 shadow-lg group animate-scaleIn">
             <img
               src={preview}
               alt="preview"
-              className="w-full h-48 object-cover rounded-lg"
+              className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
             />
-            <button
-              type="button"
-              onClick={removeImage}
-              className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-lg font-bold"
-            >
-              ×
-            </button>
+            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <button
+                type="button"
+                onClick={removeImage}
+                className="bg-red-500/80 hover:bg-red-600 text-white rounded-full p-3 backdrop-blur-sm transform transition-transform hover:scale-110 shadow-lg"
+              >
+                <span className="sr-only">Remove</span>
+                🗑️
+              </button>
+            </div>
           </div>
         )}
 
@@ -127,25 +127,34 @@ export default function CreatePost({ onPostCreated }) {
         />
 
         {/* Buttons */}
-        <div className="flex gap-3">
+        <div className="flex items-center gap-3 pt-2">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className={`flex-1 px-4 py-2 rounded-lg font-medium transition ${
-              isDarkMode
-                ? 'bg-secondary-700 hover:bg-secondary-600 text-white'
-                : 'bg-gray-100 hover:bg-gray-200 text-gray-900'
-            }`}
+            className="glass-button flex items-center gap-2 text-sky-500 hover:text-sky-600 hover:px-5 transition-all"
           >
-            📷 Add Image
+            <span>📷</span>
+            <span className="hidden sm:inline">Add Image</span>
           </button>
+
+          <div className="flex-1"></div>
 
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-4 py-2 rounded-lg font-medium text-white bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 hover:shadow-lg disabled:opacity-50 transition"
+            className="btn-primary min-w-[120px] flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)]"
           >
-            {loading ? 'Posting...' : 'Post'}
+            {loading ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <span>Posting...</span>
+              </>
+            ) : (
+              <>
+                <span>🚀</span>
+                <span>Post</span>
+              </>
+            )}
           </button>
         </div>
       </form>

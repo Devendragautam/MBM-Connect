@@ -97,7 +97,7 @@ const SignupPage = () => {
   };
 
   return (
-    <div className={`min-h-screen flex items-center justify-center px-4 py-8 ${isDarkMode ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800' : 'bg-gradient-to-br from-slate-50 via-white to-blue-50'}`}>
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} animate-pulse-light`}></div>
@@ -117,7 +117,7 @@ const SignupPage = () => {
         </div>
 
         {/* Signup Card */}
-        <div className={`rounded-3xl shadow-2xl backdrop-blur-xl p-8 animate-slideUp ${isDarkMode ? 'bg-slate-800/80 border border-slate-700' : 'bg-white/90 border border-slate-200'}`}>
+        <div className="glass-panel p-8 animate-slideUp">
           {/* Error Message */}
           {error && (
             <div className={`mb-6 p-4 border-2 rounded-xl flex items-start gap-3 animate-slideDown ${isDarkMode ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200'}`}>
@@ -144,11 +144,10 @@ const SignupPage = () => {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${
-                      isDarkMode
-                        ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                        : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                    } focus:outline-none`}
+                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
+                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
+                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
+                      } focus:outline-none`}
                     placeholder="John Doe"
                     required
                   />
@@ -169,11 +168,10 @@ const SignupPage = () => {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${
-                      isDarkMode
-                        ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                        : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                    } focus:outline-none`}
+                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
+                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
+                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
+                      } focus:outline-none`}
                     placeholder="johndoe_25"
                     required
                   />
@@ -195,11 +193,10 @@ const SignupPage = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${
-                    isDarkMode
-                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                  } focus:outline-none`}
+                  className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
+                    ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
+                    : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
+                    } focus:outline-none`}
                   placeholder="you@example.com"
                   required
                 />
@@ -223,11 +220,10 @@ const SignupPage = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${
-                      isDarkMode
-                        ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                        : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                    } focus:outline-none`}
+                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
+                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
+                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
+                      } focus:outline-none`}
                     placeholder="••••••••"
                     required
                   />
@@ -265,11 +261,10 @@ const SignupPage = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${
-                      isDarkMode
-                        ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                        : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                    } focus:outline-none`}
+                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
+                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
+                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
+                      } focus:outline-none`}
                     placeholder="••••••••"
                     required
                   />
@@ -285,11 +280,10 @@ const SignupPage = () => {
               <label className={`block text-sm font-semibold mb-3 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
                 Profile Avatar
               </label>
-              <label className={`relative flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-2xl cursor-pointer transition-all group-focus-within:border-purple-500 hover-scale ${
-                isDarkMode 
-                  ? 'border-slate-600 bg-slate-700 hover:bg-slate-600 hover:border-purple-500' 
-                  : 'border-slate-300 bg-slate-100 hover:bg-slate-200 hover:border-indigo-500'
-              }`}>
+              <label className={`relative flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-2xl cursor-pointer transition-all group-focus-within:border-purple-500 hover-scale ${isDarkMode
+                ? 'border-slate-600 bg-slate-700 hover:bg-slate-600 hover:border-purple-500'
+                : 'border-slate-300 bg-slate-100 hover:bg-slate-200 hover:border-indigo-500'
+                }`}>
                 {avatarPreview ? (
                   <>
                     <img src={avatarPreview} alt="Avatar preview" className="w-24 h-24 rounded-full object-cover mb-2 border-2 border-indigo-500" />

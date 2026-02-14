@@ -20,7 +20,7 @@ export default function Feed() {
   const lastPostElementRef = useCallback(node => {
     if (loading) return;
     if (observer.current) observer.current.disconnect();
-    
+
     observer.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
         setPage(prevPage => prevPage + 1);
@@ -37,7 +37,7 @@ export default function Feed() {
 
       // Try to fetch from following feed first (requires auth), fallback to all posts
       try {
-      const response = await feedAPI.getFollowingFeed(pageNum, 10);
+        const response = await feedAPI.getFollowingFeed(pageNum, 10);
 
         if (response.data.success) {
           if (pageNum === 1) {
@@ -54,7 +54,7 @@ export default function Feed() {
       }
 
       // Fallback: fetch all posts
-    const response = await feedAPI.getAllPosts(pageNum, 10);
+      const response = await feedAPI.getAllPosts(pageNum, 10);
 
       if (response.data.success) {
         if (pageNum === 1) {
@@ -142,29 +142,25 @@ export default function Feed() {
     );
   }, [posts, loading, hasMore, handlePostDeleted, user, isDarkMode, lastPostElementRef]);
 
-  const bgClass = isDarkMode 
-    ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800'
-    : 'bg-gradient-to-br from-slate-50 via-white to-blue-50';
-
   return (
-    <div className={`min-h-screen ${bgClass}`}>
+    <div className="min-h-screen pt-24 pb-12 transition-colors duration-300">
       {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} animate-pulse-light`}></div>
-        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} floating-element-slow`}></div>
+      <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+        <div className={`absolute top-20 right-10 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} animate-pulse`}></div>
+        <div className={`absolute bottom-20 left-10 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} animate-pulse`} style={{ animationDelay: '2s' }}></div>
       </div>
 
-      <div className="max-w-3xl mx-auto py-12 px-4 relative z-10">
+      <div className="max-w-2xl mx-auto px-4 relative z-10 space-y-8">
         {user && (
-          <div className="mb-8 animate-fadeInUp">
+          <div className="animate-fade-in">
             <CreatePost onPostCreated={handlePostCreated} />
           </div>
         )}
 
         {error && (
-          <div className="mb-6 animate-slideDown">
-            <ErrorBox 
-              message="Error loading posts" 
+          <div className="animate-slide-up">
+            <ErrorBox
+              message="Error loading posts"
               errors={[error]}
               onDismiss={handleDismissError}
             />
