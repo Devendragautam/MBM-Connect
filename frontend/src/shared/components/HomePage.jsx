@@ -121,11 +121,7 @@ export default function HomePage() {
     { label: 'Trust Score', value: '98%', icon: '✓' },
   ];
 
-  const features = [
-    { icon: '🔐', title: 'Enterprise Security', desc: 'Bank-level encryption and data protection' },
-    { icon: '⚡', title: 'Instant Verification', desc: 'Real-time member authentication' },
-    { icon: '🌍', title: 'Global Network', desc: 'Connect with professionals worldwide' },
-  ];
+
 
   return (
     <div className="min-h-screen relative overflow-hidden transition-colors duration-300">
@@ -140,82 +136,90 @@ export default function HomePage() {
 
       {/* Hero Section */}
       <main className="relative z-10">
-        <section className="max-w-7xl mx-auto px-6 py-32 md:py-40">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="space-y-8 animate-slideInLeft" style={{ animationDelay: '0.15s' }}>
-              <div>
-                <div className="inline-block mb-4 animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
-                  <span className={`px-4 py-2 rounded-full text-sm font-medium backdrop-blur-md border border-white/10 shadow-lg ${isDarkMode ? 'bg-white/10 text-indigo-300' : 'bg-white/40 text-indigo-700'}`}>
-                    ✨ The Professional Community Platform
-                  </span>
-                </div>
-                <h1 className={`text-6xl md:text-7xl font-bold leading-tight tracking-tight ${textClass} animate-slideInLeft`} style={{ animationDelay: '0.4s' }}>
-                  Connect with <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">Purpose</span>
-                </h1>
-              </div>
-              <p className={`text-xl leading-relaxed animate-fadeInUp ${textMuted}`} style={{ animationDelay: '0.5s' }}>
-                A curated professional network designed for meaningful business relationships, secure transactions, and community growth.
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-4 animate-fadeInUp" style={{ animationDelay: '0.6s' }}>
-                {!isAuthenticated ? (
-                  <>
-                    <Link to="/signup" className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-500 text-white bg-gradient-to-r ${accentColor} hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:scale-105 transform text-center border border-white/20`}>
-                      Start Free Today
-                    </Link>
-                    <Link to="/login" className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-500 glass-button text-center backdrop-blur-xl ${isDarkMode ? 'hover:bg-white/10' : 'hover:bg-white/40'}`}>
-                      Sign In
-                    </Link>
-                  </>
-                ) : (
-                  <Link to="/dashboard" className={`px-8 py-4 rounded-2xl font-semibold text-lg transition-all duration-500 text-white bg-gradient-to-r ${accentColor} hover:shadow-[0_0_30px_rgba(99,102,241,0.5)] hover:scale-105 text-center transform border border-white/20`}>
-                    Go to Dashboard
-                  </Link>
-                )}
-              </div>
-
-              <div className="flex items-center gap-6 pt-4 text-sm animate-fadeInUp" style={{ animationDelay: '0.7s' }}>
-                <div className="flex -space-x-3">
-                  <div className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 bg-gradient-to-br from-blue-400 to-blue-600 animate-subtleFloat shadow-lg" style={{ animationDelay: '0s' }}></div>
-                  <div className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 bg-gradient-to-br from-purple-400 to-purple-600 animate-subtleFloat shadow-lg" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 bg-gradient-to-br from-pink-400 to-pink-600 animate-subtleFloat shadow-lg" style={{ animationDelay: '0.4s' }}></div>
-                  <div className={`w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 flex items-center justify-center font-bold text-xs ${isDarkMode ? 'bg-slate-700 text-white' : 'bg-white text-slate-700'} shadow-lg`}>+10k</div>
-                </div>
-                <p className={textMuted}>Trusted by 10,000+ professionals</p>
-              </div>
+        <section className="max-w-7xl mx-auto px-6 py-32 md:py-48 relative">
+          <div className="flex flex-col items-center text-center relative z-10">
+            <div className="inline-block mb-8 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+              <span className={`px-5 py-2 rounded-full text-sm font-semibold tracking-wide backdrop-blur-md border border-white/10 shadow-xl ${isDarkMode ? 'bg-white/5 text-indigo-300 ring-1 ring-white/10' : 'bg-white/60 text-indigo-700 ring-1 ring-indigo-50'}`}>
+                ✨ The Professional Community Platform
+              </span>
             </div>
 
-            <div className="relative animate-slideInRight perspective-[1000px]" style={{ animationDelay: '0.2s' }}>
-              <div className={`glass-panel p-8 transform transition-all duration-500 hover:rotate-y-12 hover:rotate-x-12 hover:scale-105 group relative overflow-hidden`}>
-                <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
-                <div className="space-y-8 relative z-10">
-                  {features.map((f, i) => (
-                    <div key={i} className="flex items-start gap-4 animate-slideUp group/item" style={{ animationDelay: `${0.5 + i * 0.15}s` }}>
-                      <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0 transition-all duration-500 ${isDarkMode ? 'bg-white/5' : 'bg-indigo-50'} group-hover/item:scale-110 group-hover/item:bg-gradient-to-br from-indigo-500/20 to-purple-500/20 shadow-inner`} style={{ animationDelay: `${i * 0.1}s` }}>
-                        <span className="group-hover/item:animate-bounce">{f.icon}</span>
-                      </div>
-                      <div>
-                        <h3 className={`font-bold text-lg ${textClass} mb-1`}>{f.title}</h3>
-                        <p className={`text-sm ${textMuted}`}>{f.desc}</p>
-                      </div>
-                    </div>
-                  ))}
+            <h1 className={`text-6xl md:text-8xl font-black leading-tight tracking-tight mb-8 ${textClass} animate-slideUp max-w-5xl`} style={{ animationDelay: '0.3s' }}>
+              Connect with <br />
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-gradient-x">Purpose & Impact</span>
+            </h1>
+
+            <p className={`text-xl md:text-2xl leading-relaxed max-w-3xl mx-auto mb-12 animate-fadeInUp ${textMuted}`} style={{ animationDelay: '0.4s' }}>
+              A curated professional network designed for meaningful business relationships, secure transactions, and community growth.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-6 animate-fadeInUp" style={{ animationDelay: '0.5s' }}>
+              {!isAuthenticated ? (
+                <>
+                  <Link to="/signup" className={`px-10 py-5 rounded-2xl font-bold text-lg transition-all duration-300 text-white bg-gradient-to-r ${accentColor} hover:shadow-[0_0_40px_rgba(99,102,241,0.6)] hover:-translate-y-1 transform border border-white/20 shadow-xl`}>
+                    Start Free Today
+                  </Link>
+                  <Link to="/login" className={`px-10 py-5 rounded-2xl font-bold text-lg transition-all duration-300 glass-button backdrop-blur-xl border border-white/10 hover:bg-white/10 hover:-translate-y-1 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+                    Sign In
+                  </Link>
+                </>
+              ) : (
+                <Link to="/dashboard" className={`px-10 py-5 rounded-2xl font-bold text-lg transition-all duration-300 text-white bg-gradient-to-r ${accentColor} hover:shadow-[0_0_40px_rgba(99,102,241,0.6)] hover:-translate-y-1 transform border border-white/20 shadow-xl`}>
+                  Go to Dashboard
+                </Link>
+              )}
+            </div>
+
+            <div className="mt-16 pt-8 border-t border-white/10 animate-fadeInUp w-full max-w-xs mx-auto" style={{ animationDelay: '0.6s' }}>
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex -space-x-4">
+                  <div className="w-12 h-12 rounded-full border-4 border-white dark:border-slate-900 bg-gradient-to-br from-blue-400 to-blue-600 animate-subtleFloat shadow-lg z-30" style={{ animationDelay: '0s' }}></div>
+                  <div className="w-12 h-12 rounded-full border-4 border-white dark:border-slate-900 bg-gradient-to-br from-purple-400 to-purple-600 animate-subtleFloat shadow-lg z-20" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-12 h-12 rounded-full border-4 border-white dark:border-slate-900 bg-gradient-to-br from-pink-400 to-pink-600 animate-subtleFloat shadow-lg z-10" style={{ animationDelay: '0.4s' }}></div>
                 </div>
+                <p className={`text-sm font-medium ${textMuted}`}>Trusted by <span className={isDarkMode ? "text-white" : "text-slate-900"}>10,000+</span> professionals</p>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Stats Section */}
-        <section className="py-20 relative">
+        {/* Key Features Grid */}
+        <section className="py-24 relative z-10">
           <div className="max-w-7xl mx-auto px-6">
-            <h2 className={`text-4xl font-bold text-center mb-12 ${textClass} animate-fadeInUp font-display`} style={{ animationDelay: '0.1s' }}>Trusted by Industry Leaders</h2>
+            <div className="text-center mb-16 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
+              <h2 className={`text-3xl md:text-5xl font-bold mb-6 ${textClass} font-display`}>Everything you need to <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-500 to-fuchsia-500">grow</span></h2>
+              <p className={`text-xl max-w-2xl mx-auto ${textMuted}`}>Powerful tools to help you build your network and advance your career.</p>
+            </div>
+
             <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { icon: '🚀', title: 'Fast Connections', desc: 'Instant messaging and networking tools.' },
+                { icon: '🛡️', title: 'Secure Platform', desc: 'Enterprise-grade security for your data.' },
+                { icon: '🌍', title: 'Global Reach', desc: 'Connect with professionals from 150+ countries.' },
+                { icon: '💡', title: 'Smart Insights', desc: 'AI-powered recommendations for your growth.' },
+                { icon: '🤝', title: 'Community Events', desc: 'Exclusive access to webinars and meetups.' },
+                { icon: '📱', title: 'Mobile First', desc: 'Seamless experience across all devices.' }
+              ].map((feature, i) => (
+                <div key={i} className={`glass-panel p-8 rounded-3xl transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border ${isDarkMode ? 'border-white/5 hover:border-violet-500/30' : 'border-white/40 hover:border-violet-500/30'} group`} style={{ animationDelay: `${0.1 * i}s` }}>
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500/10 to-fuchsia-500/10 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    {feature.icon}
+                  </div>
+                  <h3 className={`text-xl font-bold mb-3 ${textClass}`}>{feature.title}</h3>
+                  <p className={textMuted}>{feature.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="py-20 relative border-y border-white/10 bg-white/5 backdrop-blur-sm">
+          <div className="max-w-7xl mx-auto px-6">
+            <div className="grid md:grid-cols-3 gap-12 divide-y md:divide-y-0 md:divide-x divide-white/10">
               {stats.map((stat, i) => (
-                <div key={i} className={`glass-panel text-center p-8 transition-all duration-500 tilt-hover animate-slideUp cursor-pointer group`} style={{ animationDelay: `${0.15 + i * 0.12}s` }}>
-                  <div className={`text-6xl mb-6 transition-transform duration-500 inline-block transform group-hover:scale-125 group-hover:rotate-12`} style={{ animationDelay: `${i * 0.15}s` }}>{stat.icon}</div>
-                  <div className="text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent mb-2">{stat.value}</div>
-                  <p className={`text-lg font-medium ${textMuted}`}>{stat.label}</p>
+                <div key={i} className="text-center py-8 md:py-0 animate-fadeInUp" style={{ animationDelay: `${0.1 * i}s` }}>
+                  <div className="text-5xl md:text-6xl font-black bg-gradient-to-r from-violet-500 to-fuchsia-500 bg-clip-text text-transparent mb-2">{stat.value}</div>
+                  <div className={`text-lg font-medium uppercase tracking-widest ${textMuted}`}>{stat.label}</div>
                 </div>
               ))}
             </div>
@@ -224,6 +228,32 @@ export default function HomePage() {
 
         {/* Value Props Section */}
         <section className="max-w-7xl mx-auto px-6 py-20">
+          <div className="max-w-7xl mx-auto px-6 relative z-10">
+            <h2 className={`text-3xl md:text-5xl font-bold text-center mb-16 ${textClass} font-display`}>Loved by <span className="text-violet-500">Professionals</span></h2>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                { name: "Sarah J.", role: "Product Manager", text: "MBM Connect transformed how I network. The quality of connections is unmatched." },
+                { name: "David K.", role: "Tech Lead", text: "Found my co-founder here within a week. The verification system gives real peace of mind." },
+                { name: "Emily R.", role: "Freelance Designer", text: "The community support is incredible. I've landed 3 major clients in just a month." }
+              ].map((t, i) => (
+                <div key={i} className={`glass-panel p-8 rounded-2xl relative ${isDarkMode ? 'bg-slate-800/50' : 'bg-white/60'}`}>
+                  <div className="text-violet-500 text-4xl mb-4 font-serif">"</div>
+                  <p className={`text-lg mb-6 leading-relaxed ${textClass} italic`}>{t.text}</p>
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-violet-400 to-fuchsia-400"></div>
+                    <div>
+                      <div className={`font-bold ${textClass}`}>{t.name}</div>
+                      <div className={`text-xs uppercase tracking-wide ${textMuted}`}>{t.role}</div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* Value Props Section */}
+        <section className="max-w-7xl mx-auto px-6 py-20 border-t border-white/10">
           <h2 className={`text-4xl font-bold text-center mb-16 ${textClass} animate-fadeInUp font-display`} style={{ animationDelay: '0.1s' }}>Why Choose MBM Connect?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -231,9 +261,9 @@ export default function HomePage() {
               { title: 'Secure Transactions', desc: 'End-to-end encryption for all communications', icon: '🔒' },
               { title: '24/7 Support', desc: 'Dedicated support team always available', icon: '🎧' },
             ].map((item, i) => (
-              <div key={i} className={`glass-panel p-8 transition-all duration-500 hover:shadow-[0_20px_40px_rgba(0,0,0,0.2)] hover:-translate-y-2 animate-slideUp cursor-pointer group border-t-4 ${isDarkMode ? 'border-t-indigo-500' : 'border-t-indigo-400'}`} style={{ animationDelay: `${0.2 + i * 0.12}s` }}>
+              <div key={i} className={`p-8 rounded-2xl transition-all duration-300 hover:bg-white/5 border border-transparent hover:border-white/10 group`} style={{ animationDelay: `${0.2 + i * 0.12}s` }}>
                 <div className="text-4xl mb-4 transform transition-transform group-hover:scale-110 inline-block">{item.icon}</div>
-                <h3 className={`text-2xl font-bold mb-3 ${textClass} group-hover:text-indigo-500 transition-colors duration-300`}>{item.title}</h3>
+                <h3 className={`text-2xl font-bold mb-3 ${textClass} group-hover:text-violet-500 transition-colors duration-300`}>{item.title}</h3>
                 <p className={`leading-relaxed ${textMuted}`}>{item.desc}</p>
               </div>
             ))}

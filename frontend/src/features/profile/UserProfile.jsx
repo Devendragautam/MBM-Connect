@@ -443,7 +443,7 @@ export default function UserProfile() {
           {/* Stats Section */}
           <div className="flex justify-center md:justify-start gap-12 py-6 border-t border-white/10">
             <div className="text-center group cursor-pointer hover:scale-110 transition-transform">
-              <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-sky-400 to-blue-600">
+              <p className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-br from-violet-400 to-fuchsia-600">
                 {posts.length}
               </p>
               <p className={`text-sm font-semibold tracking-wide uppercase ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Posts</p>
@@ -463,13 +463,13 @@ export default function UserProfile() {
                 key={tab}
                 onClick={() => setActiveTab(tab)}
                 className={`px-4 py-3 font-semibold transition-all duration-300 relative ${activeTab === tab
-                    ? 'text-sky-500'
-                    : (isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700')
+                  ? 'text-violet-500'
+                  : (isDarkMode ? 'text-slate-400 hover:text-slate-200' : 'text-slate-500 hover:text-slate-700')
                   }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
                 {activeTab === tab && (
-                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-sky-500 rounded-t-full shadow-[0_0_10px_rgba(14,165,233,0.5)]"></div>
+                  <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-violet-500 rounded-t-full shadow-[0_0_10px_rgba(139,92,246,0.5)]"></div>
                 )}
               </button>
             ))}
@@ -556,7 +556,7 @@ export default function UserProfile() {
                         href={profile.website.startsWith('http') ? profile.website : `https://${profile.website}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-sky-500 hover:text-sky-400 font-medium break-all hover:underline transition-colors"
+                        className="text-violet-500 hover:text-violet-400 font-medium break-all hover:underline transition-colors"
                       >
                         {profile.website}
                       </a>

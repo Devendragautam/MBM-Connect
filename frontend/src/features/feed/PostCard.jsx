@@ -98,12 +98,12 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
             <img
               src={post.author?.avatar || 'https://via.placeholder.com/40'}
               alt={post.author?.username}
-              className="w-12 h-12 rounded-full object-cover ring-2 ring-white/30 group-hover:ring-sky-500 transition-all duration-300"
+              className="w-12 h-12 rounded-full object-cover ring-2 ring-white/30 group-hover:ring-violet-500 transition-all duration-300"
             />
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-sky-500/20 to-purple-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-violet-500/20 to-fuchsia-500/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
           </div>
           <div>
-            <p className={`font-bold text-lg ${isDarkMode ? 'text-white' : 'text-slate-900'} group-hover:text-sky-500 transition-colors`}>
+            <p className={`font-bold text-lg ${isDarkMode ? 'text-white' : 'text-slate-900'} group-hover:text-violet-500 transition-colors`}>
               {post.author?.fullName}
             </p>
             <p className={`text-xs font-medium ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
@@ -141,10 +141,10 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
 
       {/* Stats */}
       <div className="px-6 py-3 border-y border-white/10 flex justify-between text-sm font-medium text-slate-500 dark:text-slate-400">
-        <span className="flex items-center gap-1.5 hover:text-sky-500 transition-colors cursor-pointer">
+        <span className="flex items-center gap-1.5 hover:text-violet-500 transition-colors cursor-pointer">
           <span className="text-lg">❤️</span> {likeCount} Likes
         </span>
-        <span className="flex items-center gap-1.5 hover:text-sky-500 transition-colors cursor-pointer">
+        <span className="flex items-center gap-1.5 hover:text-violet-500 transition-colors cursor-pointer">
           <span className="text-lg">💬</span> {comments.length} Comments
         </span>
       </div>
@@ -183,7 +183,7 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
             ) : (
               comments.map((comment) => (
                 <div key={comment._id} className="flex gap-3 animate-fade-in">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-sky-400 to-blue-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-violet-400 to-fuchsia-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
                     {comment.user?.username?.[0]?.toUpperCase() || '?'}
                   </div>
                   <div className="flex-1">
@@ -227,7 +227,7 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
             <button
               type="submit"
               disabled={loading || !commentText.trim()}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-sky-500 text-white hover:bg-sky-600 disabled:opacity-50 disabled:hover:bg-sky-500 transition-colors shadow-lg"
+              className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-violet-500 text-white hover:bg-violet-600 disabled:opacity-50 disabled:hover:bg-violet-500 transition-colors shadow-lg"
             >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />

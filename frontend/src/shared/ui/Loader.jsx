@@ -27,7 +27,7 @@ export const Loader = ({
         {/* Outer Ring */}
         <div className={`${spinnerSize} border-white/20 rounded-full`}></div>
         {/* Spinning Segment */}
-        <div className={`absolute top-0 left-0 ${spinnerSize} border-transparent border-t-sky-500 rounded-full animate-spin`}></div>
+        <div className={`absolute top-0 left-0 ${spinnerSize} border-transparent border-t-violet-500 rounded-full animate-spin`}></div>
         {/* Inner Glow */}
         <div className="absolute inset-0 rounded-full shadow-[0_0_15px_rgba(14,165,233,0.4)] animate-pulse"></div>
       </div>

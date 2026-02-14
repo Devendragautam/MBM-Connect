@@ -131,7 +131,7 @@ export default function CreatePost({ onPostCreated }) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="glass-button flex items-center gap-2 text-sky-500 hover:text-sky-600 hover:px-5 transition-all"
+            className="glass-button flex items-center gap-2 text-violet-500 hover:text-violet-600 hover:px-5 transition-all"
           >
             <span>📷</span>
             <span className="hidden sm:inline">Add Image</span>
