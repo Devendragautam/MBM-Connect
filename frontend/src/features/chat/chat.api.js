@@ -36,6 +36,11 @@ export const chatAPI = {
     const response = await apiClient.post('/chat', { receiverId: userId });
     return response;
   },
+
+  deleteMessage: async (messageId) => {
+    const response = await apiClient.delete(`/chat/message/${messageId}`);
+    return response;
+  },
 };
 
 /**

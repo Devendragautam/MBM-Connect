@@ -7,8 +7,8 @@ import React from 'react';
  * @param {boolean} fullScreen - Full screen loader
  * @param {string} size - 'sm' | 'md' | 'lg'
  */
-export const Loader = ({ 
-  text = 'Loading...', 
+export const Loader = ({
+  text = 'Loading...',
   fullScreen = false,
   size = 'md'
 }) => {

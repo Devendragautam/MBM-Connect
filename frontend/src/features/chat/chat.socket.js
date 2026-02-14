@@ -4,7 +4,10 @@ import { io } from 'socket.io-client';
  * Initialize socket with autoConnect: false
  * Connect manually when user is authenticated
  */
-export const chatSocket = io(import.meta.env.VITE_API_URL, {
+// Setup socket connection URL (remove /api if present)
+const SOCKET_URL = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/api\/?$/, '');
+
+export const chatSocket = io(SOCKET_URL, {
   autoConnect: false,
   reconnection: true,
   reconnectionDelay: 1000,
@@ -31,7 +34,7 @@ chatSocket.on('connect_error', (error) => {
  */
 export const connectSocket = (token) => {
   if (chatSocket.connected) return chatSocket;
-  
+
   chatSocket.auth = { token };
   chatSocket.connect();
   return chatSocket;

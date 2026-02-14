@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { userAPI } from './user.api';
+import { chatAPI } from '../chat/chat.api'; // Import chatAPI
 import { useAuth } from '../auth/AuthContext';
 import { useDarkMode } from '../../shared/DarkModeContext';
 import { resolveImageUrl } from '../../shared/utils/imageUrl';
@@ -35,8 +36,17 @@ export default function ConnectPage() {
     return users.filter(u => (u.fullName || u.username || '').toLowerCase().includes(q) || (u.email || '').toLowerCase().includes(q) || u._id?.includes(q));
   }, [users, query]);
 
-  const startChat = (otherId) => {
-    navigate(`/chat?userId=${otherId}`);
+  const startChat = async (otherId) => {
+    try {
+      const response = await chatAPI.startConversation(otherId);
+      if (response.data.success) {
+        const conversation = response.data.data;
+        navigate('/chat', { state: { conversationId: conversation._id } });
+      }
+    } catch (error) {
+      console.error("Failed to start chat:", error);
+      setError("Failed to start chat session");
+    }
   };
 
   const startVideoCall = (otherId) => {
