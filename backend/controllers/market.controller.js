@@ -47,17 +47,87 @@ export const createItem = asyncHandler(async (req, res) => {
 
 /**
  * ===============================
+ * UPDATE ITEM (OWNER ONLY)
+ * ===============================
+ */
+export const updateItem = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const { title, price, category, description } = req.body;
+
+  const item = await Market.findById(id);
+
+  if (!item) {
+    throw new ApiError(404, "Item not found");
+  }
+
+  if (item.owner.toString() !== req.user._id.toString()) {
+    throw new ApiError(403, "You are not allowed to update this item");
+  }
+
+  let imageUrl = item.image;
+  if (req.files?.image?.[0]?.path) {
+    const uploadResult = await uploadOnCloudinary(req.files.image[0].path);
+    if (uploadResult?.url) {
+      imageUrl = uploadResult.url;
+    }
+  }
+
+  item.title = title || item.title;
+  item.price = price || item.price;
+  item.category = category || item.category;
+  item.description = description || item.description;
+  item.image = imageUrl;
+
+  await item.save();
+
+  res.json(new ApiResponse(200, item, "Item updated successfully"));
+});
+
+/**
+ * ===============================
  * GET ALL ITEMS
  * ===============================
  */
 export const getAllItems = asyncHandler(async (req, res) => {
-  const items = await Market.find()
-    .populate("owner", "username avatar")
-    .sort({ createdAt: -1 });
+  const { page = 1, limit = 9, search, category, minPrice, maxPrice } = req.query;
 
-  res
-    .status(200)
-    .json(new ApiResponse(200, items, "Market items fetched"));
+  const query = {};
+
+  if (search) {
+    query.$or = [
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } }
+    ];
+  }
+
+  if (category) {
+    query.category = { $regex: category, $options: "i" };
+  }
+
+  if (minPrice || maxPrice) {
+    query.price = {};
+    if (minPrice) query.price.$gte = Number(minPrice);
+    if (maxPrice) query.price.$lte = Number(maxPrice);
+  }
+
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const items = await Market.find(query)
+    .populate("owner", "username avatar")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(Number(limit));
+
+  const total = await Market.countDocuments(query);
+
+  res.status(200).json(
+    new ApiResponse(200, {
+      listings: items,
+      totalListings: total,
+      currentPage: Number(page),
+      totalPages: Math.ceil(total / Number(limit)),
+    }, "Market items fetched")
+  );
 });
 
 /**
