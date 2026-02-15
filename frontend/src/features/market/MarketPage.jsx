@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { marketAPI } from './market.api';
 import { Loader, ErrorBox, Button, Input } from '../../shared/ui';
-import { useDarkMode } from '../../shared/DarkModeContext';
 import { useAuth } from '../auth/AuthContext';
 
 const MarketPage = () => {
   const { user, logout } = useAuth();
-  const { isDarkMode } = useDarkMode();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -211,7 +209,7 @@ const MarketPage = () => {
           listings.map((listing) => (
             <div
               key={listing._id}
-              className="card tilt-hover group flex flex-col h-full"
+              className="glass-panel overflow-hidden tilt-hover group flex flex-col h-full bg-dark-800/40 border border-white/5"
             >
               <div className="relative h-56 overflow-hidden rounded-t-2xl">
                 {listing.image ? (
@@ -221,7 +219,7 @@ const MarketPage = () => {
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />
                 ) : (
-                  <div className={`w-full h-full flex items-center justify-center ${isDarkMode ? 'bg-slate-800' : 'bg-slate-200'}`}>
+                  <div className="w-full h-full flex items-center justify-center bg-dark-800">
                     <span className="text-5xl">🛍️</span>
                   </div>
                 )}
@@ -231,7 +229,7 @@ const MarketPage = () => {
                   </span>
                 </div>
                 {/* Overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-60"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-80"></div>
                 <div className="absolute bottom-3 left-3 flex-1 mr-2">
                   <p className="text-2xl font-bold text-white drop-shadow-md">
                     ${listing.price}
@@ -240,23 +238,23 @@ const MarketPage = () => {
               </div>
 
               <div className="p-5 flex-1 flex flex-col">
-                <h3 className={`text-xl font-bold mb-2 line-clamp-1 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+                <h3 className="text-xl font-bold mb-2 line-clamp-1 text-white">
                   {listing.title}
                 </h3>
-                <p className={`text-sm mb-4 line-clamp-2 flex-grow ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                <p className="text-sm mb-4 line-clamp-2 flex-grow text-dark-400">
                   {listing.description}
                 </p>
 
                 <div className="flex justify-between items-center pt-4 border-t border-white/10 mt-auto">
                   <div className="flex items-center gap-2">
                     {listing.owner?.avatar ? (
-                      <img src={listing.owner.avatar} alt="Owner" className="w-8 h-8 rounded-full object-cover ring-2 ring-white/20" />
+                      <img src={listing.owner.avatar} alt="Owner" className="w-8 h-8 rounded-full object-cover ring-2 ring-white/10" />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white/20">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 flex items-center justify-center text-white text-xs font-bold ring-2 ring-white/10">
                         {listing.owner?.username?.[0]?.toUpperCase() || 'U'}
                       </div>
                     )}
-                    <span className={`text-xs font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-500'}`}>
+                    <span className="text-xs font-medium text-dark-300">
                       {listing.owner?.username || 'Unknown'}
                     </span>
                   </div>
@@ -265,7 +263,7 @@ const MarketPage = () => {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={(e) => handleEditListing(listing, e)}
-                        className={`p-2 rounded-full transition-colors ${isDarkMode ? 'hover:bg-slate-700 text-violet-400' : 'hover:bg-violet-50 text-violet-600'}`}
+                        className="p-2 rounded-full transition-colors hover:bg-white/10 text-primary-400"
                         title="Edit"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
@@ -275,7 +273,7 @@ const MarketPage = () => {
                         disabled={deletingId === listing._id}
                         className={`p-2 rounded-full transition-colors ${confirmId === listing._id
                           ? 'bg-red-500 text-white animate-pulse'
-                          : isDarkMode ? 'hover:bg-slate-700 text-red-400' : 'hover:bg-red-50 text-red-600'
+                          : 'hover:bg-white/10 text-red-400'
                           }`}
                         title="Delete"
                       >
@@ -294,24 +292,24 @@ const MarketPage = () => {
         ) : (
           <div className="col-span-full text-center py-20 opacity-60">
             <div className="text-6xl mb-4">🏷️</div>
-            <p className="text-xl">No listings found</p>
+            <p className="text-xl text-dark-300">No listings found</p>
           </div>
         )}
       </div>
     );
-  }, [listings, loading, isDarkMode, user, handleDeleteListing, handleEditListing, confirmId, deletingId]);
+  }, [listings, loading, user, handleDeleteListing, handleEditListing, confirmId, deletingId]);
 
   return (
-    <div className="min-h-screen pt-20 pb-12 transition-colors duration-300">
+    <div className="min-h-screen pt-20 pb-12 transition-colors duration-300 bg-dark-900">
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} animate-pulse`}></div>
-        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} animate-pulse`} style={{ animationDelay: '2s' }}></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-screen filter blur-3xl opacity-20 bg-primary-600 animate-pulse"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-screen filter blur-3xl opacity-20 bg-secondary-600 animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
-          <h1 className="text-4xl font-bold font-display text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-600">Marketplace</h1>
+          <h1 className="text-4xl font-bold font-display text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-secondary-400">Marketplace</h1>
           <Button
             onClick={handleToggleForm}
             className="btn-primary"
@@ -331,8 +329,8 @@ const MarketPage = () => {
         )}
 
         {showCreateForm && (
-          <div className="glass-panel p-6 mb-8 animate-fade-in">
-            <h2 className={`text-2xl font-bold mb-6 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>{editingId ? 'Edit Listing' : 'Create New Listing'}</h2>
+          <div className="glass-panel p-6 mb-8 animate-fade-in border border-white/5">
+            <h2 className="text-2xl font-bold mb-6 text-white">{editingId ? 'Edit Listing' : 'Create New Listing'}</h2>
             <form onSubmit={handleSaveListing} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Input
@@ -363,15 +361,15 @@ const MarketPage = () => {
                     className="input-field pl-8"
                     required
                   />
-                  <span className={`absolute left-3 top-[38px] ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>$</span>
+                  <span className="absolute left-3 top-[38px] text-dark-400">$</span>
                 </div>
               </div>
 
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                <label className="block text-sm font-medium mb-2 text-dark-300">
                   Image
                 </label>
-                <div className={`border-2 border-dashed rounded-xl p-4 text-center ${isDarkMode ? 'border-slate-600 hover:border-slate-500' : 'border-slate-300 hover:border-slate-400'} transition-colors cursor-pointer relative group`} onClick={() => fileInputRef.current?.click()}>
+                <div className="border-2 border-dashed rounded-xl p-4 text-center border-dark-600 hover:border-dark-500 transition-colors cursor-pointer relative group" onClick={() => fileInputRef.current?.click()}>
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -381,7 +379,7 @@ const MarketPage = () => {
                   />
                   <div className="space-y-2">
                     <span className="text-4xl">🖼️</span>
-                    <p className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>Click to upload image</p>
+                    <p className="text-sm text-dark-400">Click to upload image</p>
                   </div>
                 </div>
                 {(formData.imagePreview || formData.existingImage) && (
@@ -405,7 +403,7 @@ const MarketPage = () => {
               </div>
 
               <div>
-                <label className={`block text-sm font-medium mb-2 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                <label className="block text-sm font-medium mb-2 text-dark-300">
                   Description
                 </label>
                 <textarea
@@ -425,10 +423,10 @@ const MarketPage = () => {
           </div>
         )}
 
-        <div className="glass-panel p-6 mb-8 animate-fade-in">
+        <div className="glass-panel p-6 mb-8 animate-fade-in border border-white/5">
           <div className="flex items-center gap-2 mb-4">
             <span className="text-xl">🔍</span>
-            <h3 className={`text-lg font-bold ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>Filters</h3>
+            <h3 className="text-lg font-bold text-white">Filters</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <Input
@@ -478,7 +476,7 @@ const MarketPage = () => {
             >
               Previous
             </Button>
-            <span className={`text-lg font-medium ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+            <span className="text-lg font-medium text-white">
               Page {page} of {totalPages}
             </span>
             <Button

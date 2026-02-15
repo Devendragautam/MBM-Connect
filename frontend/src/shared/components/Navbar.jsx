@@ -5,10 +5,11 @@ import { useDarkMode } from '../DarkModeContext';
 
 const Navbar = () => {
   const { isAuthenticated, user, logout } = useAuth();
+
   React.useEffect(() => {
     console.log('[Navbar] auth user changed', user);
   }, [user]);
-  const { isDarkMode, toggleDarkMode } = useDarkMode();
+
   const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -28,17 +29,17 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className={`border-b border-white/20 dark:border-slate-700/30 sticky top-0 z-50 glass-effect bg-white/10 shadow-lg transition-colors duration-300`}>
+    <nav className="border-b border-dark-700/50 sticky top-0 z-50 glass-effect bg-dark-900/80 backdrop-blur-md shadow-lg transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group animate-fadeInUp">
-            <div className="w-12 h-12 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-2xl flex items-center justify-center shadow-2xl group-hover:shadow-3xl group-hover:scale-105 transition-all duration-300">
+            <div className="w-12 h-12 bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 rounded-xl flex items-center justify-center shadow-glow-sm group-hover:shadow-glow-md group-hover:scale-105 transition-all duration-300">
               <span className="text-lg font-bold text-white">MB</span>
             </div>
             <div className="flex items-center gap-1">
-              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent leading-none">MBM</span>
-              <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent leading-none">CONNECT</span>
+              <span className="text-xl font-bold bg-gradient-to-r from-primary-500 via-primary-400 to-secondary-400 bg-clip-text text-transparent leading-none">MBM</span>
+              <span className="text-xl font-bold text-white leading-none">CONNECT</span>
             </div>
           </Link>
 
@@ -51,7 +52,7 @@ const Navbar = () => {
                     <Link
                       key={link.path}
                       to={link.path}
-                      className={`px-4 py-2 rounded-lg text-slate-700 dark:text-slate-300 font-medium transition-all duration-300 hover:bg-slate-200 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-purple-400 flex items-center gap-1 group animate-fadeInUp hover-scale`}
+                      className="px-4 py-2 rounded-lg text-slate-300 font-medium transition-all duration-300 hover:bg-dark-800 hover:text-primary-400 flex items-center gap-1 group animate-fadeInUp hover-scale"
                       style={{ animationDelay: `${0.05 + index * 0.08}s` }}
                     >
                       <span className="text-lg group-hover:scale-110 transition-transform duration-300">{link.icon}</span>
@@ -61,32 +62,23 @@ const Navbar = () => {
                 </div>
 
                 {/* User Menu */}
-                <div className={`flex items-center gap-4 border-l ${isDarkMode ? 'border-slate-700' : 'border-slate-200'} pl-6 ml-6`}>
+                <div className="flex items-center gap-4 border-l border-dark-700 pl-6 ml-6">
                   <div className="text-right hidden sm:block">
-                    <p className={`text-sm font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{user?.fullName}</p>
-                    <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>{user?.email}</p>
+                    <p className="text-sm font-semibold text-white">{user?.fullName}</p>
                   </div>
                   {user?.avatar && (
-                    <Link to={`/profile/${user._id}`} className="group">
+                    <Link to={`/profile/${user._id}`} className="group flex-shrink-0 leading-none">
                       <img
                         src={user.avatar}
                         alt={user.fullName}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-indigo-500 dark:border-purple-500 cursor-pointer group-hover:scale-110 group-hover:shadow-lg transition-all duration-300"
+                        className="w-10 h-10 rounded-full object-cover aspect-square border-2 border-primary-500 cursor-pointer group-hover:scale-110 group-hover:shadow-glow-sm transition-all duration-300"
                       />
                     </Link>
                   )}
 
-                  {/* Dark Mode Toggle */}
-                  <button
-                    onClick={toggleDarkMode}
-                    className={`p-2 rounded-lg font-semibold transition-all duration-300 hover-scale ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-yellow-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}
-                  >
-                    {isDarkMode ? '☀️' : '🌙'}
-                  </button>
-
                   <button
                     onClick={handleLogout}
-                    className="px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-lg hover:shadow-2xl hover:scale-105 font-semibold transition-all duration-300"
+                    className="px-4 py-2 bg-gradient-to-r from-red-600 to-pink-700 text-white rounded-lg hover:shadow-lg hover:scale-105 font-semibold transition-all duration-300 border border-white/10"
                   >
                     Logout
                   </button>
@@ -94,23 +86,15 @@ const Navbar = () => {
               </>
             ) : (
               <div className="flex items-center gap-3">
-                {/* Dark Mode Toggle */}
-                <button
-                  onClick={toggleDarkMode}
-                  className={`p-2 rounded-lg font-semibold transition-all duration-300 hover-scale ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-yellow-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}
-                >
-                  {isDarkMode ? '☀️' : '🌙'}
-                </button>
-
                 <Link
                   to="/login"
-                  className="px-4 py-2 text-indigo-600 dark:text-purple-400 hover:text-indigo-700 dark:hover:text-purple-300 font-semibold transition-colors hover-scale"
+                  className="px-4 py-2 text-primary-400 hover:text-primary-300 font-semibold transition-colors hover-scale"
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
-                  className="px-6 py-2 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-lg font-semibold hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                  className="px-6 py-2 bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 text-white rounded-lg font-semibold hover:shadow-glow-md hover:scale-105 transition-all duration-300 border border-white/10"
                 >
                   Sign Up
                 </Link>
@@ -121,14 +105,8 @@ const Navbar = () => {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center gap-2">
             <button
-              onClick={toggleDarkMode}
-              className={`p-2 rounded-lg font-semibold transition-all duration-300 hover-scale ${isDarkMode ? 'bg-slate-800 hover:bg-slate-700 text-yellow-400' : 'bg-slate-100 hover:bg-slate-200 text-slate-600'}`}
-            >
-              {isDarkMode ? '☀️' : '🌙'}
-            </button>
-            <button
               onClick={() => setIsOpen(!isOpen)}
-              className={`p-2 rounded-lg transition-all duration-300 ${isDarkMode ? 'hover:bg-slate-800 text-white' : 'hover:bg-slate-100 text-slate-900'}`}
+              className="p-2 rounded-lg transition-all duration-300 hover:bg-dark-800 text-white"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"} />
@@ -139,7 +117,7 @@ const Navbar = () => {
 
         {/* Mobile Navigation */}
         {isOpen && (
-          <div className={`md:hidden border-t border-white/20 dark:border-slate-700/30 bg-white/20 dark:bg-slate-900/40 backdrop-blur-xl pb-4 animate-slideDown shadow-lg`}>
+          <div className="md:hidden border-t border-dark-700/50 bg-dark-900/95 backdrop-blur-xl pb-4 animate-slideDown shadow-lg">
             {isAuthenticated ? (
               <>
                 <div className="py-4 space-y-1">
@@ -148,7 +126,7 @@ const Navbar = () => {
                       key={link.path}
                       to={link.path}
                       onClick={() => setIsOpen(false)}
-                      className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium animate-slideUp ${isDarkMode ? 'text-slate-300 hover:bg-slate-800 hover:text-purple-400' : 'text-slate-700 hover:bg-slate-100 hover:text-indigo-600'}`}
+                      className="block px-4 py-3 rounded-lg transition-all duration-300 font-medium animate-slideUp text-slate-300 hover:bg-dark-800 hover:text-primary-400"
                       style={{ animationDelay: `${0.05 + index * 0.08}s` }}
                     >
                       <span className="mr-2">{link.icon}</span>
@@ -158,30 +136,29 @@ const Navbar = () => {
                   <Link
                     to={`/profile/${user._id}`}
                     onClick={() => setIsOpen(false)}
-                    className={`block px-4 py-3 rounded-lg transition-all duration-300 font-medium animate-slideUp ${isDarkMode ? 'text-slate-300 hover:bg-slate-800 hover:text-purple-400' : 'text-slate-700 hover:bg-slate-100 hover:text-indigo-600'}`}
+                    className="block px-4 py-3 rounded-lg transition-all duration-300 font-medium animate-slideUp text-slate-300 hover:bg-dark-800 hover:text-primary-400"
                   >
                     <span className="mr-2">👤</span>
                     My Profile
                   </Link>
                 </div>
 
-                <div className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-slate-200'} pt-4 px-4`}>
+                <div className="border-t border-dark-700 pt-4 px-4">
                   <div className="flex items-center gap-3 mb-4">
                     {user?.avatar && (
                       <img
                         src={user.avatar}
                         alt={user.fullName}
-                        className="w-10 h-10 rounded-full object-cover border-2 border-indigo-500"
+                        className="w-10 h-10 rounded-full object-cover aspect-square border-2 border-primary-500 flex-shrink-0"
                       />
                     )}
                     <div>
-                      <p className={`font-semibold text-sm ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>{user?.fullName}</p>
-                      <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>{user?.email}</p>
+                      <p className="font-semibold text-sm text-white">{user?.fullName}</p>
                     </div>
                   </div>
                   <button
                     onClick={handleLogout}
-                    className="w-full px-4 py-2 bg-gradient-to-r from-red-500 to-pink-600 text-white rounded-lg hover:shadow-lg font-semibold transition-all"
+                    className="w-full px-4 py-2 bg-gradient-to-r from-red-600 to-pink-700 text-white rounded-lg hover:shadow-lg font-semibold transition-all border border-white/10"
                   >
                     Logout
                   </button>
@@ -192,14 +169,14 @@ const Navbar = () => {
                 <Link
                   to="/login"
                   onClick={() => setIsOpen(false)}
-                  className={`block px-4 py-3 rounded-lg font-semibold transition-all duration-300 animate-slideUp ${isDarkMode ? 'text-purple-400 hover:bg-slate-800' : 'text-indigo-600 hover:bg-slate-100'}`}
+                  className="block px-4 py-3 rounded-lg font-semibold transition-all duration-300 animate-slideUp text-primary-400 hover:bg-dark-800"
                 >
                   Login
                 </Link>
                 <Link
                   to="/signup"
                   onClick={() => setIsOpen(false)}
-                  className="block px-4 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-lg font-semibold text-center animate-slideUp"
+                  className="block px-4 py-3 bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 text-white rounded-lg font-semibold text-center animate-slideUp border border-white/10"
                 >
                   Sign Up
                 </Link>

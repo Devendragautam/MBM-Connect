@@ -2,10 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authAPI } from './auth.api';
 import { useAuth } from './AuthContext';
-import { useDarkMode } from '../../shared/DarkModeContext';
 
 const SignupPage = () => {
-  const { isDarkMode } = useDarkMode();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -97,35 +95,35 @@ const SignupPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center px-4 py-8 relative overflow-hidden bg-dark-900">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} animate-pulse-light`}></div>
-        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} floating-element`}></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-screen filter blur-3xl opacity-20 bg-secondary-600 animate-pulse-light"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-screen filter blur-3xl opacity-20 bg-primary-600 floating-element"></div>
       </div>
 
       <div className="relative w-full max-w-2xl">
         {/* Logo/Brand section */}
         <div className="text-center mb-8 animate-fadeInUp">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 rounded-3xl shadow-2xl mb-4 hover:shadow-3xl hover:scale-105 transition-all duration-500">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 rounded-3xl shadow-glow-md mb-4 hover:shadow-glow-lg hover:scale-105 transition-all duration-500">
             <span className="text-2xl font-bold text-white">MB</span>
           </div>
-          <h1 className={`text-4xl font-bold font-serif mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h1 className="text-4xl font-bold font-serif mb-2 text-white">
             Join MBM Connect
           </h1>
-          <p className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>Create your account and start connecting</p>
+          <p className="text-dark-400">Create your account and start connecting</p>
         </div>
 
         {/* Signup Card */}
         <div className="glass-panel p-8 animate-slideUp">
           {/* Error Message */}
           {error && (
-            <div className={`mb-6 p-4 border-2 rounded-xl flex items-start gap-3 animate-slideDown ${isDarkMode ? 'bg-red-900/20 border-red-700' : 'bg-red-50 border-red-200'}`}>
-              <svg className={`w-5 h-5 flex-shrink-0 mt-0.5 ${isDarkMode ? 'text-red-400' : 'text-red-500'}`} fill="currentColor" viewBox="0 0 20 20">
+            <div className="mb-6 p-4 border-2 rounded-xl flex items-start gap-3 animate-slideDown bg-red-500/10 border-red-500/20">
+              <svg className="w-5 h-5 flex-shrink-0 mt-0.5 text-red-500" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
               </svg>
               <div>
-                <p className={`font-medium text-sm ${isDarkMode ? 'text-red-300' : 'text-red-800'}`}>{error}</p>
+                <p className="font-medium text-sm text-red-400">{error}</p>
               </div>
             </div>
           )}
@@ -135,7 +133,7 @@ const SignupPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Full Name */}
               <div className="group">
-                <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-secondary-700'}`}>
+                <label className="block text-sm font-semibold mb-2 text-dark-300">
                   Full Name
                 </label>
                 <div className="relative">
@@ -144,14 +142,11 @@ const SignupPage = () => {
                     name="fullName"
                     value={formData.fullName}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
-                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                      } focus:outline-none`}
+                    className="w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 bg-dark-800/50 border-dark-700 text-white focus:border-primary-500 focus:outline-none"
                     placeholder="John Doe"
                     required
                   />
-                  <svg className="absolute left-3 top-3.5 w-5 h-5 text-secondary-400 group-focus-within:text-primary-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="absolute left-3 top-3.5 w-5 h-5 text-dark-400 group-focus-within:text-primary-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                   </svg>
                 </div>
@@ -159,7 +154,7 @@ const SignupPage = () => {
 
               {/* Username */}
               <div className="group">
-                <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-secondary-700'}`}>
+                <label className="block text-sm font-semibold mb-2 text-dark-300">
                   Username
                 </label>
                 <div className="relative">
@@ -168,14 +163,11 @@ const SignupPage = () => {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
-                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                      } focus:outline-none`}
+                    className="w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 bg-dark-800/50 border-dark-700 text-white focus:border-primary-500 focus:outline-none"
                     placeholder="johndoe_25"
                     required
                   />
-                  <svg className="absolute left-3 top-3.5 w-5 h-5 text-secondary-400 group-focus-within:text-primary-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="absolute left-3 top-3.5 w-5 h-5 text-dark-400 group-focus-within:text-primary-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v1h8v-1zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-1a6 6 0 00-9-5.197V7a1 1 0 00-2 0v.01a6 6 0 00-6 5.999v1h14z" />
                   </svg>
                 </div>
@@ -184,7 +176,7 @@ const SignupPage = () => {
 
             {/* Email */}
             <div className="group">
-              <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-secondary-700'}`}>
+              <label className="block text-sm font-semibold mb-2 text-dark-300">
                 Email Address
               </label>
               <div className="relative">
@@ -193,14 +185,11 @@ const SignupPage = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
-                    ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                    : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                    } focus:outline-none`}
+                  className="w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 bg-dark-800/50 border-dark-700 text-white focus:border-primary-500 focus:outline-none"
                   placeholder="you@example.com"
                   required
                 />
-                <svg className="absolute left-3 top-3.5 w-5 h-5 text-secondary-400 group-focus-within:text-primary-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="absolute left-3 top-3.5 w-5 h-5 text-dark-400 group-focus-within:text-primary-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                   <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
                 </svg>
@@ -211,7 +200,7 @@ const SignupPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Password */}
               <div className="group">
-                <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-secondary-700'}`}>
+                <label className="block text-sm font-semibold mb-2 text-dark-300">
                   Password
                 </label>
                 <div className="relative">
@@ -220,20 +209,17 @@ const SignupPage = () => {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
-                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                      } focus:outline-none`}
+                    className="w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 bg-dark-800/50 border-dark-700 text-white focus:border-primary-500 focus:outline-none"
                     placeholder="••••••••"
                     required
                   />
-                  <svg className="absolute left-3 top-3.5 w-5 h-5 text-secondary-400 group-focus-within:text-primary-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="absolute left-3 top-3.5 w-5 h-5 text-dark-400 group-focus-within:text-primary-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-3.5 text-secondary-400 hover:text-secondary-600 transition-colors"
+                    className="absolute right-3 top-3.5 text-dark-400 hover:text-dark-200 transition-colors"
                   >
                     {showPassword ? (
                       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -252,7 +238,7 @@ const SignupPage = () => {
 
               {/* Confirm Password */}
               <div className="group">
-                <label className={`block text-sm font-semibold mb-2 ${isDarkMode ? 'text-gray-300' : 'text-secondary-700'}`}>
+                <label className="block text-sm font-semibold mb-2 text-dark-300">
                   Confirm Password
                 </label>
                 <div className="relative">
@@ -261,14 +247,11 @@ const SignupPage = () => {
                     name="confirmPassword"
                     value={formData.confirmPassword}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 ${isDarkMode
-                      ? 'bg-secondary-700 border-secondary-600 text-white focus:border-primary-500'
-                      : 'bg-gray-50 border-gray-300 text-gray-900 focus:border-primary-500'
-                      } focus:outline-none`}
+                    className="w-full px-4 py-2 rounded-lg border-2 transition-colors pl-11 bg-dark-800/50 border-dark-700 text-white focus:border-primary-500 focus:outline-none"
                     placeholder="••••••••"
                     required
                   />
-                  <svg className="absolute left-3 top-3.5 w-5 h-5 text-secondary-400 group-focus-within:text-primary-600 transition-colors" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="absolute left-3 top-3.5 w-5 h-5 text-dark-400 group-focus-within:text-primary-500 transition-colors" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
                   </svg>
                 </div>
@@ -277,25 +260,22 @@ const SignupPage = () => {
 
             {/* Avatar Upload */}
             <div className="group animate-fadeInUp" style={{ animationDelay: '0.65s' }}>
-              <label className={`block text-sm font-semibold mb-3 ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+              <label className="block text-sm font-semibold mb-3 text-dark-300">
                 Profile Avatar
               </label>
-              <label className={`relative flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-2xl cursor-pointer transition-all group-focus-within:border-purple-500 hover-scale ${isDarkMode
-                ? 'border-slate-600 bg-slate-700 hover:bg-slate-600 hover:border-purple-500'
-                : 'border-slate-300 bg-slate-100 hover:bg-slate-200 hover:border-indigo-500'
-                }`}>
+              <label className="relative flex flex-col items-center justify-center w-full p-6 border-2 border-dashed rounded-2xl cursor-pointer transition-all group-focus-within:border-primary-500 hover-scale border-dark-600 bg-dark-700 hover:bg-dark-600 hover:border-primary-500">
                 {avatarPreview ? (
                   <>
-                    <img src={avatarPreview} alt="Avatar preview" className="w-24 h-24 rounded-full object-cover mb-2 border-2 border-indigo-500" />
-                    <p className={`text-sm font-medium ${isDarkMode ? 'text-purple-400' : 'text-indigo-600'}`}>Change image</p>
+                    <img src={avatarPreview} alt="Avatar preview" className="w-24 h-24 rounded-full object-cover mb-2 border-2 border-primary-500" />
+                    <p className="text-sm font-medium text-primary-400">Change image</p>
                   </>
                 ) : (
                   <>
-                    <svg className={`w-8 h-8 mb-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-8 h-8 mb-2 text-dark-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                     </svg>
-                    <p className={`text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>Click to upload or drag and drop</p>
-                    <p className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>PNG, JPG, GIF up to 5MB</p>
+                    <p className="text-sm font-medium text-dark-300">Click to upload or drag and drop</p>
+                    <p className="text-xs text-dark-400">PNG, JPG, GIF up to 5MB</p>
                   </>
                 )}
                 <input
@@ -313,7 +293,7 @@ const SignupPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full px-6 py-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white rounded-lg hover:shadow-2xl hover:scale-105 font-semibold transition-all duration-300 flex items-center justify-center gap-2 animate-fadeInUp group disabled:opacity-50 disabled:cursor-not-allowed mt-8"
+              className="w-full px-6 py-3 bg-gradient-to-r from-primary-600 via-primary-500 to-secondary-500 text-white rounded-lg hover:shadow-glow-md hover:scale-105 font-semibold transition-all duration-300 flex items-center justify-center gap-2 animate-fadeInUp group disabled:opacity-50 disabled:cursor-not-allowed mt-8"
               style={{ animationDelay: '0.75s' }}
             >
               {loading ? (
@@ -337,17 +317,17 @@ const SignupPage = () => {
             {/* Divider */}
             <div className="relative my-6 animate-fadeInUp" style={{ animationDelay: '0.85s' }}>
               <div className="absolute inset-0 flex items-center">
-                <div className={`w-full border-t ${isDarkMode ? 'border-slate-700' : 'border-slate-300'}`}></div>
+                <div className="w-full border-t border-dark-700"></div>
               </div>
               <div className="relative flex justify-center text-sm">
-                <span className={`px-2 ${isDarkMode ? 'bg-slate-800 text-slate-400' : 'bg-white text-slate-600'}`}>Already have an account?</span>
+                <span className="px-2 bg-dark-800 text-dark-400">Already have an account?</span>
               </div>
             </div>
 
             {/* Login Link */}
             <Link
               to="/login"
-              className={`block px-6 py-3 rounded-lg font-semibold text-center transition-all duration-300 flex items-center justify-center gap-2 animate-fadeInUp hover-scale ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-white border border-slate-600' : 'bg-slate-100 hover:bg-slate-200 text-slate-900 border border-slate-300'}`}
+              className="block px-6 py-3 rounded-lg font-semibold text-center transition-all duration-300 flex items-center justify-center gap-2 animate-fadeInUp hover-scale bg-dark-700 hover:bg-dark-600 text-white border border-dark-600"
               style={{ animationDelay: '0.95s' }}
             >
               <span>Sign In</span>
@@ -359,13 +339,13 @@ const SignupPage = () => {
         </div>
 
         {/* Footer text */}
-        <p className={`text-center text-sm mt-6 animate-fadeInUp ${isDarkMode ? 'text-slate-400' : 'text-slate-700'}`} style={{ animationDelay: '1.05s' }}>
+        <p className="text-center text-sm mt-6 animate-fadeInUp text-dark-400" style={{ animationDelay: '1.05s' }}>
           By signing up, you agree to our{' '}
-          <a href="#" className={`font-medium transition-colors ${isDarkMode ? 'text-purple-400 hover:text-purple-300' : 'text-indigo-600 hover:text-indigo-700'}`}>
+          <a href="#" className="font-medium transition-colors text-primary-400 hover:text-primary-300">
             Terms of Service
           </a>
           {' '}and{' '}
-          <a href="#" className={`font-medium transition-colors ${isDarkMode ? 'text-purple-400 hover:text-purple-300' : 'text-indigo-600 hover:text-indigo-700'}`}>
+          <a href="#" className="font-medium transition-colors text-primary-400 hover:text-primary-300">
             Privacy Policy
           </a>
         </p>

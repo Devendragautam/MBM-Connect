@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Poppins:wght@600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -18,56 +18,43 @@ body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #f5f3ff;
-  background-image:
-    radial-gradient(at 0% 0%, hsla(270, 50%, 10%, 1) 0, transparent 50%),
-    radial-gradient(at 50% 0%, hsla(290, 40%, 30%, 1) 0, transparent 50%),
-    radial-gradient(at 100% 0%, hsla(320, 50%, 30%, 1) 0, transparent 50%);
-  background-size: 400% 400%;
-  animation: meshMove 20s ease-in-out infinite;
+  background-color: #0B0C10;
+  /* Void Black */
+  color: #C5C6C7;
+  /* Light Gray Text */
+  overflow-x: hidden;
+  position: relative;
 }
 
-/* Light mode mesh gradient overlay */
+/* Subtle background grid */
 body::before {
-  content: '';
+  content: "";
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   background-image:
-    radial-gradient(at 40% 20%, hsla(280, 100%, 74%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, hsla(260, 100%, 56%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(320, 100%, 93%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, hsla(300, 100%, 76%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, hsla(270, 100%, 77%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, hsla(290, 100%, 70%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 0%, hsla(310, 100%, 76%, 1) 0px, transparent 50%);
-  filter: blur(60px);
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
   z-index: -1;
-  opacity: 0.8;
-  animation: pulse 10s ease-in-out infinite alternate;
+  pointer-events: none;
 }
 
-/* Dark mode page background override */
-.dark body {
-  background-color: #0f172a;
-  background-size: 400% 400%;
-  animation: meshMove 20s ease-in-out infinite;
-  color: #e6eef8;
-}
-
-.dark body::before {
-  background-image:
-    radial-gradient(at 40% 20%, hsla(270, 50%, 20%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, hsla(290, 60%, 20%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(310, 40%, 15%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 50%, hsla(280, 45%, 18%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, hsla(260, 50%, 20%, 1) 0px, transparent 50%),
-    radial-gradient(at 80% 100%, hsla(300, 56%, 22%, 1) 0px, transparent 50%),
-    radial-gradient(at 0% 0%, hsla(250, 50%, 18%, 1) 0px, transparent 50%);
-  opacity: 0.6;
-  animation: pulse 12s ease-in-out infinite alternate;
+/* Glow effect in top right */
+body::after {
+  content: "";
+  position: fixed;
+  top: -200px;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(99, 102, 241, 0.08) 0%, rgba(0, 0, 0, 0) 70%);
+  /* Primary Indigo Glow */
+  border-radius: 50%;
+  z-index: -1;
+  pointer-events: none;
 }
 
 ::-webkit-scrollbar {
@@ -76,211 +63,97 @@ body::before {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(4px);
+  background: #0B0C10;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(139, 92, 246, 0.4);
+  background: #445266;
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(139, 92, 246, 0.7);
+  background: #6366f1;
+  /* Primary Indigo */
 }
 
-/* ========== Form Styles ========== */
+/* ========== Component Styles ========== */
 @layer components {
+
+  /* Cards: Solid, Dark, Subtle Border, Glow on Hover */
+  .card {
+    @apply bg-dark-900 border border-dark-800 rounded-xl transition-all duration-300 relative overflow-hidden;
+  }
+
+  .card:hover {
+    @apply border-primary-500/30 shadow-glow-sm;
+  }
+
+  /* Glass/Surface Panel */
+  .glass-panel {
+    @apply bg-dark-800/50 backdrop-blur-md border border-dark-700/50 rounded-xl shadow-lg;
+  }
+
+  /* Inputs: High Contrast, Clean */
   .input-field {
-    @apply w-full px-4 py-3 border border-white/20 rounded-xl outline-none transition-all duration-300 bg-white/30 backdrop-blur-md text-slate-900 placeholder-slate-500 focus:bg-white/50 focus:border-violet-500/50;
+    @apply w-full px-4 py-3 bg-dark-950 border border-dark-700 rounded-lg outline-none text-white placeholder-dark-500 transition-all duration-300 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50;
   }
 
-  .input-field:focus {
-    box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
-  }
-
-  .dark .input-field {
-    @apply bg-slate-900/40 border-slate-700/50 text-white placeholder-slate-400 focus:bg-slate-900/60;
-  }
-
+  /* Buttons */
   .btn-primary {
-    @apply w-full px-6 py-3 bg-gradient-to-r from-violet-600/90 to-fuchsia-600/90 backdrop-blur-sm text-white font-semibold rounded-xl transition-all duration-300 border border-white/10;
-  }
-
-  .btn-primary:hover {
-    box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
-    transform: scale(1.02);
-  }
-
-  .btn-primary:active {
-    transform: scale(0.98);
+    @apply w-full px-6 py-3 bg-gradient-primary text-white font-semibold rounded-lg shadow-lg transition-all duration-300 hover:shadow-glow-md hover:scale-[1.02] active:scale-[0.98];
   }
 
   .btn-secondary {
-    @apply w-full px-6 py-3 border border-violet-500/30 bg-white/10 backdrop-blur-md text-violet-600 font-semibold rounded-xl transition-all duration-300 hover:bg-violet-50/50 active:scale-95;
+    @apply w-full px-6 py-3 bg-dark-800 border border-dark-700 text-white font-semibold rounded-lg transition-all duration-300 hover:bg-dark-700 hover:border-dark-600 active:scale-[0.98];
   }
 
   .glass-button {
-    @apply relative overflow-hidden bg-white/10 backdrop-blur-md border border-white/20 text-white font-semibold py-2 px-4 rounded-xl transition-all duration-300 hover:bg-white/20 active:scale-95;
+    @apply px-4 py-2 bg-dark-800/80 border border-dark-700 text-white rounded-lg transition-all duration-300 hover:bg-dark-700 hover:border-primary-500/50;
   }
 
-  .glass-button:hover {
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
-  }
-
-  .card {
-    @apply bg-white/40 backdrop-blur-xl border border-white/40 rounded-2xl shadow-lg transition-all duration-300 hover:shadow-xl hover:bg-white/50;
-  }
-
-  .dark .card {
-    @apply bg-slate-900/40 border-slate-700/40 hover:bg-slate-900/50 shadow-black/20;
-  }
-
-
-
-  .glass-panel {
-    @apply bg-white/20 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg;
-  }
-
-  .dark .glass-panel {
-    @apply bg-slate-900/40 border-slate-700/30 shadow-black/30;
-  }
-
-  .tilt-hover {
-    @apply transition-transform duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02];
-  }
-
-  .badge {
-    @apply inline-block px-3 py-1 bg-violet-100 text-violet-700 rounded-full text-sm font-medium;
-  }
-
-  .text-gradient {
-    @apply bg-gradient-to-r from-violet-600 to-fuchsia-500 bg-clip-text text-transparent;
-  }
-
-  .text-gradient-gold {
-    @apply bg-gradient-to-r from-amber-400 via-orange-500 to-yellow-500 bg-clip-text text-transparent;
-  }
-
-  .text-gradient-gold {
-    @apply bg-gradient-to-r from-amber-400 via-orange-500 to-yellow-500 bg-clip-text text-transparent;
-  }
-
+  /* Typography */
   .section-title {
-    @apply text-4xl font-bold font-display text-slate-900 mb-4;
+    @apply text-3xl md:text-4xl font-bold font-display text-white mb-2 tracking-tight;
   }
 
   .section-subtitle {
-    @apply text-lg text-slate-600 mb-8;
+    @apply text-base text-dark-400 mb-8 font-light;
   }
 
-  .search-input {
-    @apply w-full px-4 py-3 border-2 border-slate-200 rounded-2xl outline-none transition-all duration-300 bg-white text-slate-900 placeholder-slate-400 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100;
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-primary-400 to-secondary-400;
   }
 
-  /* Dark variant for search */
-  .dark .search-input {
-    @apply bg-slate-900 text-slate-100 border-slate-700 placeholder-slate-500 focus:ring-indigo-900;
-  }
-
+  /* Specific Components */
   .member-card {
-    @apply p-4 rounded-2xl bg-white/40 backdrop-blur-md border border-white/40 shadow-md transition-transform duration-300 ease-out;
+    @apply p-4 rounded-xl bg-dark-800/40 border border-dark-700/50 flex items-center justify-between transition-all duration-300 hover:bg-dark-800 hover:border-primary-500/30 hover:-translate-y-1;
     min-height: 88px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .member-card:hover {
-    transform: translateY(-6px) scale(1.02);
-    box-shadow: 0 18px 44px rgba(2, 6, 23, 0.16);
-  }
-
-  /* Dark variant for member card */
-  .dark .member-card {
-    @apply bg-slate-900/40 border-slate-700/40 shadow-black/20 hover:bg-slate-900/60;
   }
 
   .avatar-lg {
-    @apply w-16 h-16 rounded-full object-cover ring-2 ring-indigo-400;
+    @apply w-16 h-16 rounded-full object-cover ring-2 ring-dark-700 group-hover:ring-primary-500 transition-all duration-300;
   }
 
-  .dark .avatar-lg {
-    @apply ring-2 ring-indigo-500;
+  .badge {
+    @apply px-2 py-0.5 rounded text-xs font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20;
   }
 
-  .action-btn {
-    @apply px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 shadow-sm;
+  /* Search */
+  .search-input {
+    @apply w-full px-4 py-3 bg-dark-900 border border-dark-700 rounded-xl text-white placeholder-dark-500 focus:border-primary-500 focus:ring-1 focus:ring-primary-500/50 transition-all duration-300;
   }
 
-  .btn-chat {
-    @apply bg-violet-600 text-white hover:bg-violet-700;
+  /* Animations */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out forwards;
   }
 
-  .btn-video {
-    @apply bg-fuchsia-600 text-white hover:bg-fuchsia-700;
-  }
-
-  /* Compact layout helpers */
-  .member-left {
-    @apply flex items-center gap-4 flex-none;
-  }
-
-  .member-name {
-    @apply text-lg font-semibold;
-  }
-
-  .member-actions {
-    @apply flex flex-col items-end gap-2;
-    min-width: 120px;
-  }
-
-  .profile-link {
-    @apply text-xs text-slate-500 dark:text-slate-300 underline cursor-pointer;
-  }
-
-  .dark .btn-chat {
-    @apply bg-indigo-500 hover:bg-indigo-600;
-  }
-
-  .dark .btn-video {
-    @apply bg-emerald-500 hover:bg-emerald-600;
-  }
-
-  .animated-gradient-text {
-    background: linear-gradient(90deg, #8b5cf6, #c026d3, #ec4899, #f97316);
-    background-size: 200% 200%;
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    animation: gradientMove 4.5s linear infinite;
-    font-family: 'Poppins', 'Inter', sans-serif;
+  .animate-slide-up {
+    animation: slideUp 0.6s ease-out forwards;
   }
 }
 
-/* ========== Animations ========== */
-.animate-fade-in {
-  animation: fadeIn 0.5s ease-in-out;
-}
-
-@keyframes gradientMove {
-  0% {
-    background-position: 0% 50%;
-  }
-
-  50% {
-    background-position: 100% 50%;
-  }
-
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-slide-up {
-  animation: slideUp 0.5s ease-out;
-}
-
+/* Keyframes */
 @keyframes fadeIn {
   from {
     opacity: 0;

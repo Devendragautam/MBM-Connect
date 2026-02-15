@@ -1,12 +1,13 @@
-/* Global Animation Library */
-/* Professional enterprise-grade animations used across the entire application */
+/* Luminous Void Animation Library */
+/* Professional enterprise-grade animations optimized for dark interfaces */
 
 /* ============= FADE ANIMATIONS ============= */
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(30px);
+    transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -17,6 +18,7 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
@@ -25,8 +27,9 @@
 @keyframes fadeInDown {
   from {
     opacity: 0;
-    transform: translateY(-30px);
+    transform: translateY(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -37,8 +40,9 @@
 @keyframes slideInLeft {
   from {
     opacity: 0;
-    transform: translateX(-60px);
+    transform: translateX(-30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -48,33 +52,12 @@
 @keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(60px);
+    transform: translateX(30px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideDown {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -84,217 +67,163 @@
     opacity: 0;
     transform: scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
   }
 }
 
-@keyframes scaleUp {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.05);
-  }
-}
-
-/* ============= FLOATING/FLOAT ANIMATIONS ============= */
+/* ============= FLOATING/BREATHING ANIMATIONS ============= */
 @keyframes subtleFloat {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
-    transform: translateY(-5px);
+    transform: translateY(-6px);
   }
 }
 
 @keyframes floatSlow {
-  0%, 100% {
+
+  0%,
+  100% {
     transform: translateY(0px);
   }
+
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-12px);
   }
 }
 
-/* ============= PULSE ANIMATIONS ============= */
-@keyframes pulse {
-  0%, 100% {
+/* ============= GLOW & PULSE ANIMATIONS ============= */
+@keyframes pulseGlow {
+
+  0%,
+  100% {
     opacity: 1;
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
   }
+
   50% {
-    opacity: 0.5;
+    opacity: 0.8;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
   }
 }
 
 @keyframes pulseLight {
-  0%, 100% {
-    opacity: 1;
+
+  0%,
+  100% {
+    opacity: 0.3;
   }
+
   50% {
-    opacity: 0.7;
+    opacity: 0.6;
   }
 }
 
-/* ============= GLOW ANIMATIONS ============= */
-@keyframes glow {
-  0%, 100% {
-    box-shadow: 0 0 5px rgba(99, 102, 241, 0.3);
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
   }
-  50% {
-    box-shadow: 0 0 20px rgba(99, 102, 241, 0.6);
+
+  100% {
+    background-position: 1000px 0;
   }
 }
 
-/* ============= BOUNCE ANIMATIONS ============= */
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-/* ============= SPIN ANIMATIONS ============= */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ============= UTILITY ANIMATION CLASSES ============= */
+/* ============= UTILITY CLASSES ============= */
 
 .animate-fadeInUp {
-  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-fadeIn {
-  animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.5s ease-out forwards;
 }
 
 .animate-fadeInDown {
-  animation: fadeInDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slideInLeft {
-  animation: slideInLeft 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideInLeft 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slideInRight {
-  animation: slideInRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-slideUp {
-  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-.animate-slideDown {
-  animation: slideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-scaleIn {
-  animation: scaleIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: scaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-subtleFloat {
-  animation: subtleFloat 3s ease-in-out infinite;
+  animation: subtleFloat 4s ease-in-out infinite;
 }
 
 .animate-floatSlow {
-  animation: floatSlow 4s ease-in-out infinite;
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 3s ease-in-out infinite;
 }
 
 .animate-pulse-light {
   animation: pulseLight 4s ease-in-out infinite;
 }
 
-.animate-glow {
-  animation: glow 2s ease-in-out infinite;
+/* Staggered delays for lists */
+.delay-100 {
+  animation-delay: 100ms;
 }
 
-.animate-bounce {
-  animation: bounce 1s ease-in-out infinite;
+.delay-200 {
+  animation-delay: 200ms;
 }
 
-.animate-spin {
-  animation: spin 1s linear infinite;
+.delay-300 {
+  animation-delay: 300ms;
 }
 
-/* ============= DURATION UTILITIES ============= */
-.animation-duration-300 { animation-duration: 0.3s !important; }
-.animation-duration-500 { animation-duration: 0.5s !important; }
-.animation-duration-700 { animation-duration: 0.7s !important; }
-.animation-duration-1000 { animation-duration: 1s !important; }
-
-/* ============= DELAY UTILITIES ============= */
-.animation-delay-100 { animation-delay: 0.1s !important; }
-.animation-delay-200 { animation-delay: 0.2s !important; }
-.animation-delay-300 { animation-delay: 0.3s !important; }
-.animation-delay-400 { animation-delay: 0.4s !important; }
-.animation-delay-500 { animation-delay: 0.5s !important; }
-.animation-delay-600 { animation-delay: 0.6s !important; }
-.animation-delay-700 { animation-delay: 0.7s !important; }
-.animation-delay-800 { animation-delay: 0.8s !important; }
-.animation-delay-1000 { animation-delay: 1s !important; }
-.animation-delay-2000 { animation-delay: 2s !important; }
-
-/* ============= FILL MODE UTILITIES ============= */
-.animation-fill-both { animation-fill-mode: both !important; }
-.animation-fill-forward { animation-fill-mode: forwards !important; }
-.animation-fill-backward { animation-fill-mode: backwards !important; }
-
-/* ============= TRANSITION UTILITIES ============= */
-.transition-smooth {
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.delay-500 {
+  animation-delay: 500ms;
 }
 
-.transition-smooth-lg {
-  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.transition-smooth-xl {
-  transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* ============= HOVER SCALE UTILITIES ============= */
+/* Hover Effects */
 .hover-scale {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .hover-scale:hover {
   transform: scale(1.02);
 }
 
-.hover-scale-md {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.hover-glow {
+  transition: all 0.3s ease;
 }
 
-.hover-scale-md:hover {
-  transform: scale(1.05);
+.hover-glow:hover {
+  box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);
 }
 
-.hover-scale-lg {
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+.hover-lift {
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
 }
 
-.hover-scale-lg:hover {
-  transform: scale(1.08);
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
 }
 
-/* ============= FLOATING BACKGROUND ELEMENTS ============= */
-.floating-element {
-  animation: subtleFloat 4s ease-in-out infinite;
-}
-
-.floating-element-slow {
-  animation: floatSlow 5s ease-in-out infinite;
-}
-
-.floating-element-very-slow {
-  animation: floatSlow 7s ease-in-out infinite;
+/* Loaders */
+.loader-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(to right, #1e293b 4%, #334155 25%, #1e293b 36%);
+  background-size: 1000px 100%;
 }

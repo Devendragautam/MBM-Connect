@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
-import { useDarkMode } from '../../shared/DarkModeContext';
 import { useAuth } from '../auth/AuthContext';
 import { feedAPI } from './feed.api';
 import { Loader, ErrorBox } from '../../shared/ui';
@@ -7,7 +6,6 @@ import CreatePost from './CreatePost';
 import PostCard from './PostCard';
 
 export default function Feed() {
-  const { isDarkMode } = useDarkMode();
   const { user } = useAuth();
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -132,22 +130,22 @@ export default function Feed() {
     return (
       <div className="text-center py-16 animate-fadeInUp">
         <div className="text-6xl mb-4">📝</div>
-        <p className={`text-2xl font-bold mb-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+        <p className="text-2xl font-bold mb-2 text-white">
           No posts yet
         </p>
-        <p className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>
+        <p className="text-dark-400">
           {user ? 'Be the first to create a post!' : 'Log in to see posts from your followers'}
         </p>
       </div>
     );
-  }, [posts, loading, hasMore, handlePostDeleted, user, isDarkMode, lastPostElementRef]);
+  }, [posts, loading, hasMore, handlePostDeleted, user, lastPostElementRef]);
 
   return (
-    <div className="min-h-screen pt-24 pb-12 transition-colors duration-300">
+    <div className="min-h-screen pt-24 pb-12 transition-colors duration-300 bg-dark-900">
       {/* Animated background elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
-        <div className={`absolute top-20 right-10 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} animate-pulse`}></div>
-        <div className={`absolute bottom-20 left-10 w-96 h-96 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} animate-pulse`} style={{ animationDelay: '2s' }}></div>
+        <div className="absolute top-20 right-10 w-96 h-96 rounded-full mix-blend-screen filter blur-3xl opacity-10 bg-primary-600 animate-pulse"></div>
+        <div className="absolute bottom-20 left-10 w-96 h-96 rounded-full mix-blend-screen filter blur-3xl opacity-10 bg-secondary-600 animate-pulse" style={{ animationDelay: '2s' }}></div>
       </div>
 
       <div className="max-w-2xl mx-auto px-4 relative z-10 space-y-8">

@@ -1,9 +1,7 @@
 import { useState, useRef } from 'react';
-import { useDarkMode } from '../../shared/DarkModeContext';
 import { feedAPI } from './feed.api';
 
 export default function CreatePost({ onPostCreated }) {
-  const { isDarkMode } = useDarkMode();
   const [content, setContent] = useState('');
   const [image, setImage] = useState(null);
   const [preview, setPreview] = useState(null);
@@ -65,9 +63,9 @@ export default function CreatePost({ onPostCreated }) {
   };
 
   return (
-    <div className="glass-panel p-6 mb-8 animate-fade-in border-t-4 border-indigo-500/50">
+    <div className="glass-panel p-6 mb-8 animate-fade-in border-t-4 border-primary-500/50 bg-dark-800/40">
       {/* Header */}
-      <h3 className={`text-xl font-bold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-slate-800'}`}>
+      <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-white">
         <span className="text-2xl animate-bounce">✨</span> Create a Post
       </h3>
 
@@ -88,10 +86,9 @@ export default function CreatePost({ onPostCreated }) {
             placeholder="What's on your mind?"
             maxLength={1000}
             rows={3}
-            className="input-field min-h-[120px] resize-none"
+            className="input-field min-h-[120px] resize-none bg-dark-950 border-dark-700 focus:border-primary-500 text-white placeholder-dark-500"
           />
-          <div className={`absolute bottom-3 right-3 text-xs font-medium transition-colors duration-300 ${content.length > 900 ? 'text-red-500' : isDarkMode ? 'text-slate-400' : 'text-slate-500'
-            }`}>
+          <div className={`absolute bottom-3 right-3 text-xs font-medium transition-colors duration-300 ${content.length > 900 ? 'text-red-500' : 'text-slate-400'}`}>
             {content.length} / 1000
           </div>
         </div>
@@ -131,7 +128,7 @@ export default function CreatePost({ onPostCreated }) {
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="glass-button flex items-center gap-2 text-violet-500 hover:text-violet-600 hover:px-5 transition-all"
+            className="glass-button flex items-center gap-2 text-primary-400 hover:text-primary-300 hover:px-5 transition-all"
           >
             <span>📷</span>
             <span className="hidden sm:inline">Add Image</span>
@@ -142,7 +139,7 @@ export default function CreatePost({ onPostCreated }) {
           <button
             type="submit"
             disabled={loading}
-            className="btn-primary min-w-[120px] flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(14,165,233,0.3)] hover:shadow-[0_0_25px_rgba(14,165,233,0.5)]"
+            className="btn-primary min-w-[120px] flex items-center justify-center gap-2 shadow-glow-sm hover:shadow-glow-md"
           >
             {loading ? (
               <>

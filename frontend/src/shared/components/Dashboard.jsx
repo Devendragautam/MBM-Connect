@@ -3,12 +3,10 @@ import { useAuth } from '../../features/auth/AuthContext';
 import { feedAPI } from '../../features/feed/feed.api';
 import { marketAPI } from '../../features/market/market.api';
 import { storiesAPI } from '../../features/stories/stories.api';
-import { useDarkMode } from '../DarkModeContext';
 import { Loader, ErrorBox } from '../ui';
 
 const Dashboard = () => {
   const { user } = useAuth();
-  const { isDarkMode } = useDarkMode();
   const [feeds, setFeeds] = useState([]);
   const [listings, setListings] = useState([]);
   const [stories, setStories] = useState([]);
@@ -62,10 +60,6 @@ const Dashboard = () => {
     }
   };
 
-  const bgClass = isDarkMode
-    ? 'bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800'
-    : 'bg-gradient-to-br from-slate-50 via-white to-blue-50';
-
   if (loading) {
     return (
       <Loader text="Loading dashboard..." fullScreen />
@@ -73,20 +67,20 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="min-h-screen py-16 relative overflow-hidden">
+    <div className="min-h-screen py-16 relative overflow-hidden bg-dark-900">
       {/* Animated background elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className={`absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-indigo-600' : 'bg-indigo-300'} animate-pulse-light`}></div>
-        <div className={`absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-multiply filter blur-3xl opacity-20 ${isDarkMode ? 'bg-purple-600' : 'bg-purple-300'} floating-element-slow`}></div>
+        <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full mix-blend-screen filter blur-3xl opacity-20 bg-primary-600 animate-pulse-light"></div>
+        <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full mix-blend-screen filter blur-3xl opacity-20 bg-secondary-600 floating-element-slow"></div>
       </div>
 
       <div className="max-w-7xl mx-auto px-4 relative z-10">
         {/* Welcome Section */}
         <div className="mb-12 animate-fadeInUp">
-          <h1 className={`text-5xl font-bold mb-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent`}>
+          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-primary-500 via-purple-500 to-secondary-500 bg-clip-text text-transparent">
             Welcome, {user?.fullName || user?.email}!
           </h1>
-          <p className={isDarkMode ? 'text-slate-400' : 'text-slate-600'}>Here's what's happening on MBM Connect today</p>
+          <p className="text-dark-400">Here's what's happening on MBM Connect today</p>
         </div>
 
         {error && (
@@ -99,46 +93,46 @@ const Dashboard = () => {
         {/* Stats Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           {/* Total Listings */}
-          <div className={`glass-effect p-8 flex items-center justify-between animate-fadeInUp hover-scale-md`} style={{ animationDelay: '0.1s' }}>
+          <div className="glass-panel p-8 flex items-center justify-between animate-fadeInUp hover-scale-md" style={{ animationDelay: '0.1s' }}>
             <div>
-              <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              <p className="text-sm font-semibold mb-1 text-dark-400">
                 Total Listings
               </p>
-              <p className="text-4xl font-bold bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+              <p className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
                 {listings.length}
               </p>
             </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center text-2xl">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl flex items-center justify-center text-2xl border border-cyan-500/30">
               🛍️
             </div>
           </div>
 
           {/* Stories Count */}
-          <div className={`glass-effect p-8 flex items-center justify-between animate-fadeInUp hover-scale-md`} style={{ animationDelay: '0.2s' }}>
+          <div className="glass-panel p-8 flex items-center justify-between animate-fadeInUp hover-scale-md" style={{ animationDelay: '0.2s' }}>
             <div>
-              <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              <p className="text-sm font-semibold mb-1 text-dark-400">
                 Stories
               </p>
-              <p className="text-4xl font-bold bg-gradient-to-r from-green-500 to-emerald-500 bg-clip-text text-transparent">
+              <p className="text-4xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
                 {stories.length}
               </p>
             </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center text-2xl">
+            <div className="w-16 h-16 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl flex items-center justify-center text-2xl border border-emerald-500/30">
               📖
             </div>
           </div>
 
           {/* Feed Posts */}
-          <div className={`glass-effect p-8 flex items-center justify-between animate-fadeInUp hover-scale-md`} style={{ animationDelay: '0.3s' }}>
+          <div className="glass-panel p-8 flex items-center justify-between animate-fadeInUp hover-scale-md" style={{ animationDelay: '0.3s' }}>
             <div>
-              <p className={`text-sm font-semibold mb-1 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              <p className="text-sm font-semibold mb-1 text-dark-400">
                 Feed Posts
               </p>
-              <p className="text-4xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+              <p className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 {feeds.length}
               </p>
             </div>
-            <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl flex items-center justify-center text-2xl">
+            <div className="w-16 h-16 bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl flex items-center justify-center text-2xl border border-purple-500/30">
               📰
             </div>
           </div>
@@ -146,7 +140,7 @@ const Dashboard = () => {
 
         {/* Listings Section */}
         <div className="mb-12">
-          <h2 className={`text-3xl font-bold mb-6 animate-fadeInUp ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+          <h2 className="text-3xl font-bold mb-6 animate-fadeInUp text-white">
             Latest Listings
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -154,28 +148,31 @@ const Dashboard = () => {
               listings.map((listing, index) => (
                 <div
                   key={listing._id}
-                  className={`rounded-3xl shadow-2xl overflow-hidden backdrop-blur-xl border animate-fadeInUp hover-scale-md transition-all duration-300 ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white/90 border-slate-200'}`}
+                  className="card group animate-fadeInUp hover:shadow-glow-md"
                   style={{ animationDelay: `${0.1 + index * 0.1}s` }}
                 >
                   {listing.image && (
-                    <img
-                      src={listing.image}
-                      alt={listing.title}
-                      className="w-full h-48 object-cover"
-                    />
+                    <div className="relative overflow-hidden h-48">
+                      <img
+                        src={listing.image}
+                        alt={listing.title}
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-dark-900 to-transparent opacity-60"></div>
+                    </div>
                   )}
-                  <div className="p-6">
-                    <h3 className={`text-lg font-bold mb-2 line-clamp-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                  <div className="p-6 relative">
+                    <h3 className="text-lg font-bold mb-2 line-clamp-2 text-white group-hover:text-primary-400 transition-colors">
                       {listing.title}
                     </h3>
-                    <p className={`text-sm mb-4 line-clamp-2 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                    <p className="text-sm mb-4 line-clamp-2 text-dark-300">
                       {listing.description?.substring(0, 100)}...
                     </p>
                     <div className="flex items-center justify-between">
-                      <p className="font-bold text-xl bg-gradient-to-r from-blue-500 to-cyan-500 bg-clip-text text-transparent">
+                      <p className="font-bold text-xl text-primary-400">
                         ${listing.price}
                       </p>
-                      <button className="px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-lg transition-all">
+                      <button className="px-4 py-2 bg-dark-800 hover:bg-dark-700 text-white rounded-lg transition-all border border-dark-700 group-hover:border-primary-500/50">
                         View
                       </button>
                     </div>
@@ -183,7 +180,7 @@ const Dashboard = () => {
                 </div>
               ))
             ) : (
-              <p className={`col-span-3 text-center py-8 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              <p className="col-span-3 text-center py-8 text-dark-400">
                 No listings available
               </p>
             )}
@@ -192,7 +189,7 @@ const Dashboard = () => {
 
         {/* Stories Section */}
         <div className="mb-12">
-          <h2 className={`text-3xl font-bold mb-6 animate-fadeInUp ${isDarkMode ? 'text-white' : 'text-slate-900'}`} style={{ animationDelay: '0.2s' }}>
+          <h2 className="text-3xl font-bold mb-6 animate-fadeInUp text-white" style={{ animationDelay: '0.2s' }}>
             Recent Stories
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -200,27 +197,27 @@ const Dashboard = () => {
               stories.map((story, index) => (
                 <div
                   key={story._id}
-                  className={`rounded-3xl shadow-2xl backdrop-blur-xl border p-6 animate-fadeInUp hover-scale-md transition-all duration-300 ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white/90 border-slate-200'}`}
+                  className="glass-panel p-6 animate-fadeInUp hover-scale-md"
                   style={{ animationDelay: `${0.3 + index * 0.1}s` }}
                 >
-                  <h3 className={`text-lg font-bold mb-3 line-clamp-2 ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                  <h3 className="text-lg font-bold mb-3 line-clamp-2 text-white">
                     {story.title}
                   </h3>
-                  <p className={`text-sm mb-4 line-clamp-3 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                  <p className="text-sm mb-4 line-clamp-3 text-dark-300">
                     {story.content?.substring(0, 100)}...
                   </p>
-                  <div className="flex items-center justify-between pt-4 border-t border-slate-200 dark:border-slate-700">
-                    <span className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-slate-500'}`}>
+                  <div className="flex items-center justify-between pt-4 border-t border-dark-700">
+                    <span className="text-xs text-dark-400">
                       By {story.author?.fullName || 'Anonymous'}
                     </span>
-                    <button className="text-indigo-600 dark:text-purple-400 hover:text-indigo-700 dark:hover:text-purple-300 text-sm font-medium">
+                    <button className="text-primary-400 hover:text-primary-300 text-sm font-medium">
                       Read →
                     </button>
                   </div>
                 </div>
               ))
             ) : (
-              <p className={`col-span-3 text-center py-8 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              <p className="col-span-3 text-center py-8 text-dark-400">
                 No stories available
               </p>
             )}
@@ -229,7 +226,7 @@ const Dashboard = () => {
 
         {/* Feed Section */}
         <div>
-          <h2 className={`text-3xl font-bold mb-6 animate-fadeInUp ${isDarkMode ? 'text-white' : 'text-slate-900'}`} style={{ animationDelay: '0.4s' }}>
+          <h2 className="text-3xl font-bold mb-6 animate-fadeInUp text-white" style={{ animationDelay: '0.4s' }}>
             Home Feed
           </h2>
           <div className="space-y-4">
@@ -237,29 +234,29 @@ const Dashboard = () => {
               feeds.map((post, index) => (
                 <div
                   key={post._id}
-                  className={`rounded-3xl shadow-2xl backdrop-blur-xl border p-6 animate-fadeInUp transition-all duration-300 hover:shadow-3xl ${isDarkMode ? 'bg-slate-800/80 border-slate-700' : 'bg-white/90 border-slate-200'}`}
+                  className="glass-panel p-6 animate-fadeInUp hover:shadow-glow-sm"
                   style={{ animationDelay: `${0.5 + index * 0.08}s` }}
                 >
                   <div className="flex items-start gap-4 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 text-lg">
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary-500 to-secondary-600 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 text-lg shadow-lg">
                       {post.author?.fullName?.charAt(0) || 'U'}
                     </div>
                     <div className="flex-1">
-                      <h4 className={`font-semibold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>
+                      <h4 className="font-semibold text-white">
                         {post.author?.fullName || 'Anonymous'}
                       </h4>
-                      <p className={`text-sm ${isDarkMode ? 'text-slate-500' : 'text-slate-500'}`}>
+                      <p className="text-sm text-dark-400">
                         {new Date(post.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <p className={`leading-relaxed ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}`}>
+                  <p className="leading-relaxed text-dark-200">
                     {post.content}
                   </p>
                 </div>
               ))
             ) : (
-              <p className={`text-center py-8 ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+              <p className="text-center py-8 text-dark-400">
                 No posts in your feed
               </p>
             )}
