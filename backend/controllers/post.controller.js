@@ -6,16 +6,21 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 // Create a new post
+/**
+ * Create a new post
+ * Handles optional image upload
+ */
 export const createPost = asyncHandler(async (req, res) => {
   const { content } = req.body;
-  
+
+  // 1️⃣ Validate content
   if (!content || content.trim().length === 0) {
     throw new ApiError(400, "Post content is required");
   }
 
   let imageUrl = null;
-  
-  // Handle image upload if file is provided
+
+  // 2️⃣ Upload image if provided
   if (req.file) {
     try {
       const uploadResult = await uploadOnCloudinary(req.file.path);
@@ -27,12 +32,14 @@ export const createPost = asyncHandler(async (req, res) => {
     }
   }
 
+  // 3️⃣ Create post in DB
   const post = await Post.create({
     author: req.user._id,
     content: content.trim(),
     image: imageUrl,
   });
 
+  // 4️⃣ Populate author details for response
   const populatedPost = await post.populate("author", "username avatar fullName");
 
   return res

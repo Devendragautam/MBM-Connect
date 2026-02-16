@@ -2,6 +2,11 @@ import { Server } from "socket.io";
 
 let io;
 
+/**
+ * Initialize Socket.io server
+ * @param {object} server - HTTP server instance
+ * @returns {object} - Socket.io instance
+ */
 export const initSocket = (server) => {
     io = new Server(server, {
         cors: {
@@ -17,6 +22,7 @@ export const initSocket = (server) => {
     io.on("connection", (socket) => {
         console.log("✅ User connected:", socket.id);
 
+        // User joins room with their ID
         socket.on("join_room", (userId) => {
             if (userId) {
                 socket.join(userId);
@@ -32,6 +38,7 @@ export const initSocket = (server) => {
         socket.on("typing:start", (data) => {
             const { receiverId, conversationId, senderId } = data;
             if (receiverId) {
+                // Emit typing status to the receiver
                 io.to(receiverId).emit("typing:start", { conversationId, senderId });
             }
         });
@@ -59,18 +66,18 @@ export const initSocket = (server) => {
                 io.to(socketId).emit("call:accepted", signal);
             }
         });
-        
+
         socket.on("end:call", (data) => {
-             const { to } = data;
-             if (onlineUsers.has(to)) {
+            const { to } = data;
+            if (onlineUsers.has(to)) {
                 const socketId = onlineUsers.get(to);
                 io.to(socketId).emit("call:ended");
-             }
+            }
         });
 
         socket.on("disconnect", () => {
             console.log("❌ User disconnected:", socket.id);
-            // Find userId
+            // Find userId associated with the disconnected socket
             let disconnectedUserId = null;
             for (const [userId, socketId] of onlineUsers.entries()) {
                 if (socketId === socket.id) {
@@ -79,6 +86,7 @@ export const initSocket = (server) => {
                     break;
                 }
             }
+            // Notify others that user is offline
             if (disconnectedUserId) {
                 io.emit("user:offline", disconnectedUserId);
             }
@@ -88,6 +96,10 @@ export const initSocket = (server) => {
     return io;
 };
 
+/**
+ * Get Socket.io instance (for use in other files)
+ * @returns {object} - Socket.io instance
+ */
 export const getIO = () => {
     if (!io) {
         throw new Error("Socket.io not initialized!");

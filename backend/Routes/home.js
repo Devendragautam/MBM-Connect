@@ -5,6 +5,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 
 const router = express.Router();
 
+// Route: Get all posts for logic-free home feed (example)
+// GET /api/home
 router.get("/", asyncHandler(async (req, res) => {
   const posts = await Post.find()
     .populate("author", "username avatar")

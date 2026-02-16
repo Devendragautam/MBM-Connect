@@ -21,13 +21,20 @@ const cookieOptions = {
 };
 
 /* ================= REGISTER ================= */
+/**
+ * Register a new user
+ * Handles file uploads for avatar and cover image
+ * Creates user in DB and returns access/refresh tokens
+ */
 export const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, username, password } = req.body;
 
+  // 1️⃣ Validation: Ensure all fields are present
   if (!fullName || !email || !username || !password) {
     throw new ApiError(400, "All fields are required");
   }
 
+  // 2️⃣ Check for existing user by email or username
   const existingUser = await User.findOne({
     $or: [
       { email: email.toLowerCase() },
@@ -39,6 +46,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User already exists");
   }
 
+  // 3️⃣ Handle Avatar Upload (Required)
   const avatarPath = req.files?.avatar?.[0]?.path;
   if (!avatarPath) {
     throw new ApiError(400, "Avatar is required");
@@ -49,14 +57,17 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Avatar upload failed");
   }
 
+  // 4️⃣ Handle Cover Image Upload (Optional)
   let coverImageUrl = "";
   if (req.files?.coverImage?.[0]?.path) {
     const coverUpload = await uploadOnCloudinary(req.files.coverImage[0].path);
     if (coverUpload?.url) coverImageUrl = coverUpload.url;
   }
 
+  // 5️⃣ Hash Password
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  // 6️⃣ Create User in Database
   const user = await User.create({
     fullName,
     email: email.toLowerCase(),
@@ -66,17 +77,18 @@ export const registerUser = asyncHandler(async (req, res) => {
     coverImage: coverImageUrl,
   });
 
+  // 7️⃣ Generate Tokens
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
 
   user.refreshToken = refreshToken;
   await user.save();
 
+  // 8️⃣ Return Response (excluding sensitive fields)
   const safeUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
 
-  // ✅ FIXED RESPONSE (token + user)
   res
     .cookie("accessToken", accessToken, cookieOptions)
     .cookie("refreshToken", refreshToken, cookieOptions)

@@ -1,13 +1,18 @@
 import mongoose from "mongoose";
 
+/* =========================================
+   ✅ POST SCHEMA
+   ========================================= */
 const postSchema = new mongoose.Schema(
   {
+    // User who created the post
     author: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
 
+    // Text content of the post
     content: {
       type: String,
       required: true,
@@ -15,10 +20,12 @@ const postSchema = new mongoose.Schema(
       maxlength: 1000,
     },
 
+    // Optional image URL for the post
     image: {
       type: String,
     },
 
+    // Array of users who liked the post
     likes: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -26,6 +33,7 @@ const postSchema = new mongoose.Schema(
       },
     ],
 
+    // Array of comments on the post
     comments: [
       {
         user: {

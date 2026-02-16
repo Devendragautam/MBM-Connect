@@ -9,22 +9,30 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js";
  * CREATE STORY (with optional image)
  * ===============================
  */
+/**
+ * ===============================
+ * CREATE STORY
+ * Creates a new story, which is essentially a post but treated differently in UI
+ * ===============================
+ */
 export const createStory = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
+  // 1️⃣ Validation
   if (!content) {
     throw new ApiError(400, "Story content is required");
   }
 
   let imageUrl = "";
 
-  // image comes from multer
+  // 2️⃣ Handle optional image upload
   const imagePath = req.files?.image?.[0]?.path;
   if (imagePath) {
     const upload = await uploadOnCloudinary(imagePath);
     imageUrl = upload?.url || "";
   }
 
+  // 3️⃣ Create Story (Post)
   const post = await Post.create({
     author: req.user._id,
     content,

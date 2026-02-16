@@ -1,5 +1,9 @@
 // utils/apiError.js
 
+/**
+ * Custom Error class for API errors
+ * Extends the built-in Error class to include status codes and error details
+ */
 class ApiError extends Error {
   constructor(statusCode, message = "Something went wrong", errors = [], stack = "") {
     super(message);

@@ -23,6 +23,12 @@ export const getUserProfile = asyncHandler(async (req, res) => {
 });
 
 /* ================= UPDATE PROFILE ================= */
+/* ================= UPDATE PROFILE ================= */
+/**
+ * Update user profile
+ * Handles text fields and file uploads (avatar, coverImage)
+ * Enforces ownership and permission checks
+ */
 export const updateUserProfile = asyncHandler(async (req, res) => {
   if (!req.user?._id) {
     throw new ApiError(401, "Unauthorized");
@@ -33,7 +39,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
   const { fullName, bio, website } = req.body;
   const updateData = {};
 
-  // Owners can update profile fields; others may only update avatar/cover images
+  // 1️⃣ Permission Check: Owners can update all fields; others restricted
   if (isOwner) {
     if (fullName) updateData.fullName = fullName;
     if (bio) updateData.bio = bio;
@@ -45,6 +51,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     }
   }
 
+  // 2️⃣ Handle Avatar Upload
   if (req.files?.avatar?.[0]) {
     const avatar = await uploadOnCloudinary(req.files.avatar[0].path);
     if (!avatar?.url) {
@@ -53,6 +60,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     updateData.avatar = avatar.url;
   }
 
+  // 3️⃣ Handle Cover Image Upload
   if (req.files?.coverImage?.[0]) {
     const cover = await uploadOnCloudinary(req.files.coverImage[0].path);
     if (!cover?.url) {
@@ -65,6 +73,7 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
     throw new ApiError(400, "No data provided to update");
   }
 
+  // 4️⃣ Update User in DB
   const updatedUser = await User.findByIdAndUpdate(
     req.params.id,
     { $set: updateData },

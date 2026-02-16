@@ -16,15 +16,19 @@ export const getConversations = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, conversations, "Conversations fetched"));
 });
 
+/**
+ * Create or retrieve an existing conversation
+ */
 export const createConversation = asyncHandler(async (req, res) => {
   const { receiverId } = req.body;
   if (!receiverId) throw new ApiError(400, "Receiver ID is required");
 
-  // Check if conversation already exists
+  // 1️⃣ Check if conversation already exists between these two users
   let conversation = await Conversation.findOne({
     members: { $all: [req.user._id, receiverId] },
   });
 
+  // 2️⃣ If not, create a new one
   if (!conversation) {
     conversation = await Conversation.create({
       members: [req.user._id, receiverId],

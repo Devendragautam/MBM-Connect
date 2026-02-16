@@ -1,5 +1,9 @@
 // utils/ApiResponse.js
 
+/**
+ * Standardized API Response class
+ * Used to wrap successful responses with a consistent structure
+ */
 class ApiResponse {
   constructor(statusCode, data, message = "Success") {
     this.statusCode = statusCode;

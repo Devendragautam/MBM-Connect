@@ -6,6 +6,7 @@ import cors from "cors";
 import mongoose from "mongoose";
 import cookieParser from "cookie-parser";
 
+// Route imports
 import homeRoutes from "./Routes/home.js";
 import authRoutes from "./Routes/auth.js";
 import userRoutes from "./Routes/user.js";
@@ -18,21 +19,36 @@ import { ApiError } from "./utils/apiError.js";
 
 const app = express();
 
-/* ✅ Middlewares */
+/* =========================================
+   ✅ MIDDLEWARES SETUP
+   ========================================= */
+// Parse cookies from requests
 app.use(cookieParser());
+
+// Enable Cross-Origin Resource Sharing (CORS) with credentials
 app.use(cors({ origin: true, credentials: true }));
+
+// Parse incoming JSON payloads
 app.use(express.json());
+
+// Parse URL-encoded data with extended option (allows nested objects)
 app.use(express.urlencoded({ extended: true }));
 
-/* ✅ DB */
+/* =========================================
+   ✅ DATABASE CONNECTION
+   ========================================= */
 try {
   await mongoose.connect(process.env.MONGODB_URI);
   console.log("✅ MongoDB connected");
 } catch (error) {
   console.error("❌ MongoDB connection error:", error.message);
+  // Ideally, process should exit or handle retry logic here
 }
 
-/* ✅ Routes */
+/* =========================================
+   ✅ ROUTE MOUNTING
+   ========================================= */
+// Mount routes to specific paths
 app.use("/api/auth", authRoutes);
 app.use("/api/home", homeRoutes);
 app.use("/api/user", userRoutes);
@@ -41,12 +57,16 @@ app.use("/api/stories", storiesRoutes);
 app.use("/api/market", marketRoutes);
 app.use("/api/chat", chatRoutes);
 
-/* ✅ 404 handler */
+/* =========================================
+   ✅ ERROR HANDLING
+   ========================================= */
+
+// 404 Handler for undefined routes
 app.use((req, res, next) => {
   next(new ApiError(404, `Route not found: ${req.originalUrl}`));
 });
 
-/* ✅ Global error handler (catches all async errors) */
+// Global Error Handler
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
@@ -54,11 +74,13 @@ app.use((err, req, res, next) => {
 
   console.error(`[Error] ${statusCode}: ${message}`);
 
+  // Send formatted error response
   res.status(statusCode).json({
     success: false,
     statusCode,
     message,
     errors,
+    // Include stack trace only in development environment
     ...(process.env.NODE_ENV === "development" && { stack: err.stack }),
   });
 });
@@ -66,12 +88,16 @@ app.use((err, req, res, next) => {
 import http from "http";
 import { initSocket } from "./utils/socket.js";
 
-/* ✅ Start server */
+/* =========================================
+   ✅ SERVER INITIALIZATION
+   ========================================= */
+// Create HTTP server instance
 const server = http.createServer(app);
 
-// Initialize Socket.io
+// Initialize Socket.io with the server
 initSocket(server);
 
+// Start listening on the defined port
 server.listen(process.env.PORT, () => {
   console.log(`🚀 Server running on ${process.env.PORT}`);
 });

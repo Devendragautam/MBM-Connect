@@ -2,13 +2,16 @@ import { validationResult, body, param, query } from "express-validator";
 import { ApiError } from "../utils/apiError.js";
 
 /* ================= VALIDATION ERROR HANDLER ================= */
+// Middleware to check for validation errors from express-validator
 export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    // If errors exist, format them into a single string
     const errorMessages = errors
       .array()
       .map((err) => `${err.param}: ${err.msg}`)
       .join(", ");
+    // Throw an ApiError with 400 Bad Request status
     throw new ApiError(400, errorMessages);
   }
   next();

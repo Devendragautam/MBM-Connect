@@ -25,6 +25,7 @@ const storage = multer.diskStorage({
 
   filename: (req, file, cb) => {
     // how file name will look
+    // Use timestamp + sanitized name to ensure uniqueness
     const safeName = sanitizeFileName(file.originalname);
     cb(null, `${Date.now()}-${safeName}`);
   },
@@ -52,7 +53,7 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-// 6️⃣ Create multer upload instance
+// 6️⃣ Create multer upload instance with configuration
 export const upload = multer({
   storage,
   fileFilter,

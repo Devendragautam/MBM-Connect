@@ -4,12 +4,18 @@ import dotenv from "dotenv"; // ✅ Import dotenv
 
 dotenv.config(); // ✅ Load environment variables before using them
 
+// Cloudinary configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+/**
+ * Uploads a file to Cloudinary
+ * @param {string} localFilePath - Path to the local file
+ * @returns {object|null} - Cloudinary response object or null on failure
+ */
 const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) return null;
@@ -25,7 +31,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     console.log("✅ File uploaded to Cloudinary:", response.url);
     return response;
   } catch (error) {
-    // Remove temp file if upload fails
+    // Remove temp file if upload fails to prevent server clutter
     if (fs.existsSync(localFilePath)) {
       fs.unlinkSync(localFilePath);
     }

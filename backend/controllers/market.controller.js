@@ -10,15 +10,21 @@ import { uploadOnCloudinary } from "../utils/cloudinary.js"; // ✅ ADDED
  * - supports optional image upload
  * ===============================
  */
+/**
+ * ===============================
+ * CREATE ITEM
+ * Creates a new market listing with optional image
+ * ===============================
+ */
 export const createItem = asyncHandler(async (req, res) => {
   const { title, price, category, description } = req.body;
 
-  // ❌ Validation
+  // 1️⃣ Validation: Check required fields
   if (!title || !price || !category) {
     throw new ApiError(400, "Title, price, and category are required");
   }
 
-  // ✅ NEW: handle image upload (optional)
+  // 2️⃣ Handle optional image upload
   let imageUrl = "";
   const imagePath = req.files?.image?.[0]?.path;
 
@@ -30,14 +36,14 @@ export const createItem = asyncHandler(async (req, res) => {
     imageUrl = uploadResult.url;
   }
 
-  // ✅ Create market item
+  // 3️⃣ Create market item in DB
   const item = await Market.create({
     owner: req.user._id,
     title,
     price,
     category,
     description,
-    image: imageUrl, // ✅ NEW FIELD
+    image: imageUrl,
   });
 
   res
