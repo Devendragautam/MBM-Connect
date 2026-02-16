@@ -109,6 +109,34 @@ export const onUserOnline = (callback) => {
   chatSocket.on('user:online', callback);
 };
 
+
 export const onUserOffline = (callback) => {
   chatSocket.on('user:offline', callback);
+};
+
+/**
+ * Video Call events
+ */
+export const subscribeToCall = (callback) => {
+  chatSocket.on('call:user', callback);
+};
+
+export const subscribeToCallAccepted = (callback) => {
+  chatSocket.on('call:accepted', callback);
+};
+
+export const subscribeToCallEnded = (callback) => {
+  chatSocket.on('call:ended', callback);
+};
+
+export const callUser = (data) => {
+  chatSocket.emit('call:user', data);
+};
+
+export const answerCall = (data) => {
+  chatSocket.emit('answer:call', data);
+};
+
+export const endCall = (data) => {
+  chatSocket.emit('end:call', data);
 };

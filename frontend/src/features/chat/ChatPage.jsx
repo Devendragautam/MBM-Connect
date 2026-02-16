@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { chatAPI, isMessageFromMe } from './chat.api';
+import VideoCall from './VideoCall';
+import { Video } from 'lucide-react';
 import {
   connectSocket,
   disconnectSocket,
@@ -11,6 +13,7 @@ import {
   onStopTyping,
   onUserOnline,
   onUserOffline,
+  subscribeToCall,
   emitTyping,
   emitStopTyping,
 } from './chat.socket';
@@ -65,6 +68,11 @@ const ChatPageContent = () => {
   const [isConnected, setIsConnected] = useState(chatSocket.connected);
   const [isTyping, setIsTyping] = useState(false); // Other user is typing
   const [onlineUsers, setOnlineUsers] = useState(new Set()); // Track online users
+
+  // Video Call State
+  const [isVideoCallActive, setIsVideoCallActive] = useState(false);
+  const [incomingCallData, setIncomingCallData] = useState(null);
+
   const messagesEndRef = useRef(null); // For auto-scroll
   const typingTimeoutRef = useRef(null); // For debounce
 
@@ -89,6 +97,10 @@ const ChatPageContent = () => {
           const target = loadedConversations.find(c => c._id === location.state.conversationId);
           if (target) {
             setSelectedConversation(target);
+            // Check if video call was requested
+            if (location.state.startVideoCall) {
+              setIsVideoCallActive(true);
+            }
           } else {
             if (loadedConversations.length > 0) setSelectedConversation(loadedConversations[0]);
           }
@@ -200,12 +212,19 @@ const ChatPageContent = () => {
       });
     };
 
+    // Video Call Handler
+    const handleIncomingCall = (data) => {
+      setIncomingCallData(data);
+      setIsVideoCallActive(true);
+    };
+
     onNewMessage(handleNewMessage);
     onMessageDeleted(handleMessageDeleted);
     onTyping(handleTypingStart);
     onStopTyping(handleTypingStop);
     onUserOnline(handleUserOnline);
     onUserOffline(handleUserOffline);
+    subscribeToCall(handleIncomingCall);
 
     const onConnect = () => setIsConnected(true);
     const onDisconnect = () => setIsConnected(false);
@@ -220,10 +239,16 @@ const ChatPageContent = () => {
       chatSocket.off("typing:stop", handleTypingStop);
       chatSocket.off("user:online", handleUserOnline);
       chatSocket.off("user:offline", handleUserOffline);
+      chatSocket.off("call:user", handleIncomingCall);
       chatSocket.off('connect', onConnect);
       chatSocket.off('disconnect', onDisconnect);
     };
   }, [user, selectedConversation]);
+
+  const handleEndCall = useCallback(() => {
+    setIsVideoCallActive(false);
+    setIncomingCallData(null);
+  }, []);
 
   // Memoize send message handler
   const handleSendMessage = useCallback(async (e) => {
@@ -417,7 +442,27 @@ const ChatPageContent = () => {
         </div>
 
         {/* Chat Area */}
-        <div className="flex-1 flex flex-col bg-dark-900/30">
+        <div className="flex-1 flex flex-col bg-dark-900/30 relative">
+
+          {/* Video Call Overlay */}
+          {isVideoCallActive && (
+            <div className="absolute inset-0 z-50 bg-dark-900/95 flex flex-col backdrop-blur-md">
+              <VideoCall
+                currentUser={user}
+                activeConversation={selectedConversation}
+                socketId={chatSocket.id}
+                incomingCallData={incomingCallData}
+                onCallEnded={handleEndCall}
+              />
+              <button
+                onClick={handleEndCall}
+                className="absolute top-4 right-4 bg-red-600/80 hover:bg-red-600 text-white px-4 py-2 rounded-full font-medium transition-colors border border-red-500/50"
+              >
+                Close Call Overlay
+              </button>
+            </div>
+          )}
+
           {selectedConversation ? (
             <>
               {/* Header */}
@@ -442,6 +487,15 @@ const ChatPageContent = () => {
                     )}
                   </div>
                 </div>
+
+                {/* Video Call Button */}
+                <button
+                  onClick={() => setIsVideoCallActive(true)}
+                  className="p-3 bg-primary-600/20 hover:bg-primary-600/40 text-primary-200 rounded-full transition-colors flex items-center justify-center border border-primary-500/30"
+                  title="Start Video Call"
+                >
+                  <Video size={20} />
+                </button>
               </div>
 
               {/* Messages */}

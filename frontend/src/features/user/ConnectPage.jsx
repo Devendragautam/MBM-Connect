@@ -47,9 +47,22 @@ export default function ConnectPage() {
     }
   };
 
-  const startVideoCall = (otherId) => {
-    const target = users.find(u => u._id === otherId);
-    alert(`(placeholder) Start video call with ${target?.fullName || otherId}`);
+  const startVideoCall = async (otherId) => {
+    try {
+      const response = await chatAPI.startConversation(otherId);
+      if (response.data.success) {
+        const conversation = response.data.data;
+        navigate('/chat', {
+          state: {
+            conversationId: conversation._id,
+            startVideoCall: true
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Failed to start video call:", error);
+      setError("Failed to initiate video call");
+    }
   };
 
   if (loading) return <div className="p-8 text-dark-400">Loading members...</div>;
