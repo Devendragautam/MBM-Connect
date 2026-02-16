@@ -53,22 +53,32 @@ export const initSocket = (server) => {
         // Video Call Events
         socket.on("call:user", (data) => {
             const { userToCall, signalData, from, name } = data;
+            console.log(`📞 Call initiated from ${from} to ${userToCall}`);
             if (onlineUsers.has(userToCall)) {
                 const socketId = onlineUsers.get(userToCall);
                 io.to(socketId).emit("call:user", { signal: signalData, from, name });
+                console.log(`✅ Signal sent to ${userToCall} (socket: ${socketId})`);
+            } else {
+                console.warn(`⚠️ User ${userToCall} is offline, cannot forward call signal`);
+                // Optionally emit 'user:offline' back to caller
             }
         });
 
         socket.on("answer:call", (data) => {
             const { to, signal } = data;
+            console.log(`📞 Call answered by ${socket.id} for ${to}`);
             if (onlineUsers.has(to)) {
                 const socketId = onlineUsers.get(to);
                 io.to(socketId).emit("call:accepted", signal);
+                console.log(`✅ Answer signal sent to ${to} (socket: ${socketId})`);
+            } else {
+                console.warn(`⚠️ Caller ${to} is offline, cannot forward answer signal`);
             }
         });
 
         socket.on("end:call", (data) => {
             const { to } = data;
+            console.log(`📞 Call ended for ${to}`);
             if (onlineUsers.has(to)) {
                 const socketId = onlineUsers.get(to);
                 io.to(socketId).emit("call:ended");

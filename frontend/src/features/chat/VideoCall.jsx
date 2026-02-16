@@ -7,11 +7,11 @@ import {
     subscribeToCallAccepted,
     subscribeToCallEnded
 } from './chat.socket';
-import { Phone, PhoneOff, Video, Mic, MicOff, VideoOff } from 'lucide-react';
+import { Phone, PhoneOff, Video, Mic, MicOff, VideoOff, Wifi, WifiOff } from 'lucide-react';
 
 const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData, onCallEnded }) => {
     const [stream, setStream] = useState(null);
-    const [remoteStream, setRemoteStream] = useState(null); // [NEW] State for remote stream
+    const [remoteStream, setRemoteStream] = useState(null);
     const [receivingCall, setReceivingCall] = useState(false);
     const [caller, setCaller] = useState("");
     const [callerSignal, setCallerSignal] = useState(null);
@@ -19,6 +19,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
     const [callEnded, setCallEnded] = useState(false);
     const [name, setName] = useState("");
     const [isCalling, setIsCalling] = useState(false);
+    const [connectionStatus, setConnectionStatus] = useState('idle'); // idle, connecting, connected, failed
 
     const [micOn, setMicOn] = useState(true);
     const [videoOn, setVideoOn] = useState(true);
@@ -29,6 +30,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
 
     useEffect(() => {
         if (incomingCallData) {
+            console.log("Creating incoming call UI", incomingCallData);
             setReceivingCall(true);
             setCaller(incomingCallData.from);
             setName(incomingCallData.name);
@@ -36,76 +38,104 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         }
     }, [incomingCallData]);
 
-    // [NEW] Effect to attach local stream
+    // [NEW] Effect to handle incoming ICE candidates (trickle ICE) for the Answerer
+    useEffect(() => {
+        if (incomingCallData && connectionRef.current) {
+            console.log("Received new signal data (likely ICE candidate) while connected/connecting");
+            // If we are already connected or connecting, this is likely an ICE candidate
+            if (incomingCallData.signal) {
+                connectionRef.current.signal(incomingCallData.signal);
+            }
+        }
+    }, [incomingCallData]);
+
+    // Effect to attach local stream
     useEffect(() => {
         if (stream && myVideo.current) {
+            console.log("Attaching local stream to video element");
             myVideo.current.srcObject = stream;
         }
     }, [stream]);
 
-    // [NEW] Effect to attach remote stream
+    // Effect to attach remote stream
     useEffect(() => {
         if (remoteStream && userVideo.current) {
+            console.log("Attaching remote stream to video element");
             userVideo.current.srcObject = remoteStream;
+        } else if (userVideo.current && !remoteStream) {
+            userVideo.current.srcObject = null;
         }
-    }, [remoteStream]);
-
+    }, [remoteStream, callAccepted]);
 
     useEffect(() => {
         const handleCallEnded = () => {
-            setCallEnded(true);
-            setCallAccepted(false);
-            setReceivingCall(false);
-            setIsCalling(false);
-            if (connectionRef.current) connectionRef.current.destroy();
-            // Stop all tracks
-            if (stream) {
-                stream.getTracks().forEach(track => track.stop());
-                setStream(null);
-            }
-            setRemoteStream(null); // [NEW] Clear remote stream
-            if (onCallEnded) onCallEnded();
+            console.log("Call ended event received");
+            cleanupCall();
         };
 
         subscribeToCallEnded(handleCallEnded);
 
         return () => {
-            // cleanup
+            // cleanup on unmount if needed, but usually handled by leaveCall or parent unmounting
         };
-    }, [stream, onCallEnded]);
+    }, []);
+
+    const cleanupCall = () => {
+        setCallEnded(true);
+        setCallAccepted(false);
+        setReceivingCall(false);
+        setIsCalling(false);
+        setConnectionStatus('idle');
+
+        if (connectionRef.current) {
+            console.log("Destroying connection in cleanup");
+            connectionRef.current.destroy();
+            connectionRef.current = null;
+        }
+
+        // Stop all tracks
+        if (stream) {
+            console.log("Stopping local tracks");
+            stream.getTracks().forEach(track => track.stop());
+            setStream(null);
+        }
+
+        setRemoteStream(null);
+        if (onCallEnded) onCallEnded();
+    };
 
     const startStream = async () => {
         try {
+            console.log("Requesting local stream...");
             const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            console.log("Local stream obtained", currentStream.id);
             setStream(currentStream);
-            // Removed direct assignment to myVideo.current here, handled by useEffect
             return currentStream;
         } catch (err) {
             console.error("Failed to get local stream", err);
-            alert("Could not access camera/microphone");
+            alert("Could not access camera/microphone. Please check permissions.");
+            setConnectionStatus('failed');
             return null;
         }
     };
 
     const initiateCall = async (userToCallId) => {
         console.log("Initiating call to:", userToCallId);
+        setConnectionStatus('connecting');
         const currentStream = await startStream();
-        if (!currentStream) {
-            console.error("Failed to get local stream, cannot initiate call");
-            return;
-        }
+        if (!currentStream) return;
 
         setIsCalling(true);
         setCallEnded(false);
 
         const peer = new Peer({
             initiator: true,
-            trickle: false,
             stream: currentStream,
         });
 
+        // Event Listeners for Peer
         peer.on('signal', (data) => {
-            console.log("Peer signal generated (initiator)", data);
+            console.log("Peer (Initiator) generated signal:", data);
             callUser({
                 userToCall: userToCallId,
                 signalData: data,
@@ -115,20 +145,29 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         });
 
         peer.on('stream', (remoteStream) => {
-            console.log("Peer received remote stream (initiator)");
-            setRemoteStream(remoteStream); // [NEW] Use state
+            console.log("Peer (Initiator) received remote stream:", remoteStream.id);
+            setRemoteStream(remoteStream);
+            setConnectionStatus('connected');
         });
 
         peer.on('connect', () => {
-            console.log("Peer connected (initiator)");
+            console.log("Peer (Initiator) connected fully");
+            setConnectionStatus('connected');
         });
 
         peer.on('error', (err) => {
-            console.error("Peer error (initiator):", err);
+            console.error("Peer (Initiator) error:", err);
+            setConnectionStatus('failed');
+            alert(`Call failed: ${err.message || 'Connection error'}`);
+        });
+
+        peer.on('close', () => {
+            console.log("Peer (Initiator) connection closed");
+            cleanupCall();
         });
 
         subscribeToCallAccepted((signal) => {
-            console.log("Call accepted signal received");
+            console.log("Call accepted signal received by Initiator");
             setCallAccepted(true);
             peer.signal(signal);
         });
@@ -138,50 +177,51 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
 
     const answerCallHandler = async () => {
         console.log("Answering call from:", caller);
+        setConnectionStatus('connecting');
         const currentStream = await startStream();
-        if (!currentStream) {
-            console.error("Failed to get local stream, cannot answer call");
-            return;
-        }
+        if (!currentStream) return;
 
         setCallAccepted(true);
 
         const peer = new Peer({
             initiator: false,
-            trickle: false,
             stream: currentStream,
         });
 
         peer.on('signal', (data) => {
-            console.log("Peer signal generated (answerer)", data);
+            console.log("Peer (Answerer) generated signal:", data);
             answerCall({ signal: data, to: caller });
         });
 
         peer.on('stream', (remoteStream) => {
-            console.log("Peer received remote stream (answerer)");
-            setRemoteStream(remoteStream); // [NEW] Use state
+            console.log("Peer (Answerer) received remote stream:", remoteStream.id);
+            setRemoteStream(remoteStream);
+            setConnectionStatus('connected');
         });
 
         peer.on('connect', () => {
-            console.log("Peer connected (answerer)");
+            console.log("Peer (Answerer) connected fully");
+            setConnectionStatus('connected');
         });
 
         peer.on('error', (err) => {
-            console.error("Peer error (answerer):", err);
+            console.error("Peer (Answerer) error:", err);
+            setConnectionStatus('failed');
+            alert(`Call failed: ${err.message || 'Connection error'}`);
         });
 
-        console.log("Signaling peer with caller signal:", callerSignal);
+        peer.on('close', () => {
+            console.log("Peer (Answerer) connection closed");
+            cleanupCall();
+        });
+
+        console.log("Signaling peer with caller signal");
         peer.signal(callerSignal);
         connectionRef.current = peer;
     };
 
     const leaveCall = () => {
-        console.log("Leaving call");
-        setCallEnded(true);
-        if (connectionRef.current) {
-            console.log("Destroying peer connection");
-            connectionRef.current.destroy();
-        }
+        console.log("User leaving call manually");
 
         // Notify other user
         const otherUserId = isCalling ? activeConversation?.members.find(m => m._id !== currentUser._id)?._id : caller;
@@ -189,33 +229,28 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
             endCall({ to: otherUserId });
         }
 
-        if (stream) {
-            console.log("Stopping local stream tracks");
-            stream.getTracks().forEach(track => track.stop());
-            setStream(null);
-        }
-        setRemoteStream(null); // [NEW] Clear remote stream
-        setCallAccepted(false);
-        setIsCalling(false);
-        setReceivingCall(false);
-        if (onCallEnded) onCallEnded();
+        cleanupCall();
     };
 
     const toggleMic = () => {
         setMicOn(!micOn);
-        if (stream && stream.getAudioTracks().length > 0) {
-            stream.getAudioTracks()[0].enabled = !micOn;
-        } else {
-            console.warn("No audio tracks to toggle");
+        if (stream) {
+            const audioTracks = stream.getAudioTracks();
+            if (audioTracks.length > 0) {
+                audioTracks[0].enabled = !micOn; // If it was on, we toggle to off
+                console.log(`Audio track ${!micOn ? 'enabled' : 'disabled'}`);
+            }
         }
     };
 
     const toggleVideo = () => {
         setVideoOn(!videoOn);
-        if (stream && stream.getVideoTracks().length > 0) {
-            stream.getVideoTracks()[0].enabled = !videoOn;
-        } else {
-            console.warn("No video tracks to toggle");
+        if (stream) {
+            const videoTracks = stream.getVideoTracks();
+            if (videoTracks.length > 0) {
+                videoTracks[0].enabled = !videoOn;
+                console.log(`Video track ${!videoOn ? 'enabled' : 'disabled'}`);
+            }
         }
     };
 
@@ -223,71 +258,104 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
     const otherUser = activeConversation?.members.find(m => m._id !== currentUser._id);
 
     return (
-        <div className="flex flex-col items-center justify-center p-4 bg-gray-900 rounded-lg shadow-xl text-white">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
-                {/* My Video */}
-                {stream && (
-                    <div className="relative">
-                        <video playsInline muted ref={myVideo} autoPlay className="w-full rounded-lg bg-black" />
-                        <span className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-sm">Me</span>
-                    </div>
-                )}
-
-                {/* User's Video */}
-                {callAccepted && !callEnded ? (
-                    <div className="relative">
-                        <video playsInline ref={userVideo} autoPlay className="w-full rounded-lg bg-black" />
-                        <span className="absolute bottom-2 left-2 bg-black/50 px-2 py-1 rounded text-sm">{name || otherUser?.name || "User"}</span>
-                    </div>
-                ) : (
-                    (isCalling || receivingCall) && (
-                        <div className="flex items-center justify-center bg-black/20 rounded-lg h-64">
-                            <p className="animate-pulse text-lg">{isCalling ? "Calling..." : receivingCall ? `${name} is calling...` : ""}</p>
-                        </div>
-                    )
-                )}
+        <div className="flex flex-col items-center justify-center p-4 bg-gray-900 rounded-lg shadow-xl text-white w-full max-w-4xl mx-auto">
+            {/* Status Bar */}
+            <div className="w-full flex justify-between items-center mb-4 px-2">
+                <span className={`text-sm px-2 py-1 rounded flex items-center gap-2 ${connectionStatus === 'connected' ? 'bg-green-500/20 text-green-400' : connectionStatus === 'failed' ? 'bg-red-500/20 text-red-400' : 'bg-blue-500/20 text-blue-400'}`}>
+                    {connectionStatus === 'connected' ? <Wifi size={16} /> : <WifiOff size={16} />}
+                    Status: {connectionStatus.charAt(0).toUpperCase() + connectionStatus.slice(1)}
+                </span>
+                {callAccepted && !callEnded && <span className="text-gray-400 text-sm">Timer: 00:00 (TODO)</span>}
             </div>
 
-            <div className="mt-6 flex gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full h-[60vh] md:h-[500px]">
+                {/* My Video */}
+                <div className="relative bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-gray-700">
+                    {stream ? (
+                        <video
+                            playsInline
+                            muted
+                            ref={myVideo}
+                            autoPlay
+                            className="w-full h-full object-cover transform scale-x-[-1]"
+                        />
+                    ) : (
+                        <div className="text-gray-500">Local Camera Off/Loading...</div>
+                    )}
+                    <span className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-xs backdrop-blur-sm">You</span>
+                    {!videoOn && <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80"><VideoOff size={48} className="text-red-500" /></div>}
+                </div>
+
+                {/* User's Video */}
+                <div className="relative bg-gray-800 rounded-lg overflow-hidden flex items-center justify-center border border-gray-700">
+                    {callAccepted && !callEnded ? (
+                        <>
+                            <video
+                                playsInline
+                                ref={userVideo}
+                                autoPlay
+                                className="w-full h-full object-cover"
+                            />
+                            {/* Fallback if stream is present but track is disabled/muted (requires extra signalling to detect perfectly, but good to have placeholder) */}
+                        </>
+                    ) : (
+                        (isCalling || receivingCall) && (
+                            <div className="flex flex-col items-center justify-center p-8 text-center animate-pulse">
+                                <div className="w-20 h-20 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                                    <span className="text-2xl font-bold">{name?.charAt(0) || otherUser?.name?.charAt(0) || "?"}</span>
+                                </div>
+                                <p className="text-lg font-medium">{isCalling ? "Calling..." : receivingCall ? `${name} is calling...` : "Waiting..."}</p>
+                            </div>
+                        )
+                    )}
+                    <span className="absolute bottom-2 left-2 bg-black/60 px-2 py-1 rounded text-xs backdrop-blur-sm">{name || otherUser?.name || "Remote User"}</span>
+                </div>
+            </div>
+
+            <div className="mt-8 flex gap-6">
                 {/* Call Controls */}
                 {!callAccepted && !isCalling && !receivingCall && (
                     <button
                         onClick={() => initiateCall(otherUser?._id)}
-                        className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full transition-all"
+                        className="bg-green-600 hover:bg-green-500 text-white p-4 rounded-full transition-all shadow-lg shadow-green-900/20 hover:scale-110"
                         title="Start Call"
                     >
-                        <Video size={24} />
+                        <Video size={28} />
                     </button>
                 )}
 
                 {receivingCall && !callAccepted && (
-                    <div className="flex gap-4">
-                        <button onClick={answerCallHandler} className="bg-green-500 hover:bg-green-600 text-white p-3 rounded-full animate-bounce">
-                            <Phone size={24} />
+                    <div className="flex gap-8">
+                        <button onClick={answerCallHandler} className="bg-green-600 hover:bg-green-500 text-white p-4 rounded-full animate-bounce shadow-lg shadow-green-900/20">
+                            <Phone size={28} />
                         </button>
                         <button onClick={() => {
                             setReceivingCall(false);
                             // Optionally reject call logic
-                        }} className="bg-red-500 hover:bg-red-600 text-white p-3 rounded-full">
-                            <PhoneOff size={24} />
+                        }} className="bg-red-600 hover:bg-red-500 text-white p-4 rounded-full shadow-lg shadow-red-900/20">
+                            <PhoneOff size={28} />
                         </button>
                     </div>
                 )}
 
                 {(callAccepted || isCalling) && !callEnded && (
-                    <div className="flex gap-4">
-                        <button onClick={toggleMic} className={`p-3 rounded-full ${micOn ? 'bg-gray-600 hover:bg-gray-500' : 'bg-red-500 hover:bg-red-600'}`}>
+                    <div className="flex gap-4 items-center bg-gray-800 px-6 py-3 rounded-2xl border border-gray-700">
+                        <button onClick={toggleMic} className={`p-3 rounded-full transition-colors ${micOn ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-red-500 hover:bg-red-600 text-white'}`}>
                             {micOn ? <Mic size={24} /> : <MicOff size={24} />}
                         </button>
-                        <button onClick={toggleVideo} className={`p-3 rounded-full ${videoOn ? 'bg-gray-600 hover:bg-gray-500' : 'bg-red-500 hover:bg-red-600'}`}>
+                        <button onClick={toggleVideo} className={`p-3 rounded-full transition-colors ${videoOn ? 'bg-gray-700 hover:bg-gray-600 text-white' : 'bg-red-500 hover:bg-red-600 text-white'}`}>
                             {videoOn ? <Video size={24} /> : <VideoOff size={24} />}
                         </button>
-                        <button onClick={leaveCall} className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full">
+                        <div className="w-px h-8 bg-gray-600 mx-2"></div>
+                        <button onClick={leaveCall} className="bg-red-600 hover:bg-red-500 text-white p-3 rounded-full shadow-lg hover:scale-110 transition-transform">
                             <PhoneOff size={24} />
                         </button>
                     </div>
                 )}
             </div>
+            {!callAccepted && !isCalling && !receivingCall && (
+                <p className="mt-4 text-gray-500 text-sm">Ready to call {otherUser?.name}</p>
+            )}
         </div>
     );
 };
