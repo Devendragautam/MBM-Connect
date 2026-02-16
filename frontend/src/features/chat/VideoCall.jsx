@@ -88,8 +88,12 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
     };
 
     const initiateCall = async (userToCallId) => {
+        console.log("Initiating call to:", userToCallId);
         const currentStream = await startStream();
-        if (!currentStream) return;
+        if (!currentStream) {
+            console.error("Failed to get local stream, cannot initiate call");
+            return;
+        }
 
         setIsCalling(true);
         setCallEnded(false);
@@ -101,6 +105,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         });
 
         peer.on('signal', (data) => {
+            console.log("Peer signal generated (initiator)", data);
             callUser({
                 userToCall: userToCallId,
                 signalData: data,
@@ -110,10 +115,20 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         });
 
         peer.on('stream', (remoteStream) => {
+            console.log("Peer received remote stream (initiator)");
             setRemoteStream(remoteStream); // [NEW] Use state
         });
 
+        peer.on('connect', () => {
+            console.log("Peer connected (initiator)");
+        });
+
+        peer.on('error', (err) => {
+            console.error("Peer error (initiator):", err);
+        });
+
         subscribeToCallAccepted((signal) => {
+            console.log("Call accepted signal received");
             setCallAccepted(true);
             peer.signal(signal);
         });
@@ -122,8 +137,12 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
     };
 
     const answerCallHandler = async () => {
+        console.log("Answering call from:", caller);
         const currentStream = await startStream();
-        if (!currentStream) return;
+        if (!currentStream) {
+            console.error("Failed to get local stream, cannot answer call");
+            return;
+        }
 
         setCallAccepted(true);
 
@@ -134,20 +153,35 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         });
 
         peer.on('signal', (data) => {
+            console.log("Peer signal generated (answerer)", data);
             answerCall({ signal: data, to: caller });
         });
 
         peer.on('stream', (remoteStream) => {
+            console.log("Peer received remote stream (answerer)");
             setRemoteStream(remoteStream); // [NEW] Use state
         });
 
+        peer.on('connect', () => {
+            console.log("Peer connected (answerer)");
+        });
+
+        peer.on('error', (err) => {
+            console.error("Peer error (answerer):", err);
+        });
+
+        console.log("Signaling peer with caller signal:", callerSignal);
         peer.signal(callerSignal);
         connectionRef.current = peer;
     };
 
     const leaveCall = () => {
+        console.log("Leaving call");
         setCallEnded(true);
-        if (connectionRef.current) connectionRef.current.destroy();
+        if (connectionRef.current) {
+            console.log("Destroying peer connection");
+            connectionRef.current.destroy();
+        }
 
         // Notify other user
         const otherUserId = isCalling ? activeConversation?.members.find(m => m._id !== currentUser._id)?._id : caller;
@@ -156,6 +190,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         }
 
         if (stream) {
+            console.log("Stopping local stream tracks");
             stream.getTracks().forEach(track => track.stop());
             setStream(null);
         }
@@ -168,15 +203,19 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
 
     const toggleMic = () => {
         setMicOn(!micOn);
-        if (stream) {
+        if (stream && stream.getAudioTracks().length > 0) {
             stream.getAudioTracks()[0].enabled = !micOn;
+        } else {
+            console.warn("No audio tracks to toggle");
         }
     };
 
     const toggleVideo = () => {
         setVideoOn(!videoOn);
-        if (stream) {
+        if (stream && stream.getVideoTracks().length > 0) {
             stream.getVideoTracks()[0].enabled = !videoOn;
+        } else {
+            console.warn("No video tracks to toggle");
         }
     };
 
