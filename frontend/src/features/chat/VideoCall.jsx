@@ -28,23 +28,42 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
     const userVideo = useRef();
     const connectionRef = useRef();
 
-    useEffect(() => {
-        if (incomingCallData) {
-            console.log("Creating incoming call UI", incomingCallData);
-            setReceivingCall(true);
-            setCaller(incomingCallData.from);
-            setName(incomingCallData.name);
-            setCallerSignal(incomingCallData.signal);
-        }
-    }, [incomingCallData]);
+    // Merged into the main signal handling effect below
+    // useEffect(() => {
+    //     if (incomingCallData) {
+    //      ... 
+    //     }
+    // }, [incomingCallData]);
 
     // [NEW] Effect to handle incoming ICE candidates (trickle ICE) for the Answerer
+    // We need a ref to store candidates that arrive BEFORE the peer connection is created/ready
+    const signalQueueStr = useRef([]);
+
     useEffect(() => {
-        if (incomingCallData && connectionRef.current) {
-            console.log("Received new signal data (likely ICE candidate) while connected/connecting");
-            // If we are already connected or connecting, this is likely an ICE candidate
-            if (incomingCallData.signal) {
-                connectionRef.current.signal(incomingCallData.signal);
+        if (incomingCallData) {
+            console.log("Received new signal data:", incomingCallData);
+
+            // 1. If it's the initial offer, set it (and don't overwrite if it's just a candidate later)
+            if (incomingCallData.signal && incomingCallData.signal.type === 'offer') {
+                console.log("Start of call: Received Offer");
+                setCallerSignal(incomingCallData.signal);
+                setCaller(incomingCallData.from);
+                setName(incomingCallData.name);
+                setReceivingCall(true);
+            }
+
+            // 2. If it's a candidate (no type or type='candidate'), handle buffering or signaling
+            else if (incomingCallData.signal && (!incomingCallData.signal.type || incomingCallData.signal.type === 'candidate')) {
+                console.log("Received ICE Candidate");
+                if (connectionRef.current && !connectionRef.current.destroyed) {
+                    // Peer is ready, signal immediately
+                    console.log("Peer ready, signaling candidate immediately");
+                    connectionRef.current.signal(incomingCallData.signal);
+                } else {
+                    // Peer not ready (user hasn't answered yet), buffer it
+                    console.log("Peer not ready, buffering candidate");
+                    signalQueueStr.current.push(incomingCallData.signal);
+                }
             }
         }
     }, [incomingCallData]);
@@ -92,6 +111,8 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
             connectionRef.current.destroy();
             connectionRef.current = null;
         }
+
+        signalQueueStr.current = []; // Clear queue
 
         // Stop all tracks
         if (stream) {
@@ -215,8 +236,18 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
             cleanupCall();
         });
 
-        console.log("Signaling peer with caller signal");
+        console.log("Signaling peer with caller signal (Offer)");
         peer.signal(callerSignal);
+
+        // FLUSH QUEUE: Signal any buffered candidates that arrived before we answered
+        if (signalQueueStr.current.length > 0) {
+            console.log(`Flushing ${signalQueueStr.current.length} buffered ICE candidates`);
+            signalQueueStr.current.forEach(signal => {
+                peer.signal(signal);
+            });
+            signalQueueStr.current = [];
+        }
+
         connectionRef.current = peer;
     };
 

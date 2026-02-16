@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { useLocation } from 'react-router-dom';
 import { chatAPI, isMessageFromMe } from './chat.api';
 import VideoCall from './VideoCall';
-import { Video } from 'lucide-react';
+import { Video, Send } from 'lucide-react';
 import {
   connectSocket,
   disconnectSocket,
@@ -555,10 +555,13 @@ const ChatPageContent = () => {
                   />
                   <Button
                     type="submit"
-                    className={`absolute right-1 top-1 bottom-1 rounded-full px-6 flex items-center justify-center ${!messageText.trim() ? 'opacity-50 cursor-not-allowed' : 'btn-primary'}`}
+                    className={`absolute right-2 top-1.5 bottom-1.5 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-200 ${!messageText.trim()
+                      ? 'bg-dark-700 text-dark-400 cursor-not-allowed'
+                      : 'bg-gradient-to-tr from-primary-600 to-secondary-600 text-white shadow-lg hover:shadow-primary-500/30 hover:scale-105 active:scale-95'
+                      }`}
                     disabled={!messageText.trim()}
                   >
-                    Send
+                    <Send size={18} className={messageText.trim() ? "ml-0.5" : ""} />
                   </Button>
                 </form>
               </div>
@@ -573,7 +576,7 @@ const ChatPageContent = () => {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
