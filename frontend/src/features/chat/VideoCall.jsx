@@ -11,6 +11,7 @@ import { Phone, PhoneOff, Video, Mic, MicOff, VideoOff } from 'lucide-react';
 
 const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData, onCallEnded }) => {
     const [stream, setStream] = useState(null);
+    const [remoteStream, setRemoteStream] = useState(null); // [NEW] State for remote stream
     const [receivingCall, setReceivingCall] = useState(false);
     const [caller, setCaller] = useState("");
     const [callerSignal, setCallerSignal] = useState(null);
@@ -35,6 +36,21 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         }
     }, [incomingCallData]);
 
+    // [NEW] Effect to attach local stream
+    useEffect(() => {
+        if (stream && myVideo.current) {
+            myVideo.current.srcObject = stream;
+        }
+    }, [stream]);
+
+    // [NEW] Effect to attach remote stream
+    useEffect(() => {
+        if (remoteStream && userVideo.current) {
+            userVideo.current.srcObject = remoteStream;
+        }
+    }, [remoteStream]);
+
+
     useEffect(() => {
         const handleCallEnded = () => {
             setCallEnded(true);
@@ -47,6 +63,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
                 stream.getTracks().forEach(track => track.stop());
                 setStream(null);
             }
+            setRemoteStream(null); // [NEW] Clear remote stream
             if (onCallEnded) onCallEnded();
         };
 
@@ -61,9 +78,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         try {
             const currentStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
             setStream(currentStream);
-            if (myVideo.current) {
-                myVideo.current.srcObject = currentStream;
-            }
+            // Removed direct assignment to myVideo.current here, handled by useEffect
             return currentStream;
         } catch (err) {
             console.error("Failed to get local stream", err);
@@ -95,9 +110,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         });
 
         peer.on('stream', (remoteStream) => {
-            if (userVideo.current) {
-                userVideo.current.srcObject = remoteStream;
-            }
+            setRemoteStream(remoteStream); // [NEW] Use state
         });
 
         subscribeToCallAccepted((signal) => {
@@ -125,9 +138,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         });
 
         peer.on('stream', (remoteStream) => {
-            if (userVideo.current) {
-                userVideo.current.srcObject = remoteStream;
-            }
+            setRemoteStream(remoteStream); // [NEW] Use state
         });
 
         peer.signal(callerSignal);
@@ -148,6 +159,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
             stream.getTracks().forEach(track => track.stop());
             setStream(null);
         }
+        setRemoteStream(null); // [NEW] Clear remote stream
         setCallAccepted(false);
         setIsCalling(false);
         setReceivingCall(false);
