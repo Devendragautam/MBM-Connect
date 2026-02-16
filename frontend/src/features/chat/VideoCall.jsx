@@ -140,6 +140,14 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         }
     };
 
+    // Peer Configuration with STUN servers
+    const peerConfig = {
+        iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:global.stun.twilio.com:3478' }
+        ]
+    };
+
     const initiateCall = async (userToCallId) => {
         console.log("Initiating call to:", userToCallId);
         setConnectionStatus('connecting');
@@ -152,6 +160,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         const peer = new Peer({
             initiator: true,
             stream: currentStream,
+            config: peerConfig
         });
 
         // Event Listeners for Peer
@@ -207,6 +216,7 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         const peer = new Peer({
             initiator: false,
             stream: currentStream,
+            config: peerConfig
         });
 
         peer.on('signal', (data) => {
@@ -287,6 +297,26 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
 
     // Determine user to call (the other user in the conversation)
     const otherUser = activeConversation?.members.find(m => m._id !== currentUser._id);
+
+    // Debug logging state
+    const [debugLogs, setDebugLogs] = useState([]);
+    const addLog = (msg) => {
+        console.log(msg);
+        setDebugLogs(prev => [...prev.slice(-4), msg]); // Keep last 5 logs
+    };
+
+    // Replace console.log with addLog in critical paths
+    // (We will use a helper to wrap console.log if we were doing a full refactor, 
+    // but here we will just render the specific connection events we care about)
+
+    useEffect(() => {
+        if (connectionStatus === 'firstName') return;
+        addLog(`Status changed: ${connectionStatus}`);
+    }, [connectionStatus]);
+
+    useEffect(() => {
+        if (incomingCallData) addLog(`Incoming call data: ${incomingCallData.from}`);
+    }, [incomingCallData]);
 
     return (
         <div className="flex flex-col items-center justify-center p-4 bg-gray-900 rounded-lg shadow-xl text-white w-full max-w-4xl mx-auto">
@@ -387,6 +417,14 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
             {!callAccepted && !isCalling && !receivingCall && (
                 <p className="mt-4 text-gray-500 text-sm">Ready to call {otherUser?.name}</p>
             )}
+
+            {/* Debug Logs Section */}
+            <div className="mt-6 w-full bg-black/50 p-2 rounded text-xs font-mono text-gray-400 h-24 overflow-y-auto">
+                <div className="font-bold border-b border-gray-700 mb-1">Debug Logs:</div>
+                {debugLogs.map((log, i) => (
+                    <div key={i}>{log}</div>
+                ))}
+            </div>
         </div>
     );
 };
