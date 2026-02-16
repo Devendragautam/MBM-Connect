@@ -43,6 +43,31 @@ export const initSocket = (server) => {
             }
         });
 
+        // Video Call Events
+        socket.on("call:user", (data) => {
+            const { userToCall, signalData, from, name } = data;
+            if (onlineUsers.has(userToCall)) {
+                const socketId = onlineUsers.get(userToCall);
+                io.to(socketId).emit("call:user", { signal: signalData, from, name });
+            }
+        });
+
+        socket.on("answer:call", (data) => {
+            const { to, signal } = data;
+            if (onlineUsers.has(to)) {
+                const socketId = onlineUsers.get(to);
+                io.to(socketId).emit("call:accepted", signal);
+            }
+        });
+        
+        socket.on("end:call", (data) => {
+             const { to } = data;
+             if (onlineUsers.has(to)) {
+                const socketId = onlineUsers.get(to);
+                io.to(socketId).emit("call:ended");
+             }
+        });
+
         socket.on("disconnect", () => {
             console.log("❌ User disconnected:", socket.id);
             // Find userId
