@@ -112,3 +112,22 @@ export const deleteMessage = asyncHandler(async (req, res) => {
 
   res.status(200).json(new ApiResponse(200, {}, "Message deleted"));
 });
+
+export const getIceServers = asyncHandler(async (req, res) => {
+  // Use Google's public STUN server as default
+  const iceServers = [
+    { urls: "stun:stun.l.google.com:19302" },
+    { urls: "stun:global.stun.twilio.com:3478" },
+  ];
+
+  // Add TURN server if credentials are provided in .env
+  if (process.env.TURN_URL && process.env.TURN_USERNAME && process.env.TURN_CREDENTIAL) {
+    iceServers.push({
+      urls: process.env.TURN_URL,
+      username: process.env.TURN_USERNAME,
+      credential: process.env.TURN_CREDENTIAL,
+    });
+  }
+
+  res.status(200).json(new ApiResponse(200, iceServers, "ICE servers fetched"));
+});

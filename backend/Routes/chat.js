@@ -6,9 +6,14 @@ import {
   getMessages,
   sendMessage,
   deleteMessage,
+  getIceServers,
 } from "../controllers/chat.controller.js";
 
 const router = express.Router();
+
+// Get ICE servers (STUN/TURN)
+// GET /api/chat/ice-servers
+router.get("/ice-servers", getIceServers);
 
 router.use(authMiddleware);
 

@@ -140,9 +140,39 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
         }
     };
 
-    // Peer Configuration with STUN servers
+    // Peer Configuration
+    const [iceServers, setIceServers] = useState([]);
+
+    useEffect(() => {
+        const fetchIceServers = async () => {
+            try {
+                // Adjust fetch URL based on your API setup (e.g., using a base URL or proxy)
+                // Assuming relative path works with proxy or full URL needed
+                const response = await fetch('/api/chat/ice-servers', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('token')}` // Ensure auth if needed, though usually cookies or header
+                    }
+                });
+                const data = await response.json();
+                if (data.success) {
+                    setIceServers(data.data);
+                    addLog("ICE servers fetched successfully");
+                }
+            } catch (error) {
+                console.error("Failed to fetch ICE servers:", error);
+                addLog("Failed to fetch ICE servers, using defaults");
+                // Fallback to Google STUN if fetch fails
+                setIceServers([
+                    { urls: 'stun:stun.l.google.com:19302' },
+                    { urls: 'stun:global.stun.twilio.com:3478' }
+                ]);
+            }
+        };
+        fetchIceServers();
+    }, []);
+
     const peerConfig = {
-        iceServers: [
+        iceServers: iceServers.length > 0 ? iceServers : [
             { urls: 'stun:stun.l.google.com:19302' },
             { urls: 'stun:global.stun.twilio.com:3478' }
         ]
