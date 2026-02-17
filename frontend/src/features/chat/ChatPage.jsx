@@ -17,7 +17,7 @@ import {
   emitTyping,
   emitStopTyping,
 } from './chat.socket';
-import { Loader, ErrorBox, Button } from '../../shared/ui';
+import { Loader, ErrorBox } from '../../shared/ui';
 import { useAuth } from '../auth/AuthContext';
 
 
@@ -553,7 +553,7 @@ const ChatPageContent = () => {
                     placeholder="Type a message..."
                     className="w-full px-6 py-3 rounded-full bg-dark-800/80 border border-dark-600 text-white focus:border-primary-500 focus:outline-none placeholder-dark-500 pr-24 transition-all"
                   />
-                  <Button
+                  <button
                     type="submit"
                     className={`absolute right-2 top-1.5 bottom-1.5 rounded-full w-10 h-10 flex items-center justify-center transition-all duration-200 ${!messageText.trim()
                       ? 'bg-dark-700 text-dark-400 cursor-not-allowed'
@@ -562,7 +562,7 @@ const ChatPageContent = () => {
                     disabled={!messageText.trim()}
                   >
                     <Send size={18} className={messageText.trim() ? "ml-0.5" : ""} />
-                  </Button>
+                  </button>
                 </form>
               </div>
             </>
