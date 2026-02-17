@@ -5,7 +5,9 @@ import {
     answerCall,
     endCall,
     subscribeToCallAccepted,
-    subscribeToCallEnded
+    subscribeToCallAccepted,
+    subscribeToCallEnded,
+    subscribeToCallFailed
 } from './chat.socket';
 import { Phone, PhoneOff, Video, Mic, MicOff, VideoOff, Wifi, WifiOff } from 'lucide-react';
 
@@ -92,7 +94,14 @@ const VideoCall = ({ currentUser, activeConversation, socketId, incomingCallData
             cleanupCall();
         };
 
+        const handleCallFailed = ({ reason }) => {
+            console.log("Call failed:", reason);
+            alert(`Call failed: ${reason}`);
+            cleanupCall();
+        };
+
         subscribeToCallEnded(handleCallEnded);
+        subscribeToCallFailed(handleCallFailed);
 
         return () => {
             // cleanup on unmount if needed, but usually handled by leaveCall or parent unmounting

@@ -129,6 +129,10 @@ export const subscribeToCallEnded = (callback) => {
   chatSocket.on('call:ended', callback);
 };
 
+export const subscribeToCallFailed = (callback) => {
+  chatSocket.on('call:failed', callback);
+};
+
 export const callUser = (data) => {
   chatSocket.emit('call:user', data);
 };

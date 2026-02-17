@@ -226,7 +226,13 @@ const ChatPageContent = () => {
     onUserOffline(handleUserOffline);
     subscribeToCall(handleIncomingCall);
 
-    const onConnect = () => setIsConnected(true);
+    const onConnect = () => {
+      setIsConnected(true);
+      if (user?._id) {
+        console.log("Socket reconnected, joining room:", user._id);
+        chatSocket.emit("join_room", user._id);
+      }
+    };
     const onDisconnect = () => setIsConnected(false);
 
     chatSocket.on('connect', onConnect);

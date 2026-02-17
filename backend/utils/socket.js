@@ -60,7 +60,8 @@ export const initSocket = (server) => {
                 console.log(`✅ Signal sent to ${userToCall} (socket: ${socketId})`);
             } else {
                 console.warn(`⚠️ User ${userToCall} is offline, cannot forward call signal`);
-                // Optionally emit 'user:offline' back to caller
+                // Emit 'call:failed' back to caller
+                socket.emit("call:failed", { reason: "User is offline" });
             }
         });
 
@@ -73,6 +74,8 @@ export const initSocket = (server) => {
                 console.log(`✅ Answer signal sent to ${to} (socket: ${socketId})`);
             } else {
                 console.warn(`⚠️ Caller ${to} is offline, cannot forward answer signal`);
+                // Emit 'call:failed' back to answerer
+                socket.emit("call:failed", { reason: "Caller is offline" });
             }
         });
 
