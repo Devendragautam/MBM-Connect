@@ -51,7 +51,8 @@ export const createStory = asyncHandler(async (req, res) => {
  */
 export const getAllStories = asyncHandler(async (req, res) => {
   const stories = await Post.find()
-    .populate("author", "username avatar")
+    .populate("author", "username avatar fullName")
+    .populate("comments.user", "username fullName avatar")
     .sort({ createdAt: -1 });
 
   res
@@ -134,6 +135,9 @@ export const addComment = asyncHandler(async (req, res) => {
   });
 
   await story.save();
+
+  // Populate user details for the new comments
+  await story.populate("comments.user", "username fullName avatar");
 
   res.json(
     new ApiResponse(201, story.comments, "Comment added")
