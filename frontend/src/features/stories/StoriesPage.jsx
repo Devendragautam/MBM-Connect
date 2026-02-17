@@ -12,6 +12,8 @@ const StoriesPage = () => {
   const [formData, setFormData] = useState({
     title: '',
     content: '',
+    image: null,
+    imagePreview: null,
   });
   const [expandedStories, setExpandedStories] = useState({});
   const [commentText, setCommentText] = useState({});
@@ -47,12 +49,30 @@ const StoriesPage = () => {
     }));
   };
 
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setFormData((prev) => ({
+        ...prev,
+        image: file,
+        imagePreview: URL.createObjectURL(file),
+      }));
+    }
+  };
+
   const handleCreateStory = async (e) => {
     e.preventDefault();
     try {
-      const response = await storiesAPI.createStory(formData);
+      const data = new FormData();
+      data.append('title', formData.title);
+      data.append('content', formData.content);
+      if (formData.image) {
+        data.append('image', formData.image);
+      }
+
+      const response = await storiesAPI.createStory(data);
       if (response.data.success) {
-        setFormData({ title: '', content: '' });
+        setFormData({ title: '', content: '', image: null, imagePreview: null });
         setShowCreateForm(false);
         fetchStories();
       } else {
@@ -90,11 +110,7 @@ const StoriesPage = () => {
       if (response.data.success) {
         setStories((prev) => prev.map((story) => {
           if (story._id === storyId) {
-            const isLiked = story.likes?.includes(user._id);
-            const newLikes = isLiked
-              ? story.likes.filter(id => id !== user._id)
-              : [...(story.likes || []), user._id];
-            return { ...story, likes: newLikes };
+            return { ...story, likes: response.data.data };
           }
           return story;
         }));
@@ -116,8 +132,8 @@ const StoriesPage = () => {
     try {
       const response = await storiesAPI.addComment(storyId, { text });
       if (response.data.success) {
-        const newComment = response.data.data;
-        setStories((prev) => prev.map((story) => story._id === storyId ? { ...story, comments: [...(story.comments || []), newComment] } : story));
+        const updatedComments = response.data.data;
+        setStories((prev) => prev.map((story) => story._id === storyId ? { ...story, comments: updatedComments } : story));
         setCommentText((prev) => ({ ...prev, [storyId]: '' }));
       }
     } catch (err) {
@@ -167,6 +183,53 @@ const StoriesPage = () => {
                 required
                 className="input-field text-xl font-bold"
               />
+
+              {/* Image Upload */}
+              <div>
+                <label className="block text-sm font-medium mb-2 text-dark-300">
+                  Story Image (Optional)
+                </label>
+                <div className="relative">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="story-image-input"
+                  />
+                  <label
+                    htmlFor="story-image-input"
+                    className="flex items-center justify-center w-full p-4 border-2 border-dashed border-dark-600 rounded-xl cursor-pointer hover:border-primary-500 transition-colors bg-dark-800/50"
+                  >
+                    {formData.imagePreview ? (
+                      <div className="relative w-full">
+                        <img
+                          src={formData.imagePreview}
+                          alt="Preview"
+                          className="w-full h-48 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setFormData(prev => ({ ...prev, image: null, imagePreview: null }));
+                          }}
+                          className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 shadow-lg hover:bg-red-600"
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="text-center py-4">
+                        <span className="text-4xl block mb-2">📷</span>
+                        <span className="text-dark-400">Click to upload an image</span>
+                      </div>
+                    )}
+                  </label>
+                </div>
+              </div>
               <textarea
                 name="content"
                 placeholder="Share your story..."
@@ -235,6 +298,16 @@ const StoriesPage = () => {
                     {story.title}
                   </h3>
 
+                  {story.image && (
+                    <div className="mb-6 rounded-2xl overflow-hidden shadow-lg border border-white/5">
+                      <img
+                        src={story.image}
+                        alt={story.title}
+                        className="w-full h-auto max-h-[500px] object-cover hover:scale-[1.02] transition-transform duration-700"
+                      />
+                    </div>
+                  )}
+
                   <div className="prose max-w-none mb-6 prose-invert text-dark-300">
                     <p className="leading-relaxed whitespace-pre-wrap text-lg">
                       {expandedStories[story._id] ? story.content : `${story.content.substring(0, 300)}${story.content.length > 300 ? '...' : ''}`}
@@ -254,12 +327,14 @@ const StoriesPage = () => {
                   <div className="flex items-center gap-4 pt-6 border-t border-white/10">
                     <button
                       onClick={() => handleLike(story._id)}
-                      className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${story.likes?.includes(user?._id)
+                      className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${story.likes?.some(id => (typeof id === 'object' ? id._id : id).toString() === user?._id?.toString())
                         ? 'bg-red-500/10 text-red-500'
                         : 'hover:bg-white/10 text-dark-400'
                         }`}
                     >
-                      <span className="text-xl">{story.likes?.includes(user?._id) ? '❤️' : '🤍'}</span>
+                      <span className="text-xl">
+                        {story.likes?.some(id => (typeof id === 'object' ? id._id : id).toString() === user?._id?.toString()) ? '❤️' : '🤍'}
+                      </span>
                       <span className="font-semibold">{story.likes?.length || 0}</span>
                     </button>
 

@@ -6,7 +6,7 @@ import { feedAPI } from './feed.api';
 export default function PostCard({ post, onPostDeleted, currentUserId }) {
   const { isDarkMode } = useDarkMode();
   const navigate = useNavigate();
-  const [liked, setLiked] = useState(post.likes?.includes(currentUserId));
+  const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(post.likes?.length || 0);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState('');
@@ -14,9 +14,14 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLiked(post.likes?.includes(currentUserId));
+    // Robust check for liked state (handling ObjectId vs String)
+    const isLiked = post.likes?.some(id =>
+      (typeof id === 'object' ? id._id : id).toString() === currentUserId?.toString()
+    );
+    setLiked(!!isLiked);
     setLikeCount(post.likes?.length || 0);
-  }, [post.likes, currentUserId]);
+    setComments(post.comments || []);
+  }, [post, currentUserId]);
 
   const authorId = post.author?._id || post.author;
   const isOwner = authorId === currentUserId;
@@ -30,8 +35,19 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
       const response = await feedAPI.likePost(post._id);
 
       if (response.data.success) {
-        setLiked((prev) => !prev);
-        setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+        // Use backend response for truth if available, otherwise toggle
+        // The backend toggleLike returns { post: populatedPost, isLiked: boolean }
+        // based on post.controller.js inspection
+        const { isLiked, post: updatedPost } = response.data.data;
+
+        if (updatedPost) {
+          setLiked(isLiked);
+          setLikeCount(updatedPost.likes.length);
+        } else {
+          // Fallback manual toggle if structure differs
+          setLiked((prev) => !prev);
+          setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+        }
       }
     } catch (err) {
       console.error('Error liking post:', err);
@@ -50,7 +66,9 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
       const response = await feedAPI.addComment(post._id, { text: commentText });
 
       if (response.data.success) {
-        setComments(response.data.data.comments || []);
+        // Backend returns populatedPost in data.data
+        const updatedPost = response.data.data;
+        setComments(updatedPost.comments || []);
         setCommentText('');
       }
     } catch (err) {
@@ -66,7 +84,9 @@ export default function PostCard({ post, onPostDeleted, currentUserId }) {
       const response = await feedAPI.deleteComment(post._id, commentId);
 
       if (response.data.success) {
-        setComments(response.data.data.comments || []);
+        // Backend returns populatedPost in data.data
+        const updatedPost = response.data.data;
+        setComments(updatedPost.comments || []);
       }
     } catch (err) {
       console.error('Error deleting comment:', err);

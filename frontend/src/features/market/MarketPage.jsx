@@ -1,10 +1,13 @@
 import React, { useEffect, useState, useCallback, useMemo, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { marketAPI } from './market.api';
+import { chatAPI } from '../chat/chat.api';
 import { Loader, ErrorBox, Button, Input } from '../../shared/ui';
 import { useAuth } from '../auth/AuthContext';
 
 const MarketPage = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [listings, setListings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -197,6 +200,34 @@ const MarketPage = () => {
     setError('');
   }, []);
 
+  const handleContactSeller = async (sellerId, listing) => {
+    if (!user) return;
+    try {
+      setLoading(true);
+      // Create or get conversation
+      const response = await chatAPI.startConversation(sellerId);
+      if (response.data.success) {
+        const conversation = response.data.data;
+        // Optionally send an initial message
+        await chatAPI.sendMessage(conversation._id, {
+          text: `Hi, I'm interested in buying your "${listing.title}" for $${listing.price}. Is it still available?`
+        });
+
+        // Navigate to chat
+        navigate('/chat', {
+          state: {
+            conversationId: conversation._id
+          }
+        });
+      }
+    } catch (err) {
+      console.error("Failed to contact seller:", err);
+      setError("Failed to start chat with seller");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Memoize filtered listings rendering
   const listingsGrid = useMemo(() => {
     if (loading) {
@@ -258,6 +289,15 @@ const MarketPage = () => {
                       {listing.owner?.username || 'Unknown'}
                     </span>
                   </div>
+
+                  {user && listing.owner?._id !== user._id && listing.owner !== user._id && (
+                    <button
+                      onClick={() => handleContactSeller(listing.owner?._id || listing.owner, listing)}
+                      className="bg-primary-600 hover:bg-primary-500 text-white text-xs px-3 py-1.5 rounded-full font-bold shadow-lg shadow-primary-900/20 transition-all hover:scale-105"
+                    >
+                      Want to Buy
+                    </button>
+                  )}
 
                   {(listing.owner?._id === user?._id || listing.owner === user?._id) && (
                     <div className="flex items-center gap-2">

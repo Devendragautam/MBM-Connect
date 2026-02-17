@@ -5,7 +5,6 @@ import {
     answerCall,
     endCall,
     subscribeToCallAccepted,
-    subscribeToCallAccepted,
     subscribeToCallEnded,
     subscribeToCallFailed
 } from './chat.socket';
