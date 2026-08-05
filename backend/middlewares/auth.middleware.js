@@ -4,7 +4,7 @@ import { User } from "../models/user.models.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 export const authMiddleware = asyncHandler(async (req, res, next) => {
-  // 1️⃣ Try to get token from cookies first, then from Authorization header
+  // 1. Try to get token from cookies first, then from Authorization header
   let token = req.cookies?.accessToken;
 
   if (!token) {
@@ -14,28 +14,28 @@ export const authMiddleware = asyncHandler(async (req, res, next) => {
     }
   }
 
-  // 2️⃣ If no token found, throw Unauthorized error
+  // 2. If no token found, throw Unauthorized error
   if (!token) {
     throw new ApiError(401, "Unauthorized");
   }
 
   let decoded;
   try {
-    // 3️⃣ Verify the token using the secret key
+    // 3. Verify the token using the secret key
     decoded = jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
     // Map JWT errors to a 401 Unauthorized ApiError
     throw new ApiError(401, err.message || 'Invalid token');
   }
 
-  // 4️⃣ Find the user by ID from the decoded token, excluding sensitive fields
+  // 4. Find the user by ID from the decoded token, excluding sensitive fields
   const user = await User.findById(decoded._id).select("-password -refreshToken");
 
   if (!user) {
     throw new ApiError(401, "Invalid token");
   }
 
-  // 5️⃣ Attach user object to the request for downstream use
+  // 5. Attach user object to the request for downstream use
   req.user = user;
   next();
 });

@@ -2,29 +2,29 @@ import { Market } from "../models/market.models.js";
 import { ApiError } from "../utils/apiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-import { uploadOnCloudinary } from "../utils/cloudinary.js"; // ✅ ADDED
+import { uploadOnCloudinary } from "../utils/cloudinary.js"; //  ADDED
 
 /**
- * ===============================
+ * 
  * CREATE ITEM (UPDATED)
  * - supports optional image upload
- * ===============================
+ * 
  */
 /**
- * ===============================
+ * 
  * CREATE ITEM
  * Creates a new market listing with optional image
- * ===============================
+ * 
  */
 export const createItem = asyncHandler(async (req, res) => {
   const { title, price, category, description } = req.body;
 
-  // 1️⃣ Validation: Check required fields
+  // 1. Validation: Check required fields
   if (!title || !price || !category) {
     throw new ApiError(400, "Title, price, and category are required");
   }
 
-  // 2️⃣ Handle optional image upload
+  // 2. Handle optional image upload
   let imageUrl = "";
   const imagePath = req.files?.image?.[0]?.path;
 
@@ -36,7 +36,7 @@ export const createItem = asyncHandler(async (req, res) => {
     imageUrl = uploadResult.url;
   }
 
-  // 3️⃣ Create market item in DB
+  // 3. Create market item in DB
   const item = await Market.create({
     owner: req.user._id,
     title,
@@ -52,9 +52,9 @@ export const createItem = asyncHandler(async (req, res) => {
 });
 
 /**
- * ===============================
+ * 
  * UPDATE ITEM (OWNER ONLY)
- * ===============================
+ * 
  */
 export const updateItem = asyncHandler(async (req, res) => {
   const { id } = req.params;
@@ -90,9 +90,9 @@ export const updateItem = asyncHandler(async (req, res) => {
 });
 
 /**
- * ===============================
+ * 
  * GET ALL ITEMS
- * ===============================
+ * 
  */
 export const getAllItems = asyncHandler(async (req, res) => {
   const { page = 1, limit = 9, search, category, minPrice, maxPrice } = req.query;
@@ -137,9 +137,9 @@ export const getAllItems = asyncHandler(async (req, res) => {
 });
 
 /**
- * ===============================
+ * 
  * DELETE ITEM (OWNER ONLY)
- * ===============================
+ * 
  */
 export const deleteItem = asyncHandler(async (req, res) => {
   const item = await Market.findById(req.params.id);
@@ -148,7 +148,7 @@ export const deleteItem = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Item not found");
   }
 
-  // 🔐 Authorization check
+  // � Authorization check
   if (item.owner.toString() !== req.user._id.toString()) {
     throw new ApiError(403, "You are not allowed to delete this item");
   }

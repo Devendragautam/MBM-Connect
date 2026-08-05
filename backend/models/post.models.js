@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-/* =========================================
-   ✅ POST SCHEMA
-   ========================================= */
+// Post schema
 const postSchema = new mongoose.Schema(
   {
     // User who created the post

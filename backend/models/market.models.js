@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
-/* =========================================
-   ✅ MARKET ITEM SCHEMA
-   ========================================= */
+// Market item schema
 const marketSchema = new mongoose.Schema(
   {
     // User who listed the item

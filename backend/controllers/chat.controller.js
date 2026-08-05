@@ -23,12 +23,12 @@ export const createConversation = asyncHandler(async (req, res) => {
   const { receiverId } = req.body;
   if (!receiverId) throw new ApiError(400, "Receiver ID is required");
 
-  // 1️⃣ Check if conversation already exists between these two users
+  // 1. Check if conversation already exists between these two users
   let conversation = await Conversation.findOne({
     members: { $all: [req.user._id, receiverId] },
   });
 
-  // 2️⃣ If not, create a new one
+  // 2. If not, create a new one
   if (!conversation) {
     conversation = await Conversation.create({
       members: [req.user._id, receiverId],
@@ -70,7 +70,7 @@ export const sendMessage = asyncHandler(async (req, res) => {
     "username avatar"
   );
 
-  // ✅ Socket.io: Emit message to all members in the conversation
+  //  Socket.io: Emit message to all members in the conversation
   const conversation = await Conversation.findById(conversationId);
   const io = getIO();
 

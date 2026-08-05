@@ -5,34 +5,34 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 
 /**
- * ===============================
+ * 
  * CREATE STORY (with optional image)
- * ===============================
+ * 
  */
 /**
- * ===============================
+ * 
  * CREATE STORY
  * Creates a new story, which is essentially a post but treated differently in UI
- * ===============================
+ * 
  */
 export const createStory = asyncHandler(async (req, res) => {
   const { content } = req.body;
 
-  // 1️⃣ Validation
+  // 1. Validation
   if (!content) {
     throw new ApiError(400, "Story content is required");
   }
 
   let imageUrl = "";
 
-  // 2️⃣ Handle optional image upload
+  // 2. Handle optional image upload
   const imagePath = req.files?.image?.[0]?.path;
   if (imagePath) {
     const upload = await uploadOnCloudinary(imagePath);
     imageUrl = upload?.url || "";
   }
 
-  // 3️⃣ Create Story (Post)
+  // 3. Create Story (Post)
   const post = await Post.create({
     author: req.user._id,
     content,
@@ -45,9 +45,9 @@ export const createStory = asyncHandler(async (req, res) => {
 });
 
 /**
- * ===============================
+ * 
  * GET ALL STORIES (Feed)
- * ===============================
+ * 
  */
 export const getAllStories = asyncHandler(async (req, res) => {
   const stories = await Post.find()
@@ -61,9 +61,9 @@ export const getAllStories = asyncHandler(async (req, res) => {
 });
 
 /**
- * ===============================
+ * 
  * DELETE STORY (Owner only)
- * ===============================
+ * 
  */
 export const deleteStory = asyncHandler(async (req, res) => {
   const story = await Post.findById(req.params.id);
@@ -82,9 +82,9 @@ export const deleteStory = asyncHandler(async (req, res) => {
 });
 
 /**
- * ===============================
+ * 
  * LIKE / UNLIKE STORY
- * ===============================
+ * 
  */
 export const toggleLike = asyncHandler(async (req, res) => {
   const story = await Post.findById(req.params.id);
@@ -113,9 +113,9 @@ export const toggleLike = asyncHandler(async (req, res) => {
 });
 
 /**
- * ===============================
+ * 
  * ADD COMMENT TO STORY
- * ===============================
+ * 
  */
 export const addComment = asyncHandler(async (req, res) => {
   const { text } = req.body;

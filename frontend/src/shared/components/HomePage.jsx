@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../features/auth/AuthContext';
 
-// Animations defined in css or global style block
 const fadeInUp = `
   @keyframes fadeInUp {
     0% { opacity: 0; transform: translateY(30px); }
@@ -24,29 +23,27 @@ export default function HomePage() {
   const accentColor = 'from-primary-600 via-primary-500 to-secondary-500';
 
   const stats = [
-    { label: 'Active Members', value: '10K+', icon: '👥' },
-    { label: 'Daily Transactions', value: '5K+', icon: '📊' },
-    { label: 'Trust Score', value: '98%', icon: '✓' },
+    { label: 'Active Members', value: '10K+' },
+    { label: 'Daily Transactions', value: '5K+' },
+    { label: 'Trust Score', value: '98%' },
   ];
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-dark-900 transition-colors duration-300">
       <style>{fadeInUp}</style>
 
-      {/* Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute top-[10%] left-[10%] w-96 h-96 rounded-full mix-blend-screen filter blur-3xl opacity-20 bg-primary-600 animate-subtleFloat"></div>
         <div className="absolute bottom-[20%] right-[10%] w-[500px] h-[500px] rounded-full mix-blend-screen filter blur-3xl opacity-10 bg-secondary-600 animate-subtleFloat" style={{ animationDelay: '2s' }}></div>
         <div className="absolute top-[40%] right-[30%] w-64 h-64 rounded-full mix-blend-screen filter blur-3xl opacity-20 bg-accent animate-subtleFloat" style={{ animationDelay: '4s' }}></div>
       </div>
 
-      {/* Hero Section */}
       <main className="relative z-10">
         <section className="max-w-7xl mx-auto px-6 py-32 md:py-48 relative">
           <div className="flex flex-col items-center text-center relative z-10">
             <div className="inline-block mb-8 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
               <span className="px-5 py-2 rounded-full text-sm font-semibold tracking-wide backdrop-blur-md border border-primary-500/30 shadow-glow-sm bg-primary-500/10 text-primary-300 mx-auto">
-                ✨ The Professional Community Platform
+                The Professional Community Platform
               </span>
             </div>
 
@@ -89,7 +86,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Key Features Grid */}
         <section className="py-24 relative z-10">
           <div className="max-w-7xl mx-auto px-6">
             <div className="text-center mb-16 animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
@@ -99,17 +95,14 @@ export default function HomePage() {
 
             <div className="grid md:grid-cols-3 gap-8">
               {[
-                { icon: '🚀', title: 'Fast Connections', desc: 'Instant messaging and networking tools.' },
-                { icon: '🛡️', title: 'Secure Platform', desc: 'Enterprise-grade security for your data.' },
-                { icon: '🌍', title: 'Global Reach', desc: 'Connect with professionals from 150+ countries.' },
-                { icon: '💡', title: 'Smart Insights', desc: 'AI-powered recommendations for your growth.' },
-                { icon: '🤝', title: 'Community Events', desc: 'Exclusive access to webinars and meetups.' },
-                { icon: '📱', title: 'Mobile First', desc: 'Seamless experience across all devices.' }
+                { title: 'Fast Connections', desc: 'Instant messaging and networking tools.' },
+                { title: 'Secure Platform', desc: 'Enterprise-grade security for your data.' },
+                { title: 'Global Reach', desc: 'Connect with professionals from 150+ countries.' },
+                { title: 'Community Events', desc: 'Exclusive access to webinars and meetups.' },
+                { title: 'Mobile First', desc: 'Seamless experience across all devices.' }
               ].map((feature, i) => (
                 <div key={i} className="glass-panel p-8 rounded-2xl transition-all duration-300 hover:-translate-y-2 hover:shadow-glow-sm border border-dark-700 hover:border-primary-500/30 group bg-dark-800/40" style={{ animationDelay: `${0.1 * i}s` }}>
-                  <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary-500/10 to-secondary-500/10 flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform duration-300 border border-dark-600">
-                    {feature.icon}
-                  </div>
+
                   <h3 className="text-xl font-bold mb-3 text-white">{feature.title}</h3>
                   <p className="text-dark-400">{feature.desc}</p>
                 </div>
@@ -118,7 +111,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Stats Section */}
         <section className="py-20 relative border-y border-dark-700 bg-dark-800/30 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto px-6">
             <div className="grid md:grid-cols-3 gap-12 divide-y md:divide-y-0 md:divide-x divide-dark-700">
@@ -132,7 +124,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Value Props Section */}
         <section className="max-w-7xl mx-auto px-6 py-20">
           <div className="max-w-7xl mx-auto px-6 relative z-10">
             <h2 className="text-3xl md:text-5xl font-bold text-center mb-16 text-white font-display">Loved by <span className="text-primary-500">Professionals</span></h2>
@@ -163,12 +154,12 @@ export default function HomePage() {
           <h2 className="text-4xl font-bold text-center mb-16 text-white animate-fadeInUp font-display" style={{ animationDelay: '0.1s' }}>Why Choose MBM Connect?</h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
-              { title: 'Verified Members', desc: 'Every member undergoes thorough verification process', icon: '🛡️' },
-              { title: 'Secure Transactions', desc: 'End-to-end encryption for all communications', icon: '🔒' },
-              { title: '24/7 Support', desc: 'Dedicated support team always available', icon: '🎧' },
+              { title: 'Verified Members', desc: 'Every member undergoes thorough verification process' },
+              { title: 'Secure Transactions', desc: 'End-to-end encryption for all communications' },
+              { title: '24/7 Support', desc: 'Dedicated support team always available' },
             ].map((item, i) => (
               <div key={i} className="p-8 rounded-2xl transition-all duration-300 hover:bg-dark-800 border border-transparent hover:border-dark-700 group" style={{ animationDelay: `${0.2 + i * 0.12}s` }}>
-                <div className="text-4xl mb-4 transform transition-transform group-hover:scale-110 inline-block">{item.icon}</div>
+
                 <h3 className="text-2xl font-bold mb-3 text-white group-hover:text-primary-400 transition-colors duration-300">{item.title}</h3>
                 <p className="leading-relaxed text-dark-400">{item.desc}</p>
               </div>
@@ -176,7 +167,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* CTA Section */}
         <section className="py-24 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-primary-800/80 to-secondary-900/80 backdrop-blur-md"></div>
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -198,7 +188,6 @@ export default function HomePage() {
         </section>
       </main>
 
-      {/* Footer */}
       <footer className="border-t py-16 transition-colors duration-300 bg-dark-900/50 border-white/5 backdrop-blur-lg">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-4 gap-12 mb-12">

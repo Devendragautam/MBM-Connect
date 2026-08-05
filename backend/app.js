@@ -19,9 +19,7 @@ import { ApiError } from "./utils/apiError.js";
 
 const app = express();
 
-/* =========================================
-   ✅ MIDDLEWARES SETUP
-   ========================================= */
+// Middlewares setup
 // Parse cookies from requests
 app.use(cookieParser());
 
@@ -34,9 +32,7 @@ app.use(express.json());
 // Parse URL-encoded data with extended option (allows nested objects)
 app.use(express.urlencoded({ extended: true }));
 
-/* =========================================
-   ✅ DATABASE CONNECTION
-   ========================================= */
+// Database connection
 try {
   await mongoose.connect(process.env.MONGODB_URI);
   console.log("✅ MongoDB connected");
@@ -45,9 +41,7 @@ try {
   // Ideally, process should exit or handle retry logic here
 }
 
-/* =========================================
-   ✅ ROUTE MOUNTING
-   ========================================= */
+// Route mounting
 // Mount routes to specific paths
 app.use("/api/auth", authRoutes);
 app.use("/api/home", homeRoutes);
@@ -57,9 +51,7 @@ app.use("/api/stories", storiesRoutes);
 app.use("/api/market", marketRoutes);
 app.use("/api/chat", chatRoutes);
 
-/* =========================================
-   ✅ ERROR HANDLING
-   ========================================= */
+// Error handling
 
 // 404 Handler for undefined routes
 app.use((req, res, next) => {
@@ -88,9 +80,7 @@ app.use((err, req, res, next) => {
 import http from "http";
 import { initSocket } from "./utils/socket.js";
 
-/* =========================================
-   ✅ SERVER INITIALIZATION
-   ========================================= */
+// Server initialization
 // Create HTTP server instance
 const server = http.createServer(app);
 

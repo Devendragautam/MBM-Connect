@@ -6,21 +6,21 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { uploadOnCloudinary } from "../utils/cloudinary.js";
 import { User } from "../models/user.models.js";
 
-/* ================= TOKEN HELPERS ================= */
+// Token helpers
 const generateAccessToken = (id) =>
   jwt.sign({ _id: id }, process.env.JWT_SECRET, { expiresIn: "15m" });
 
 const generateRefreshToken = (id) =>
   jwt.sign({ _id: id }, process.env.JWT_REFRESH_SECRET, { expiresIn: "7d" });
 
-/* ================= COOKIE OPTIONS ================= */
+// Cookie options
 const cookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
   sameSite: process.env.NODE_ENV === "production" ? "strict" : "lax",
 };
 
-/* ================= REGISTER ================= */
+// Register
 /**
  * Register a new user
  * Handles file uploads for avatar and cover image
@@ -29,12 +29,12 @@ const cookieOptions = {
 export const registerUser = asyncHandler(async (req, res) => {
   const { fullName, email, username, password } = req.body;
 
-  // 1️⃣ Validation: Ensure all fields are present
+  // 1. Validation: Ensure all fields are present
   if (!fullName || !email || !username || !password) {
     throw new ApiError(400, "All fields are required");
   }
 
-  // 2️⃣ Check for existing user by email or username
+  // 2. Check for existing user by email or username
   const existingUser = await User.findOne({
     $or: [
       { email: email.toLowerCase() },
@@ -46,7 +46,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(409, "User already exists");
   }
 
-  // 3️⃣ Handle Avatar Upload (Required)
+  // 3. Handle Avatar Upload (Required)
   const avatarPath = req.files?.avatar?.[0]?.path;
   if (!avatarPath) {
     throw new ApiError(400, "Avatar is required");
@@ -57,17 +57,17 @@ export const registerUser = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Avatar upload failed");
   }
 
-  // 4️⃣ Handle Cover Image Upload (Optional)
+  // 4. Handle Cover Image Upload (Optional)
   let coverImageUrl = "";
   if (req.files?.coverImage?.[0]?.path) {
     const coverUpload = await uploadOnCloudinary(req.files.coverImage[0].path);
     if (coverUpload?.url) coverImageUrl = coverUpload.url;
   }
 
-  // 5️⃣ Hash Password
+  // 5. Hash Password
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  // 6️⃣ Create User in Database
+  // 6. Create User in Database
   const user = await User.create({
     fullName,
     email: email.toLowerCase(),
@@ -77,14 +77,14 @@ export const registerUser = asyncHandler(async (req, res) => {
     coverImage: coverImageUrl,
   });
 
-  // 7️⃣ Generate Tokens
+  // 7. Generate Tokens
   const accessToken = generateAccessToken(user._id);
   const refreshToken = generateRefreshToken(user._id);
 
   user.refreshToken = refreshToken;
   await user.save();
 
-  // 8️⃣ Return Response (excluding sensitive fields)
+  // 8. Return Response (excluding sensitive fields)
   const safeUser = await User.findById(user._id).select(
     "-password -refreshToken"
   );
@@ -105,7 +105,7 @@ export const registerUser = asyncHandler(async (req, res) => {
     );
 });
 
-/* ================= LOGIN ================= */
+// Login
 export const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
@@ -148,7 +148,7 @@ export const loginUser = asyncHandler(async (req, res) => {
     );
 });
 
-/* ================= LOGOUT ================= */
+// Logout
 export const logoutUser = asyncHandler(async (req, res) => {
   if (!req.user?._id) {
     throw new ApiError(401, "Unauthorized");
@@ -164,12 +164,12 @@ export const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "Logged out successfully"));
 });
 
-/* ================= CURRENT USER ================= */
+// Current user
 export const getCurrentUser = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, req.user, "Current user fetched"));
 });
 
-/* ================= REFRESH TOKEN ================= */
+// Refresh token
 export const refreshAccessToken = asyncHandler(async (req, res) => {
   const token = req.cookies?.refreshToken;
   if (!token) {

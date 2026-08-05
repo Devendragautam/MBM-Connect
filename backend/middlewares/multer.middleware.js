@@ -3,20 +3,20 @@ import fs from "fs";
 import path from "path";
 import { ApiError } from "../utils/apiError.js";
 
-// 1️⃣ Define temp directory for uploads
+// 1. Define temp directory for uploads
 const tempDir = path.join(process.cwd(), "public", "temp");
 
-// 2️⃣ Ensure temp directory exists
+// 2. Ensure temp directory exists
 if (!fs.existsSync(tempDir)) {
   fs.mkdirSync(tempDir, { recursive: true });
 }
 
-// 3️⃣ Sanitize file names (avoid spaces & special chars)
+// 3. Sanitize file names (avoid spaces & special chars)
 const sanitizeFileName = (name) => {
   return name.replace(/[^a-zA-Z0-9.-]/g, "_");
 };
 
-// 4️⃣ Configure disk storage
+// 4. Configure disk storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     // where file will be stored temporarily
@@ -31,7 +31,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// 5️⃣ File type validation
+// 5. File type validation
 const fileFilter = (req, file, cb) => {
   const allowedTypes = [
     "image/jpeg",
@@ -53,7 +53,7 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-// 6️⃣ Create multer upload instance with configuration
+// 6. Create multer upload instance with configuration
 export const upload = multer({
   storage,
   fileFilter,
@@ -62,7 +62,7 @@ export const upload = multer({
   },
 });
 
-// 7️⃣ Export helper for multiple fields
+// 7. Export helper for multiple fields
 export const uploadFields = upload.fields([
   { name: "avatar", maxCount: 1 },
   { name: "coverImage", maxCount: 1 },

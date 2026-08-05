@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 
-/* =========================================
-   ✅ USER SCHEMA
-   ========================================= */
+// User schema
 const userSchema = new mongoose.Schema(
   {
     fullName: {
@@ -49,7 +47,7 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      select: false, // 🔑 IMPORTANT (learning point): Do not return password by default
+      select: false, // � IMPORTANT (learning point): Do not return password by default
     },
 
     refreshToken: {

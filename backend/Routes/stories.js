@@ -30,7 +30,7 @@ router.delete("/:id", authMiddleware, deleteStory);
 // POST /api/stories/:id/like
 router.post("/:id/like", authMiddleware, toggleLike);
 
-// 💬 Comment
+// � Comment
 // POST /api/stories/:id/comment
 router.post("/:id/comment", authMiddleware, addComment);
 

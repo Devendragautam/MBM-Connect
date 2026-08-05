@@ -1,7 +1,7 @@
 import { validationResult, body, param, query } from "express-validator";
 import { ApiError } from "../utils/apiError.js";
 
-/* ================= VALIDATION ERROR HANDLER ================= */
+// Validation error handler
 // Middleware to check for validation errors from express-validator
 export const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
@@ -17,7 +17,7 @@ export const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-/* ================= REGISTER VALIDATION ================= */
+// Register validation
 export const validateRegister = [
   body("fullName")
     .trim()
@@ -51,7 +51,7 @@ export const validateRegister = [
   handleValidationErrors,
 ];
 
-/* ================= LOGIN VALIDATION ================= */
+// Login validation
 export const validateLogin = [
   body("email")
     .trim()
@@ -67,7 +67,7 @@ export const validateLogin = [
   handleValidationErrors,
 ];
 
-/* ================= ID VALIDATION ================= */
+// Id validation
 export const validateUserId = [
   param("userId")
     .isMongoId()
@@ -76,7 +76,7 @@ export const validateUserId = [
   handleValidationErrors,
 ];
 
-/* ================= EMAIL VALIDATION ================= */
+// Email validation
 export const validateEmail = [
   body("email")
     .trim()
@@ -88,7 +88,7 @@ export const validateEmail = [
   handleValidationErrors,
 ];
 
-/* ================= PASSWORD VALIDATION ================= */
+// Password validation
 export const validatePassword = [
   body("password")
     .notEmpty()

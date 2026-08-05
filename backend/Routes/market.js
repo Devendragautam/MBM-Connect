@@ -3,11 +3,11 @@ import {
   createItem,
   getAllItems,
   deleteItem,
-  updateItem, // ✅ ADDED
+  updateItem, //  ADDED
 } from "../controllers/market.controller.js";
 
 import { authMiddleware } from "../middlewares/auth.middleware.js";
-import { upload } from "../middlewares/multer.middleware.js"; // ✅ ADDED
+import { upload } from "../middlewares/multer.middleware.js"; //  ADDED
 
 const router = express.Router();
 
@@ -27,7 +27,7 @@ router.get("/", authMiddleware, getAllItems);
 router.post(
   "/",
   authMiddleware,
-  upload.fields([{ name: "image", maxCount: 1 }]), // ✅ ADDED
+  upload.fields([{ name: "image", maxCount: 1 }]), //  ADDED
   createItem
 );
 
